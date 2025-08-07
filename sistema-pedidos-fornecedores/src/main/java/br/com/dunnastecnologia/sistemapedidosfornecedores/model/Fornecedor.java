@@ -28,7 +28,7 @@ public class Fornecedor {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(name = "nome", nullable = false, length = 255)
     private String nome;
 
     @Column(nullable = false, unique = true, length = 14)
