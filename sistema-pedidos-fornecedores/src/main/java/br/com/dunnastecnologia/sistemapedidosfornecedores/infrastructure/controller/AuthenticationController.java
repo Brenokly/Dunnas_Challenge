@@ -1,0 +1,53 @@
+package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.AuthenticationRequestDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.AuthenticationResponseDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.security.JwtService;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.service.AuthenticationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/api/v1/auth")
+@Tag(name = "Autenticação", description = "Endpoints para autenticação e registro de usuários.")
+public class AuthenticationController {
+
+    private final AuthenticationManager authenticationManager;
+    private final AuthenticationService authenticationService;
+    private final JwtService jwtService;
+
+    public AuthenticationController(AuthenticationManager authenticationManager, AuthenticationService authenticationService, JwtService jwtService) {
+        this.authenticationManager = authenticationManager;
+        this.authenticationService = authenticationService;
+        this.jwtService = jwtService;
+    }
+
+    @PostMapping("/login")
+    @Operation(summary = "Autentica um usuário", description = "Realiza o login de um usuário (cliente ou fornecedor) e retorna um token JWT.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Autenticação bem-sucedida."),
+        @ApiResponse(responseCode = "401", description = "Credenciais inválidas.")
+    })
+    public ResponseEntity<AuthenticationResponseDTO> login(@RequestBody @Valid AuthenticationRequestDTO request) {
+        // A autenticação pode lançar BadCredentialsException, que precisa ser tratada
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.usuario(), request.senha())
+        );
+
+        final UserDetails user = authenticationService.loadUserByUsername(request.usuario());
+        final String token = jwtService.generateToken(user);
+        return ResponseEntity.ok(new AuthenticationResponseDTO(token));
+    }
+}
