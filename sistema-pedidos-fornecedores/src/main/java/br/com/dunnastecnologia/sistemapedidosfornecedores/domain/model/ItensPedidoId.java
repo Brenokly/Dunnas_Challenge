@@ -1,4 +1,4 @@
-package br.com.dunnastecnologia.sistemapedidosfornecedores.model;
+package br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model;
 
 import java.io.Serializable;
 import java.util.UUID;

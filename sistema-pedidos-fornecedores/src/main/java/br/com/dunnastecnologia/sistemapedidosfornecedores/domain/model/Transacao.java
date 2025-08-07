@@ -1,10 +1,10 @@
-package br.com.dunnastecnologia.sistemapedidosfornecedores.model;
+package br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-import br.com.dunnastecnologia.sistemapedidosfornecedores.utils.enums.TipoTransacao;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.utils.enums.TipoTransacao;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

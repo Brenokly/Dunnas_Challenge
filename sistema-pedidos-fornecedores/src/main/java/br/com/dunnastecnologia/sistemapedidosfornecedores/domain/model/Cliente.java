@@ -1,4 +1,4 @@
-package br.com.dunnastecnologia.sistemapedidosfornecedores.model;
+package br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

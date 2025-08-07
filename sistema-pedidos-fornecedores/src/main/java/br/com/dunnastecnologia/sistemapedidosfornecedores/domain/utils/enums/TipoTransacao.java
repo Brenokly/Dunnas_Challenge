@@ -1,4 +1,4 @@
-package br.com.dunnastecnologia.sistemapedidosfornecedores.utils.enums;
+package br.com.dunnastecnologia.sistemapedidosfornecedores.domain.utils.enums;
 
 public enum TipoTransacao {
     PAGAMENTO_PEDIDO,

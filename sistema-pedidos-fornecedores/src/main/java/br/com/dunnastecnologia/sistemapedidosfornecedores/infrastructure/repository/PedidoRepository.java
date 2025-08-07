@@ -1,4 +1,4 @@
-package br.com.dunnastecnologia.sistemapedidosfornecedores.repository;
+package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.repository;
 
 import java.util.UUID;
 
@@ -7,8 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import br.com.dunnastecnologia.sistemapedidosfornecedores.model.Pedido;
-import br.com.dunnastecnologia.sistemapedidosfornecedores.utils.enums.StatusPedido;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Pedido;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.utils.enums.StatusPedido;
 
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, UUID> {
