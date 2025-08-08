@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.FornecedorRequestDTO;
-import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.FornecedorResponseDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.fornecedor.FornecedorRequestDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.fornecedor.FornecedorResponseDTO;
 
 public interface FornecedorUseCases {
 

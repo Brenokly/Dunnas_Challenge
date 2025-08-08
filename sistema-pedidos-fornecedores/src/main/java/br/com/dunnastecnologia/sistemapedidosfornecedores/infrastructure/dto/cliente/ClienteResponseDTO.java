@@ -1,4 +1,4 @@
-package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto;
+package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

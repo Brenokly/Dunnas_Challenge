@@ -3,7 +3,7 @@ package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.mapper
 import org.springframework.stereotype.Component;
 
 import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Cliente;
-import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.ClienteResponseDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteResponseDTO;
 
 @Component
 public class ClienteMapper {

@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.AuthenticationRequestDTO;
-import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.AuthenticationResponseDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.auth.AuthenticationRequestDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.auth.AuthenticationResponseDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.security.JwtService;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;

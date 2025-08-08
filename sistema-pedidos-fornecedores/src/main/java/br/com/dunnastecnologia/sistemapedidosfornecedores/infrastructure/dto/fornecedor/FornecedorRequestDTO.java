@@ -1,4 +1,4 @@
-package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto;
+package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.fornecedor;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
