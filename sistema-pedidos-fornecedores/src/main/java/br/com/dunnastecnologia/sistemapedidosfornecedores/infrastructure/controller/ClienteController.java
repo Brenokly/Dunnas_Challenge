@@ -90,8 +90,8 @@ public class ClienteController {
         @ApiResponse(responseCode = "204", description = "Cliente deletado com sucesso."),
         @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
-    public ResponseEntity<Void> deletar(@PathVariable UUID id) {
-        clienteUseCases.deletarCliente(id);
+    public ResponseEntity<Void> desativar(@PathVariable UUID id) {
+        clienteUseCases.desativarCliente(id);
         return ResponseEntity.noContent().build();
     }
 }

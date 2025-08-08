@@ -1,12 +1,13 @@
 package br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases;
 
-import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.ClienteRequestDTO;
-import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.ClienteResponseDTO;
-import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.ValorRequestDTO;
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.UUID;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.ClienteRequestDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.ClienteResponseDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.ValorRequestDTO;
 
 public interface ClienteUseCases {
 
@@ -18,5 +19,5 @@ public interface ClienteUseCases {
 
     ClienteResponseDTO adicionarSaldo(UUID id, ValorRequestDTO valorDTO);
 
-    void deletarCliente(UUID id);
+    void desativarCliente(UUID id);
 }

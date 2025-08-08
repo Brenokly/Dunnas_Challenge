@@ -83,10 +83,11 @@ public class ClienteServiceImpl implements ClienteUseCases {
 
     @Override
     @Transactional
-    public void deletarCliente(UUID id) {
-        if (!clienteRepository.existsById(id)) {
-            throw new EntityNotFoundException("Cliente com ID " + id + " não encontrado.");
-        }
-        clienteRepository.deleteById(id);
+    public void desativarCliente(UUID id) {
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cliente com ID " + id + " não encontrado."));
+
+        cliente.setAtivo(false);
+        clienteRepository.save(cliente);
     }
 }
