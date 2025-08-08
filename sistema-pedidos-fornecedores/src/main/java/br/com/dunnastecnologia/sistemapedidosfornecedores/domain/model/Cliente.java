@@ -48,6 +48,9 @@ public class Cliente implements UserDetails {
     @Column(name = "saldo", nullable = false, precision = 19, scale = 2)
     private BigDecimal saldo;
 
+    @Column(name = "ativo", nullable = false)
+    private Boolean ativo;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // No momento o projeto está sem ROLE's
