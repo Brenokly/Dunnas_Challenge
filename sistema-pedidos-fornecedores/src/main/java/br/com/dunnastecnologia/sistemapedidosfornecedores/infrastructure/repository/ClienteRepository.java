@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -99,4 +100,15 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
      * vazio é retornado.
      */
     Optional<Cliente> findByUsuarioAndAtivoTrue(String usuario);
+
+    /**
+     * Reativa um cliente que foi desativado.
+     *
+     * @param clienteId ID do cliente a ser reativado.
+     * @pre O cliente deve existir e estar desativado.
+     * @post O cliente é reativado.
+     */
+    @Modifying
+    @Query(value = "SELECT reativar_cliente(:clienteId)", nativeQuery = true)
+    void reativarClienteViaFuncao(@Param("clienteId") UUID clienteId);
 }

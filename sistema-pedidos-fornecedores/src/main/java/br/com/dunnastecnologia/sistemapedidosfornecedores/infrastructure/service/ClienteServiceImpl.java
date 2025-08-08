@@ -2,6 +2,7 @@ package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.servic
 
 import java.util.UUID;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,11 +43,10 @@ public class ClienteServiceImpl implements ClienteUseCases {
             Cliente clienteSalvo = clienteRepository.findById(novoClienteId)
                     .orElseThrow(() -> new IllegalStateException("ERRO CRÍTICO: Cliente não encontrado após o cadastro via função."));
             return clienteMapper.toResponseDTO(clienteSalvo);
-        } catch (RuntimeException e) {
-            if (e.getCause() != null && e.getCause().getMessage().contains("Regra de Negócio Violada")) {
-                throw new RegraDeNegocioException(e.getCause().getMessage());
-            }
-            throw e;
+        } catch (DataIntegrityViolationException e) {
+            String mensagemOriginal = e.getMostSpecificCause().getMessage();
+            String mensagemTratada = extrairMensagemRegraDeNegocio(mensagemOriginal);
+            throw new RegraDeNegocioException(mensagemTratada);
         }
     }
 
@@ -73,11 +73,10 @@ public class ClienteServiceImpl implements ClienteUseCases {
         try {
             clienteRepository.adicionarSaldoViaFuncao(id, valorDTO.valor());
             return this.buscarPorId(id);
-        } catch (RuntimeException e) {
-            if (e.getCause() != null && e.getCause().getMessage().contains("Regra de Negócio Violada")) {
-                throw new RegraDeNegocioException(e.getCause().getMessage());
-            }
-            throw e;
+        } catch (DataIntegrityViolationException e) {
+            String mensagemOriginal = e.getMostSpecificCause().getMessage();
+            String mensagemTratada = extrairMensagemRegraDeNegocio(mensagemOriginal);
+            throw new RegraDeNegocioException(mensagemTratada);
         }
     }
 
@@ -89,5 +88,26 @@ public class ClienteServiceImpl implements ClienteUseCases {
 
         cliente.setAtivo(false);
         clienteRepository.save(cliente);
+    }
+
+    @Override
+    @Transactional
+    public ClienteResponseDTO reativarCliente(UUID id) {
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cliente com ID " + id + " não encontrado."));
+
+        if (cliente.getAtivo()) {
+            throw new RegraDeNegocioException("Este cliente já está ativo.");
+        }
+
+        clienteRepository.reativarClienteViaFuncao(id);
+        return this.buscarPorId(id);
+    }
+
+    private String extrairMensagemRegraDeNegocio(String mensagemOriginal) {
+        if (mensagemOriginal != null && mensagemOriginal.contains("Regra de Negócio Violada:")) {
+            return mensagemOriginal.substring(mensagemOriginal.indexOf("ERRO:") + 6).split("\n")[0].trim();
+        }
+        return "Ocorreu um erro de validação.";
     }
 }

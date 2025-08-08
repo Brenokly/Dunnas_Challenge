@@ -68,4 +68,15 @@ public interface ClienteUseCases {
      * @throws EntityNotFoundException se o cliente não for encontrado.
      */
     void desativarCliente(UUID id);
+
+    /**
+     * Reativa um cliente que foi desativado.
+     *
+     * @param id ID do cliente a ser reativado.
+     * @return dados do cliente reativado.
+     * @pre O cliente deve existir e estar desativado.
+     * @post O cliente é reativado.
+     * @throws EntityNotFoundException se o cliente não for encontrado.
+     */
+    ClienteResponseDTO reativarCliente(UUID id);
 }

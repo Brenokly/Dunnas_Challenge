@@ -94,4 +94,15 @@ public class ClienteController {
         clienteUseCases.desativarCliente(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/reativar")
+    @Operation(summary = "Reativa um cliente desativado", description = "Altera o status de um cliente para 'ativo'.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Cliente reativado com sucesso."),
+        @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+    })
+    public ResponseEntity<ClienteResponseDTO> reativar(@PathVariable UUID id) {
+        ClienteResponseDTO clienteReativado = clienteUseCases.reativarCliente(id);
+        return ResponseEntity.ok(clienteReativado);
+    }
 }
