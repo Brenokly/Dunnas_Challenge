@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -65,4 +67,36 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
             @Param("clienteId") UUID clienteId,
             @Param("valor") BigDecimal valor
     );
+
+    /**
+     * Busca todos os clientes ativos.
+     *
+     * @param pageable informações de paginação.
+     * @return lista de clientes ativos paginada.
+     * @pre Nenhuma.
+     * @post A lista de clientes ativos é retornada.
+     */
+    Page<Cliente> findAllByAtivoTrue(Pageable pageable);
+
+    /**
+     * Busca um cliente ativo pelo seu ID.
+     *
+     * @param id ID do cliente a ser buscado.
+     * @return um Optional contendo o Cliente, se encontrado.
+     * @pre O cliente deve existir e estar ativo.
+     * @post O cliente é retornado se encontrado, caso contrário, um Optional
+     * vazio é retornado.
+     */
+    Optional<Cliente> findByIdAndAtivoTrue(UUID id);
+
+    /**
+     * Busca um cliente ativo pelo nome de usuário.
+     *
+     * @param usuario nome de usuário do cliente a ser buscado.
+     * @return um Optional contendo o Cliente, se encontrado.
+     * @pre O cliente deve existir e estar ativo.
+     * @post O cliente é retornado se encontrado, caso contrário, um Optional
+     * vazio é retornado.
+     */
+    Optional<Cliente> findByUsuarioAndAtivoTrue(String usuario);
 }

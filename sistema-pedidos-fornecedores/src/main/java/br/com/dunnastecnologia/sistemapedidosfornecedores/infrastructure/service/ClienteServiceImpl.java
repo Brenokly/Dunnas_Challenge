@@ -53,7 +53,7 @@ public class ClienteServiceImpl implements ClienteUseCases {
     @Override
     @Transactional(readOnly = true)
     public ClienteResponseDTO buscarPorId(UUID id) {
-        return clienteRepository.findById(id)
+        return clienteRepository.findByIdAndAtivoTrue(id)
                 .map(clienteMapper::toResponseDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Cliente com ID " + id + " não encontrado."));
     }
@@ -61,7 +61,7 @@ public class ClienteServiceImpl implements ClienteUseCases {
     @Override
     @Transactional(readOnly = true)
     public Page<ClienteResponseDTO> listarTodos(Pageable pageable) {
-        return clienteRepository.findAll(pageable).map(clienteMapper::toResponseDTO);
+        return clienteRepository.findAllByAtivoTrue(pageable).map(clienteMapper::toResponseDTO);
     }
 
     @Override
