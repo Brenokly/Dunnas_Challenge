@@ -1,5 +1,5 @@
 -- V1__create_initial_schema.sql
--- Este script cria a estrutura inicial de tabelas para o sistema de gerenciamento de pedidos.
+-- Script pra criar a estrutura inicial de tabelas para o sistema de gerenciamento de pedidos.
 
 -- Tabela para armazenar os dados dos clientes do sistema.
 CREATE TABLE clientes (
@@ -62,7 +62,7 @@ CREATE TABLE itens_pedido (
     produto_id UUID NOT NULL,
     quantidade INTEGER NOT NULL,
     preco_unitario_cobrado DECIMAL(19, 2) NOT NULL,
-    PRIMARY KEY (pedido_id, produto_id), -- Chave primária composta
+    PRIMARY KEY (pedido_id, produto_id),
     CONSTRAINT fk_itens_pedido_pedidos FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
     CONSTRAINT fk_itens_pedido_produtos FOREIGN KEY (produto_id) REFERENCES produtos(id) ON DELETE RESTRICT
 );

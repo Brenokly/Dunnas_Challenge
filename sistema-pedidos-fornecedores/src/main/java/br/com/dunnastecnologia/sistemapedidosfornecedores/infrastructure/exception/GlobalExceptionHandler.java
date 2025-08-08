@@ -3,6 +3,7 @@ package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.except
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -52,5 +53,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleBadCredentialsException(BadCredentialsException ex) {
         ErrorResponseDTO error = new ErrorResponseDTO("Usuário ou senha inválidos.", HttpStatus.UNAUTHORIZED.value(), LocalDateTime.now());
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    // Manipulador para violações de integridade de dados
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        String message = "Operação não pode ser concluída devido a uma violação de integridade de dados. "
+                + "O recurso pode estar sendo referenciado por outros registros.";
+        ErrorResponseDTO error = new ErrorResponseDTO(message, HttpStatus.CONFLICT.value(), LocalDateTime.now());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 }

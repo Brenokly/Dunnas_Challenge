@@ -2,7 +2,6 @@ package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.servic
 
 import java.util.UUID;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,8 +42,11 @@ public class ClienteServiceImpl implements ClienteUseCases {
             Cliente clienteSalvo = clienteRepository.findById(novoClienteId)
                     .orElseThrow(() -> new IllegalStateException("ERRO CRÍTICO: Cliente não encontrado após o cadastro via função."));
             return clienteMapper.toResponseDTO(clienteSalvo);
-        } catch (DataIntegrityViolationException e) {
-            throw new RegraDeNegocioException(e.getMostSpecificCause().getMessage());
+        } catch (RuntimeException e) {
+            if (e.getCause() != null && e.getCause().getMessage().contains("Regra de Negócio Violada")) {
+                throw new RegraDeNegocioException(e.getCause().getMessage());
+            }
+            throw e;
         }
     }
 
@@ -71,8 +73,11 @@ public class ClienteServiceImpl implements ClienteUseCases {
         try {
             clienteRepository.adicionarSaldoViaFuncao(id, valorDTO.valor());
             return this.buscarPorId(id);
-        } catch (DataIntegrityViolationException e) {
-            throw new RegraDeNegocioException(e.getMostSpecificCause().getMessage());
+        } catch (RuntimeException e) {
+            if (e.getCause() != null && e.getCause().getMessage().contains("Regra de Negócio Violada")) {
+                throw new RegraDeNegocioException(e.getCause().getMessage());
+            }
+            throw e;
         }
     }
 
