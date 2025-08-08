@@ -38,8 +38,10 @@ public class ClienteServiceImpl implements ClienteUseCases {
         UUID novoClienteId = clienteRepository.registrarClienteViaFuncao(
                 requestDTO.nome(), requestDTO.cpf(), requestDTO.dataNascimento(), requestDTO.usuario(), senhaCriptografada
         );
+
         Cliente clienteSalvo = clienteRepository.findById(novoClienteId)
                 .orElseThrow(() -> new IllegalStateException("ERRO CRÍTICO: Cliente não encontrado após o cadastro via função."));
+
         return clienteMapper.toResponseDTO(clienteSalvo);
     }
 
@@ -70,11 +72,10 @@ public class ClienteServiceImpl implements ClienteUseCases {
     @Override
     @Transactional
     public void desativarCliente(UUID id) {
-        Cliente cliente = clienteRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cliente com ID " + id + " não encontrado."));
-
-        cliente.setAtivo(false);
-        clienteRepository.save(cliente);
+        if (!clienteRepository.existsById(id)) {
+            throw new EntityNotFoundException("Cliente com ID " + id + " não encontrado.");
+        }
+        clienteRepository.desativarClienteViaProcedure(id);
     }
 
     @Override
@@ -87,7 +88,7 @@ public class ClienteServiceImpl implements ClienteUseCases {
             throw new RegraDeNegocioException("Este cliente já está ativo.");
         }
 
-        clienteRepository.reativarClienteViaFuncao(id);
+        clienteRepository.reativarClienteViaProcedure(id);
         return this.buscarPorId(id);
     }
 }

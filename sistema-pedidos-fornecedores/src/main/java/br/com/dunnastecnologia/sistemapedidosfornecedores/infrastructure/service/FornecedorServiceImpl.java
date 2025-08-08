@@ -1,8 +1,88 @@
 package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.service;
 
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases.FornecedorUseCases;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Fornecedor;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.fornecedor.FornecedorRequestDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.fornecedor.FornecedorResponseDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.exception.RegraDeNegocioException;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.mapper.FornecedorMapper;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.repository.FornecedorRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class FornecedorServiceImpl {
+public class FornecedorServiceImpl implements FornecedorUseCases {
+
+    private final FornecedorRepository fornecedorRepository;
+    private final FornecedorMapper fornecedorMapper;
+    private final PasswordEncoder passwordEncoder;
+
+    public FornecedorServiceImpl(FornecedorRepository fornecedorRepository, FornecedorMapper fornecedorMapper, PasswordEncoder passwordEncoder) {
+        this.fornecedorRepository = fornecedorRepository;
+        this.fornecedorMapper = fornecedorMapper;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    @Transactional
+    public FornecedorResponseDTO cadastrarNovoFornecedor(FornecedorRequestDTO requestDTO) {
+        String senhaCriptografada = passwordEncoder.encode(requestDTO.senha());
+        UUID novoFornecedorId = fornecedorRepository.registrarFornecedorViaFuncao(
+                requestDTO.nome(),
+                requestDTO.cnpj(),
+                requestDTO.usuario(),
+                senhaCriptografada
+        );
+
+        Fornecedor fornecedorSalvo = fornecedorRepository.findById(novoFornecedorId).orElseThrow(
+                () -> new IllegalStateException("ERRO CRÍTICO: Fornecedor não encontrado após o cadastro via função."));
+
+        return fornecedorMapper.toResponseDTO(fornecedorSalvo);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FornecedorResponseDTO buscarPorId(UUID id) {
+        return fornecedorRepository.findByIdAndAtivoTrue(id)
+                .map(fornecedorMapper::toResponseDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Fornecedor com ID " + id + " não encontrado."));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<FornecedorResponseDTO> listarTodos(Pageable pageable) {
+        return fornecedorRepository.findAllByAtivoTrue(pageable)
+                .map(fornecedorMapper::toResponseDTO);
+    }
+
+    @Override
+    @Transactional
+    public void desativarFornecedor(UUID id) {
+        if (!fornecedorRepository.existsById(id)) {
+            throw new EntityNotFoundException("Fornecedor com ID " + id + " não encontrado.");
+        }
+        fornecedorRepository.desativarFornecedorViaProcedure(id);
+    }
+
+    @Override
+    @Transactional
+    public FornecedorResponseDTO reativarFornecedor(UUID id) {
+        Fornecedor fornecedor = fornecedorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Fornecedor com ID " + id + " não encontrado."));
+
+        if (fornecedor.getAtivo()) {
+            throw new RegraDeNegocioException("Este fornecedor já está ativo.");
+        }
+
+        fornecedorRepository.reativarFornecedorViaProcedure(id);
+        return this.buscarPorId(id);
+    }
 
 }

@@ -88,5 +88,16 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
      */
     @Modifying
     @Query(value = "CALL reativar_cliente(:clienteId)", nativeQuery = true)
-    void reativarClienteViaFuncao(@Param("clienteId") UUID clienteId);
+    void reativarClienteViaProcedure(@Param("clienteId") UUID clienteId);
+
+    /**
+     * Desativa um cliente que está ativo.
+     *
+     * @param clienteId ID do cliente a ser desativado.
+     * @pre O cliente deve existir e estar ativo.
+     * @post O cliente é desativado.
+     */
+    @Modifying
+    @Query(value = "CALL desativar_cliente(:clienteId)", nativeQuery = true)
+    void desativarClienteViaProcedure(@Param("clienteId") UUID clienteId);
 }
