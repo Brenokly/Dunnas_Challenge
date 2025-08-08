@@ -19,28 +19,6 @@ import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Cliente;
 public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
 
     /**
-     * Busca um cliente pelo seu nome de usuário.
-     *
-     * @param usuario O nome de usuário a ser buscado.
-     * @return um Optional contendo o Cliente, se encontrado.
-     * @pre O cliente deve existir no sistema.
-     * @post O cliente é retornado se encontrado, caso contrário, um Optional
-     * vazio é retornado.
-     */
-    Optional<Cliente> findByUsuario(String usuario);
-
-    /**
-     * Busca um cliente pelo seu CPF.
-     *
-     * @param cpf O CPF a ser buscado.
-     * @return um Optional contendo o Cliente, se encontrado.
-     * @pre O cliente deve existir no sistema.
-     * @post O cliente é retornado se encontrado, caso contrário, um Optional
-     * vazio é retornado.
-     */
-    Optional<Cliente> findByCpf(String cpf);
-
-    /**
      * Chama a função 'cadastrar_novo_cliente' no PostgreSQL para registrar um
      * novo cliente. Delega a lógica de validação de duplicidade e inserção para
      * o banco de dados.

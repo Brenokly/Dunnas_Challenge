@@ -50,6 +50,7 @@ public class SecurityConfig {
                         "/api/v1/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"
                 ).permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/clientes").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/fornecedores").permitAll()
                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
