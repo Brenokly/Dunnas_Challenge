@@ -2,7 +2,6 @@ package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.servic
 
 import java.util.UUID;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,19 +34,13 @@ public class ClienteServiceImpl implements ClienteUseCases {
     @Override
     @Transactional
     public ClienteResponseDTO cadastrarNovoCliente(ClienteRequestDTO requestDTO) {
-        try {
-            String senhaCriptografada = passwordEncoder.encode(requestDTO.senha());
-            UUID novoClienteId = clienteRepository.registrarClienteViaFuncao(
-                    requestDTO.nome(), requestDTO.cpf(), requestDTO.dataNascimento(), requestDTO.usuario(), senhaCriptografada
-            );
-            Cliente clienteSalvo = clienteRepository.findById(novoClienteId)
-                    .orElseThrow(() -> new IllegalStateException("ERRO CRÍTICO: Cliente não encontrado após o cadastro via função."));
-            return clienteMapper.toResponseDTO(clienteSalvo);
-        } catch (DataIntegrityViolationException e) {
-            String mensagemOriginal = e.getMostSpecificCause().getMessage();
-            String mensagemTratada = extrairMensagemRegraDeNegocio(mensagemOriginal);
-            throw new RegraDeNegocioException(mensagemTratada);
-        }
+        String senhaCriptografada = passwordEncoder.encode(requestDTO.senha());
+        UUID novoClienteId = clienteRepository.registrarClienteViaFuncao(
+                requestDTO.nome(), requestDTO.cpf(), requestDTO.dataNascimento(), requestDTO.usuario(), senhaCriptografada
+        );
+        Cliente clienteSalvo = clienteRepository.findById(novoClienteId)
+                .orElseThrow(() -> new IllegalStateException("ERRO CRÍTICO: Cliente não encontrado após o cadastro via função."));
+        return clienteMapper.toResponseDTO(clienteSalvo);
     }
 
     @Override
@@ -70,14 +63,8 @@ public class ClienteServiceImpl implements ClienteUseCases {
         if (!clienteRepository.existsById(id)) {
             throw new EntityNotFoundException("Cliente com ID " + id + " não encontrado.");
         }
-        try {
-            clienteRepository.adicionarSaldoViaFuncao(id, valorDTO.valor());
-            return this.buscarPorId(id);
-        } catch (DataIntegrityViolationException e) {
-            String mensagemOriginal = e.getMostSpecificCause().getMessage();
-            String mensagemTratada = extrairMensagemRegraDeNegocio(mensagemOriginal);
-            throw new RegraDeNegocioException(mensagemTratada);
-        }
+        clienteRepository.adicionarSaldoViaFuncao(id, valorDTO.valor());
+        return this.buscarPorId(id);
     }
 
     @Override
@@ -102,12 +89,5 @@ public class ClienteServiceImpl implements ClienteUseCases {
 
         clienteRepository.reativarClienteViaFuncao(id);
         return this.buscarPorId(id);
-    }
-
-    private String extrairMensagemRegraDeNegocio(String mensagemOriginal) {
-        if (mensagemOriginal != null && mensagemOriginal.contains("Regra de Negócio Violada:")) {
-            return mensagemOriginal.substring(mensagemOriginal.indexOf("ERRO:") + 6).split("\n")[0].trim();
-        }
-        return "Ocorreu um erro de validação.";
     }
 }

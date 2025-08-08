@@ -109,6 +109,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
      * @post O cliente é reativado.
      */
     @Modifying
-    @Query(value = "SELECT reativar_cliente(:clienteId)", nativeQuery = true)
+    @Query(value = "CALL reativar_cliente(:clienteId)", nativeQuery = true)
     void reativarClienteViaFuncao(@Param("clienteId") UUID clienteId);
 }
