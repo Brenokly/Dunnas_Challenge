@@ -1,7 +1,6 @@
 package br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -18,7 +17,7 @@ import lombok.Setter;
 @Embeddable
 public class ItensPedidoId implements Serializable {
 
-    private UUID pedidoId;
-    private UUID produtoId;
+    private Pedido pedido;
+    private Produto produto;
 
 }
