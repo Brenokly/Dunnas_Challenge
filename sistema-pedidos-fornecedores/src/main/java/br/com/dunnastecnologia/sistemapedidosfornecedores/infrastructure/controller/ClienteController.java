@@ -85,9 +85,9 @@ public class ClienteController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deleta um cliente", description = "Remove um cliente do sistema pelo seu ID.")
+    @Operation(summary = "Desativa um cliente", description = "Desativa um cliente pelo seu ID.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Cliente deletado com sucesso."),
+        @ApiResponse(responseCode = "204", description = "Cliente desativado com sucesso."),
         @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
     public ResponseEntity<Void> desativar(@PathVariable UUID id) {

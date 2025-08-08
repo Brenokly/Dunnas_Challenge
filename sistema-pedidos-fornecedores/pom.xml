@@ -94,6 +94,17 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <configuration>
+                    <url>jdbc:postgresql://localhost:5432/dunnas_challenge_db</url>
+                    <user>postgres</user>
+                    <password>9610</password>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 

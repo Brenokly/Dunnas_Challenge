@@ -15,7 +15,8 @@ public class ClienteMapper {
                 cliente.getCpf(),
                 cliente.getDataNascimento(),
                 cliente.getUsuario(),
-                cliente.getSaldo()
+                cliente.getSaldo(),
+                cliente.getAtivo()
         );
     }
 }

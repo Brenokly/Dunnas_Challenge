@@ -1,5 +1,4 @@
 -- V4__update_cadastrar_cliente_function.sql
-
 CREATE OR REPLACE FUNCTION cadastrar_novo_cliente(
     p_nome VARCHAR,
     p_cpf VARCHAR,
@@ -9,6 +8,7 @@ CREATE OR REPLACE FUNCTION cadastrar_novo_cliente(
 ) RETURNS UUID AS $$
 DECLARE
     cliente_existente clientes%ROWTYPE;
+    novo_cliente_id UUID;
 BEGIN
     -- Verifica se já existe um cliente com o mesmo CPF ou usuário
     SELECT *
@@ -18,26 +18,24 @@ BEGIN
     LIMIT 1;
 
     IF FOUND THEN
-        -- Cliente encontrado
         IF cliente_existente.ativo IS FALSE THEN
-            RAISE EXCEPTION
-                'Regra de Negócio Violada: Já existe uma conta inativa com este CPF (%), ou usuário (?). Contate o suporte para reativação.',
-                p_cpf, p_usuario;
+            RAISE EXCEPTION 'Regra de Negócio Violada: Já existe uma conta inativa com este CPF % ou usuário %. Contate o suporte para reativação.',
+                cliente_existente.cpf, cliente_existente.usuario;
         ELSE
-            RAISE EXCEPTION
-                'Regra de Negócio Violada: CPF (%) ou nome de usuário (%) já cadastrado.',
-                p_cpf, p_usuario;
+            RAISE EXCEPTION 'Regra de Negócio Violada: CPF % ou nome de usuário % já cadastrado.',
+                cliente_existente.cpf, cliente_existente.usuario;
         END IF;
     END IF;
 
-    -- Se não encontrou nenhum registro, insere o novo cliente
-    RETURN (
-        INSERT INTO clientes (
-            nome, cpf, data_nascimento, usuario, senha, ativo
-        ) VALUES (
-            p_nome, p_cpf, p_data_nascimento, p_usuario, p_senha_hash, TRUE
-        )
-        RETURNING id
-    );
+    -- Se não encontrou, insere o novo cliente e salva o ID na variável
+    INSERT INTO clientes (
+        nome, cpf, data_nascimento, usuario, senha, ativo
+    ) VALUES (
+        p_nome, p_cpf, p_data_nascimento, p_usuario, p_senha_hash, TRUE
+    )
+    RETURNING id INTO novo_cliente_id;
+
+    -- Retorna a variável
+    RETURN novo_cliente_id;
 END;
 $$ LANGUAGE plpgsql;
