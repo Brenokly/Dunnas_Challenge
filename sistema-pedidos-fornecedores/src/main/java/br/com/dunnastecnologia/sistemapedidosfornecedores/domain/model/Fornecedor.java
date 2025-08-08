@@ -43,4 +43,6 @@ public class Fornecedor {
     @OneToMany(mappedBy = "fornecedor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Produto> produtos = new ArrayList<>();
 
+    @Column(name = "ativo", nullable = false)
+    private Boolean ativo;
 }
