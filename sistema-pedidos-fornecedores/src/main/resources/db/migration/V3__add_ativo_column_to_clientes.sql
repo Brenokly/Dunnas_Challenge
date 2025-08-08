@@ -1,3 +1,4 @@
--- V3__add_ativo_column_to_clientes.sql
+-- Adiciona a coluna 'ativo' para implementar o soft delete
+
 ALTER TABLE clientes
 ADD COLUMN ativo BOOLEAN NOT NULL DEFAULT TRUE;

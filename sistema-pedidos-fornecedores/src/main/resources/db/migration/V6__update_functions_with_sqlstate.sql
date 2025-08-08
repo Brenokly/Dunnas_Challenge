@@ -1,5 +1,3 @@
--- V6__update_functions_with_sqlstate.sql
-
 -- Atualiza as funções já criadas para usar o SQLSTATEs customizados
 
 CREATE OR REPLACE FUNCTION cadastrar_novo_cliente(
@@ -17,7 +15,7 @@ BEGIN
                 USING ERRCODE = 'PC002';
         ELSE
             RAISE EXCEPTION 'CPF ou nome de usuário já cadastrado.'
-                USING ERRCODE = 'PC001'; 
+                USING ERRCODE = 'PC001';
         END IF;
     END IF;
 

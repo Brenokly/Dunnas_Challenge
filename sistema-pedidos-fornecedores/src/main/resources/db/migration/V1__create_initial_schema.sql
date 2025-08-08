@@ -1,4 +1,3 @@
--- V1__create_initial_schema.sql
 -- Script pra criar a estrutura inicial de tabelas para o sistema de gerenciamento de pedidos.
 
 -- Tabela para armazenar os dados dos clientes do sistema.

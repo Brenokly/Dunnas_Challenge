@@ -1,5 +1,3 @@
--- V2__create_cliente_business_functions.sql
-
 -- Função para cadastrar um novo cliente, com validações de duplicidade.
 CREATE OR REPLACE FUNCTION cadastrar_novo_cliente(
     p_nome VARCHAR, p_cpf VARCHAR, p_data_nascimento DATE, p_usuario VARCHAR, p_senha_hash VARCHAR

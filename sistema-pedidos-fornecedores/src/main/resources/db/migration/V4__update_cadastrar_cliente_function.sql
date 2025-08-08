@@ -1,4 +1,5 @@
--- V4__update_cadastrar_cliente_function.sql
+-- Adiciona a verificação de contas desativadas na função de cadastro
+
 CREATE OR REPLACE FUNCTION cadastrar_novo_cliente(
     p_nome VARCHAR,
     p_cpf VARCHAR,
