@@ -6,9 +6,12 @@ import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +32,7 @@ public class Cupom {
     private String codigo;
 
     @Column(name = "tipo_desconto", nullable = false, length = 1)
-    private Character tipoDesconto; // 'P' para percentual, 'F' para fixo
+    private Character tipoDesconto;
 
     @Column(name = "valor", nullable = false, precision = 19, scale = 2)
     private BigDecimal valor;
@@ -37,7 +40,19 @@ public class Cupom {
     @Column(name = "data_validade", nullable = false)
     private LocalDate dataValidade;
 
+    @Column(name = "valor_minimo_pedido")
+    private BigDecimal valorMinimoPedido;
+
+    @Column(name = "limite_de_usos")
+    private Integer limiteDeUsos;
+
+    @Column(name = "usos_atuais", nullable = false)
+    private Integer usosAtuais;
+
     @Column(name = "ativo", nullable = false)
     private Boolean ativo;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fornecedor_id", nullable = false)
+    private Fornecedor fornecedor;
 }
