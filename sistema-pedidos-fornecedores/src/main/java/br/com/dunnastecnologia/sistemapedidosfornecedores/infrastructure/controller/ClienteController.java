@@ -24,6 +24,7 @@ import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cli
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -41,8 +42,8 @@ public class ClienteController {
     @PostMapping
     @Operation(summary = "Cadastra um novo cliente", description = "Cria um novo cliente no sistema.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = "Cliente cadastrado com sucesso."),
-        @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos ou regra de negócio violada.")
+            @ApiResponse(responseCode = "201", description = "Cliente cadastrado com sucesso."),
+            @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos ou regra de negócio violada.")
     })
     public ResponseEntity<ClienteResponseDTO> cadastrar(@RequestBody @Valid ClienteRequestDTO requestDTO) {
         ClienteResponseDTO responseDTO = clienteUseCases.cadastrarNovoCliente(requestDTO);
@@ -54,6 +55,7 @@ public class ClienteController {
     }
 
     @GetMapping
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Lista todos os clientes", description = "Retorna uma lista paginada de todos os clientes.")
     @ApiResponse(responseCode = "200", description = "Lista de clientes retornada com sucesso.")
     public ResponseEntity<Page<ClienteResponseDTO>> listar(@ParameterObject Pageable pageable) {
@@ -62,10 +64,11 @@ public class ClienteController {
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Busca um cliente por ID", description = "Retorna os detalhes de um cliente específico.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Cliente encontrado com sucesso."),
-        @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+            @ApiResponse(responseCode = "200", description = "Cliente encontrado com sucesso."),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
     public ResponseEntity<ClienteResponseDTO> buscarPorId(@PathVariable UUID id) {
         ClienteResponseDTO cliente = clienteUseCases.buscarPorId(id);
@@ -73,22 +76,25 @@ public class ClienteController {
     }
 
     @PatchMapping("/{id}/saldo")
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Adiciona saldo a um cliente", description = "Realiza uma operação de adição de saldo na conta de um cliente.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Saldo adicionado com sucesso."),
-        @ApiResponse(responseCode = "400", description = "Valor inválido."),
-        @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+            @ApiResponse(responseCode = "200", description = "Saldo adicionado com sucesso."),
+            @ApiResponse(responseCode = "400", description = "Valor inválido."),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
-    public ResponseEntity<ClienteResponseDTO> adicionarSaldo(@PathVariable UUID id, @RequestBody @Valid ValorRequestDTO valorDTO) {
+    public ResponseEntity<ClienteResponseDTO> adicionarSaldo(@PathVariable UUID id,
+            @RequestBody @Valid ValorRequestDTO valorDTO) {
         ClienteResponseDTO clienteAtualizado = clienteUseCases.adicionarSaldo(id, valorDTO);
         return ResponseEntity.ok(clienteAtualizado);
     }
 
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Desativa um cliente", description = "Desativa um cliente pelo seu ID.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "204", description = "Cliente desativado com sucesso."),
-        @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+            @ApiResponse(responseCode = "204", description = "Cliente desativado com sucesso."),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
     public ResponseEntity<Void> desativar(@PathVariable UUID id) {
         clienteUseCases.desativarCliente(id);
@@ -96,10 +102,11 @@ public class ClienteController {
     }
 
     @PostMapping("/{id}/reativar")
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Reativa um cliente desativado", description = "Altera o status de um cliente para 'ativo'.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Cliente reativado com sucesso."),
-        @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+            @ApiResponse(responseCode = "200", description = "Cliente reativado com sucesso."),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
     public ResponseEntity<ClienteResponseDTO> reativar(@PathVariable UUID id) {
         ClienteResponseDTO clienteReativado = clienteUseCases.reativarCliente(id);

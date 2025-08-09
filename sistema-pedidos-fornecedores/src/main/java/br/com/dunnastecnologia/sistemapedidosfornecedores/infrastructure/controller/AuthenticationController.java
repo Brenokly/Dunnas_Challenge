@@ -28,7 +28,8 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final JwtService jwtService;
 
-    public AuthenticationController(AuthenticationManager authenticationManager, AuthenticationService authenticationService, JwtService jwtService) {
+    public AuthenticationController(AuthenticationManager authenticationManager,
+            AuthenticationService authenticationService, JwtService jwtService) {
         this.authenticationManager = authenticationManager;
         this.authenticationService = authenticationService;
         this.jwtService = jwtService;
@@ -37,14 +38,13 @@ public class AuthenticationController {
     @PostMapping("/login")
     @Operation(summary = "Autentica um usuário", description = "Realiza o login de um usuário (cliente ou fornecedor) e retorna um token JWT.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Autenticação bem-sucedida."),
-        @ApiResponse(responseCode = "401", description = "Credenciais inválidas.")
+            @ApiResponse(responseCode = "200", description = "Autenticação bem-sucedida."),
+            @ApiResponse(responseCode = "401", description = "Credenciais inválidas.")
     })
     public ResponseEntity<AuthenticationResponseDTO> login(@RequestBody @Valid AuthenticationRequestDTO request) {
         // A autenticação pode lançar BadCredentialsException, que precisa ser tratada
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.usuario(), request.senha())
-        );
+                new UsernamePasswordAuthenticationToken(request.usuario(), request.senha()));
 
         final UserDetails user = authenticationService.loadUserByUsername(request.usuario());
         final String token = jwtService.generateToken(user);
