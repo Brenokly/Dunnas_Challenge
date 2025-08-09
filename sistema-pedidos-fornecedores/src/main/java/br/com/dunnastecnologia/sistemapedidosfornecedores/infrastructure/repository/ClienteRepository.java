@@ -100,4 +100,5 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
     @Modifying
     @Query(value = "CALL desativar_cliente(:clienteId)", nativeQuery = true)
     void desativarClienteViaProcedure(@Param("clienteId") UUID clienteId);
+    
 }
