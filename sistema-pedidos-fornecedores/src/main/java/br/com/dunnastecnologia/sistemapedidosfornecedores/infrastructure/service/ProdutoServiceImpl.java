@@ -91,7 +91,7 @@ public class ProdutoServiceImpl implements ProdutoUseCases {
   @Override
   @Transactional(readOnly = true)
   public ProdutoResponseDTO buscarProdutoPublicoPorId(UUID id) {
-    return produtoRepository.findByIdAndAtivoTrue(id)
+    return produtoRepository.findByIdPublicoAtivo(id)
         .map(produtoMapper::toResponseDTO)
         .orElseThrow(() -> new EntityNotFoundException("Produto com ID " + id + " não encontrado."));
   }
@@ -99,7 +99,7 @@ public class ProdutoServiceImpl implements ProdutoUseCases {
   @Override
   @Transactional(readOnly = true)
   public Page<ProdutoResponseDTO> listarTodosProdutosPublicos(Pageable pageable) {
-    return produtoRepository.findAllByAtivoTrue(pageable).map(produtoMapper::toResponseDTO);
+    return produtoRepository.findAllPublicosAtivos(pageable).map(produtoMapper::toResponseDTO);
   }
 
   @Override
@@ -114,10 +114,7 @@ public class ProdutoServiceImpl implements ProdutoUseCases {
   @Override
   @Transactional(readOnly = true)
   public Page<ProdutoResponseDTO> listarProdutosAtivosDeFornecedor(UUID fornecedorId, Pageable pageable) {
-    if (!fornecedorRepository.existsById(fornecedorId)) {
-      throw new EntityNotFoundException("Fornecedor com ID " + fornecedorId + " não encontrado.");
-    }
-    return produtoRepository.findAllByAtivoTrueAndFornecedorId(fornecedorId, pageable)
+    return produtoRepository.findAllByFornecedorIdPublicoAtivo(fornecedorId, pageable)
         .map(produtoMapper::toResponseDTO);
   }
 

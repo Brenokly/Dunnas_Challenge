@@ -42,7 +42,6 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "401", description = "Credenciais inválidas.")
     })
     public ResponseEntity<AuthenticationResponseDTO> login(@RequestBody @Valid AuthenticationRequestDTO request) {
-        // A autenticação pode lançar BadCredentialsException, que precisa ser tratada
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.usuario(), request.senha()));
 

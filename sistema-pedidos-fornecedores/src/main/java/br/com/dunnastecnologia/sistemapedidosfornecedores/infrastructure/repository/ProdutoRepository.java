@@ -17,18 +17,23 @@ import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Produto;
 @Repository
 public interface ProdutoRepository extends JpaRepository<Produto, UUID> {
 
+        // MÉTODOS PÚBLICOS
+
         /**
-         * Busca uma página de todos os produtos que estão ATIVOS no sistema.
+         * Busca uma página de todos os produtos que estão ATIVOS e cujo Fornecedor
+         * também está ATIVO.
          *
          * @param pageable O objeto contendo as informações de paginação.
          * @return uma Página (Page) de todos os Produtos ativos.
          * @pre O objeto pageable não deve ser nulo.
          * @post Uma página de produtos é retornada, podendo estar vazia.
          */
-        Page<Produto> findAllByAtivoTrue(Pageable pageable);
+        @Query("SELECT p FROM Produto p WHERE p.ativo = true AND p.fornecedor.ativo = true")
+        Page<Produto> findAllPublicosAtivos(Pageable pageable);
 
         /**
-         * Busca um produto específico pelo ID, mas somente se ele estiver ATIVO.
+         * Busca um produto específico pelo ID, mas somente se ele e seu Fornecedor
+         * estiverem ATIVOS.
          *
          * @param id O ID do produto a ser buscado.
          * @return um Optional contendo o Produto, se encontrado e ativo.
@@ -36,11 +41,12 @@ public interface ProdutoRepository extends JpaRepository<Produto, UUID> {
          * @post O produto é retornado se encontrado e ativo, caso contrário, um
          *       Optional vazio é retornado.
          */
-        Optional<Produto> findByIdAndAtivoTrue(UUID id);
+        @Query("SELECT p FROM Produto p WHERE p.id = :id AND p.ativo = true AND p.fornecedor.ativo = true")
+        Optional<Produto> findByIdPublicoAtivo(@Param("id") UUID id);
 
         /**
-         * Busca produtos ATIVOS cujo nome contém o termo de busca, ignorando maiúsculas
-         * e minúsculas.
+         * Busca produtos ATIVOS de um Fornecedor ATIVO cujo nome contém o termo de
+         * busca.
          *
          * @param nome     O termo a ser buscado no nome dos produtos.
          * @param pageable O objeto contendo as informações de paginação.
@@ -49,10 +55,11 @@ public interface ProdutoRepository extends JpaRepository<Produto, UUID> {
          * @post Uma página de produtos correspondentes é retornada, podendo estar
          *       vazia.
          */
-        Page<Produto> findByNomeContainingIgnoreCaseAndAtivoTrue(String nome, Pageable pageable);
+        @Query("SELECT p FROM Produto p WHERE p.ativo = true AND p.fornecedor.ativo = true AND lower(p.nome) LIKE lower(concat('%', :nome, '%'))")
+        Page<Produto> findByNomeContainingIgnoreCasePublicoAtivo(@Param("nome") String nome, Pageable pageable);
 
         /**
-         * Busca uma página de produtos ATIVOS de um fornecedor específico.
+         * Busca uma página de produtos ATIVOS de um Fornecedor ATIVO específico.
          *
          * @param fornecedorId O ID do fornecedor.
          * @param pageable     O objeto contendo as informações de paginação.
@@ -60,7 +67,8 @@ public interface ProdutoRepository extends JpaRepository<Produto, UUID> {
          * @pre O ID do fornecedor deve ser válido.
          * @post Uma página de produtos é retornada, podendo estar vazia.
          */
-        Page<Produto> findAllByAtivoTrueAndFornecedorId(UUID fornecedorId, Pageable pageable);
+        @Query("SELECT p FROM Produto p WHERE p.fornecedor.id = :fornecedorId AND p.ativo = true AND p.fornecedor.ativo = true")
+        Page<Produto> findAllByFornecedorIdPublicoAtivo(@Param("fornecedorId") UUID fornecedorId, Pageable pageable);
 
         /**
          * Busca uma página de todos os produtos (ativos e inativos) de um fornecedor
