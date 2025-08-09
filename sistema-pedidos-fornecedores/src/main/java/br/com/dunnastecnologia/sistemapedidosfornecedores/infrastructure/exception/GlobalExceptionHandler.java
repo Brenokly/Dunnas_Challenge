@@ -69,10 +69,22 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    // Manipulador para acesso negado
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponseDTO> handleAccessDeniedException(AccessDeniedException ex) {
         ErrorResponseDTO error = new ErrorResponseDTO(ex.getMessage(), HttpStatus.FORBIDDEN.value(),
                 LocalDateTime.now());
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
+    // Manipulador para estados ilegais/erros internos no servidor
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponseDTO> handleIllegalStateException(IllegalStateException ex) {
+        ex.printStackTrace();
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                "Ocorreu um erro interno crítico no servidor.",
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                LocalDateTime.now());
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
