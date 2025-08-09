@@ -24,7 +24,8 @@ public class FornecedorServiceImpl implements FornecedorUseCases {
     private final FornecedorMapper fornecedorMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public FornecedorServiceImpl(FornecedorRepository fornecedorRepository, FornecedorMapper fornecedorMapper, PasswordEncoder passwordEncoder) {
+    public FornecedorServiceImpl(FornecedorRepository fornecedorRepository, FornecedorMapper fornecedorMapper,
+            PasswordEncoder passwordEncoder) {
         this.fornecedorRepository = fornecedorRepository;
         this.fornecedorMapper = fornecedorMapper;
         this.passwordEncoder = passwordEncoder;
@@ -38,8 +39,7 @@ public class FornecedorServiceImpl implements FornecedorUseCases {
                 requestDTO.nome(),
                 requestDTO.cnpj(),
                 requestDTO.usuario(),
-                senhaCriptografada
-        );
+                senhaCriptografada);
 
         Fornecedor fornecedorSalvo = fornecedorRepository.findById(novoFornecedorId).orElseThrow(
                 () -> new IllegalStateException("ERRO CRÍTICO: Fornecedor não encontrado após o cadastro via função."));

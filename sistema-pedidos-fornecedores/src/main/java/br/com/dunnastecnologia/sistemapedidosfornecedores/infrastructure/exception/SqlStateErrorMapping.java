@@ -5,20 +5,25 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SqlStateErrorMapping {
 
-    private final Map<String, Function<String, RegraDeNegocioException>> errorMap = new HashMap<>();
+    private final Map<String, Function<String, ? extends RuntimeException>> errorMap = new HashMap<>();
 
     public SqlStateErrorMapping() {
         errorMap.put("PC001", RecursoDuplicadoException::new);
         errorMap.put("PC002", ContaInativaException::new);
         errorMap.put("PC003", RegraDeNegocioException::new);
+        errorMap.put("PC004", LimiteDeSaldoException::new);
+        errorMap.put("PF001", RecursoDuplicadoException::new);
+        errorMap.put("PF002", ContaInativaException::new);
+        errorMap.put("P0005", AccessDeniedException::new);
     }
 
-    public Optional<RegraDeNegocioException> getExceptionFor(String sqlState, String message) {
+    public Optional<? extends RuntimeException> getExceptionFor(String sqlState, String message) {
         if (errorMap.containsKey(sqlState)) {
             return Optional.of(errorMap.get(sqlState).apply(message));
         }

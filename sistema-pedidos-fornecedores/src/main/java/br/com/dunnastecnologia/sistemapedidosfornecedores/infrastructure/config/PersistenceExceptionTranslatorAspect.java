@@ -18,10 +18,7 @@ public class PersistenceExceptionTranslatorAspect {
         this.errorMapping = errorMapping;
     }
 
-    @AfterThrowing(
-            pointcut = "execution(* br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.repository.*.*(..))",
-            throwing = "ex"
-    )
+    @AfterThrowing(pointcut = "execution(* br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.repository.*.*(..))", throwing = "ex")
     public void translateException(Throwable ex) {
         SQLException rootCause = findRootSQLException(ex);
 

@@ -1,0 +1,130 @@
+package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.service;
+
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases.ProdutoUseCases;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Fornecedor;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Produto;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.produto.ProdutoRequestDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.produto.ProdutoResponseDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.exception.RegraDeNegocioException;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.mapper.ProdutoMapper;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.repository.FornecedorRepository;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.repository.ProdutoRepository;
+import jakarta.persistence.EntityNotFoundException;
+
+@Service
+public class ProdutoServiceImpl implements ProdutoUseCases {
+
+  private final ProdutoRepository produtoRepository;
+  private final FornecedorRepository fornecedorRepository;
+  private final ProdutoMapper produtoMapper;
+
+  public ProdutoServiceImpl(ProdutoRepository produtoRepository, FornecedorRepository fornecedorRepository,
+      ProdutoMapper produtoMapper) {
+    this.produtoRepository = produtoRepository;
+    this.fornecedorRepository = fornecedorRepository;
+    this.produtoMapper = produtoMapper;
+  }
+
+  @Override
+  @Transactional
+  public ProdutoResponseDTO cadastrarNovoProduto(ProdutoRequestDTO requestDTO, UserDetails fornecedorAutenticado) {
+    Fornecedor fornecedor = getFornecedorFromUserDetails(fornecedorAutenticado);
+    UUID novoProdutoId = produtoRepository.registrarProdutoViaFuncao(
+        requestDTO.nome(),
+        requestDTO.descricao(),
+        requestDTO.preco(),
+        requestDTO.percentualDesconto(),
+        fornecedor.getId());
+    Produto produtoSalvo = produtoRepository.findById(novoProdutoId)
+        .orElseThrow(() -> new IllegalStateException("ERRO CRÍTICO: Produto não encontrado após o cadastro."));
+    return produtoMapper.toResponseDTO(produtoSalvo);
+  }
+
+  @Override
+  @Transactional
+  public ProdutoResponseDTO atualizarProduto(UUID produtoId, ProdutoRequestDTO requestDTO,
+      UserDetails fornecedorAutenticado) {
+    Fornecedor fornecedor = getFornecedorFromUserDetails(fornecedorAutenticado);
+    produtoRepository.atualizarProdutoViaProcedure(
+        produtoId,
+        fornecedor.getId(),
+        requestDTO.nome(),
+        requestDTO.descricao(),
+        requestDTO.preco(),
+        requestDTO.percentualDesconto());
+    return this.buscarProdutoPublicoPorId(produtoId);
+  }
+
+  @Override
+  @Transactional
+  public void desativarProduto(UUID produtoId, UserDetails fornecedorAutenticado) {
+    Fornecedor fornecedor = getFornecedorFromUserDetails(fornecedorAutenticado);
+    produtoRepository.desativarProdutoViaProcedure(produtoId, fornecedor.getId());
+  }
+
+  @Override
+  @Transactional
+  public ProdutoResponseDTO reativarProduto(UUID produtoId, UserDetails fornecedorAutenticado) {
+    Fornecedor fornecedor = getFornecedorFromUserDetails(fornecedorAutenticado);
+
+    Produto produto = produtoRepository.findById(produtoId)
+        .orElseThrow(() -> new EntityNotFoundException("Produto com ID " + produtoId + " não encontrado."));
+    if (produto.getAtivo()) {
+      throw new RegraDeNegocioException("Este produto já está ativo.");
+    }
+
+    produtoRepository.reativarProdutoViaProcedure(produtoId, fornecedor.getId());
+    return produtoRepository.findById(produtoId)
+        .map(produtoMapper::toResponseDTO)
+        .orElseThrow(() -> new EntityNotFoundException("Produto com ID " + produtoId + " não encontrado."));
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public ProdutoResponseDTO buscarProdutoPublicoPorId(UUID id) {
+    return produtoRepository.findByIdAndAtivoTrue(id)
+        .map(produtoMapper::toResponseDTO)
+        .orElseThrow(() -> new EntityNotFoundException("Produto com ID " + id + " não encontrado."));
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<ProdutoResponseDTO> listarTodosProdutosPublicos(Pageable pageable) {
+    return produtoRepository.findAllByAtivoTrue(pageable).map(produtoMapper::toResponseDTO);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<ProdutoResponseDTO> listarProdutosDoFornecedorLogado(UserDetails fornecedorAutenticado,
+      Pageable pageable) {
+    Fornecedor fornecedor = getFornecedorFromUserDetails(fornecedorAutenticado);
+    return produtoRepository.findAllByFornecedorId(fornecedor.getId(), pageable)
+        .map(produtoMapper::toResponseDTO);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<ProdutoResponseDTO> listarProdutosAtivosDeFornecedor(UUID fornecedorId, Pageable pageable) {
+    if (!fornecedorRepository.existsById(fornecedorId)) {
+      throw new EntityNotFoundException("Fornecedor com ID " + fornecedorId + " não encontrado.");
+    }
+    return produtoRepository.findAllByAtivoTrueAndFornecedorId(fornecedorId, pageable)
+        .map(produtoMapper::toResponseDTO);
+  }
+
+  private Fornecedor getFornecedorFromUserDetails(UserDetails userDetails) {
+    if (!(userDetails instanceof Fornecedor)) {
+      throw new AccessDeniedException("Ação permitida apenas para fornecedores autenticados.");
+    }
+    return (Fornecedor) userDetails;
+  }
+}

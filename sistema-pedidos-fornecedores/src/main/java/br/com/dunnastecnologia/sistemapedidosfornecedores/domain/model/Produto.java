@@ -43,4 +43,6 @@ public class Produto {
     @JoinColumn(name = "fornecedor_id", nullable = false)
     private Fornecedor fornecedor;
 
+    @Column(name = "ativo", nullable = false)
+    private Boolean ativo;
 }
