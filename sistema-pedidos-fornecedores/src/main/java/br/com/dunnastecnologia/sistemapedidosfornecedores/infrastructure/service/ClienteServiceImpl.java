@@ -2,8 +2,6 @@ package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.servic
 
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,26 +49,19 @@ public class ClienteServiceImpl implements ClienteUseCases {
 
     @Override
     @Transactional(readOnly = true)
-    public ClienteResponseDTO buscarPorId(UUID id) {
-        return clienteRepository.findByIdAndAtivoTrue(id)
+    public ClienteResponseDTO buscarClienteLogado(UserDetails authUser) {
+        Cliente clienteLogado = getClienteFromUserDetails(authUser);
+        return clienteRepository.findById(clienteLogado.getId())
                 .map(clienteMapper::toResponseDTO)
-                .orElseThrow(() -> new EntityNotFoundException("Cliente com ID " + id + " não encontrado."));
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ClienteResponseDTO> listarTodos(Pageable pageable) {
-        return clienteRepository.findAllByAtivoTrue(pageable).map(clienteMapper::toResponseDTO);
+                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado."));
     }
 
     @Override
     @Transactional
-    public ClienteResponseDTO adicionarSaldo(UUID id, ValorRequestDTO valorDTO) {
-        if (!clienteRepository.existsById(id)) {
-            throw new EntityNotFoundException("Cliente com ID " + id + " não encontrado.");
-        }
-        clienteRepository.adicionarSaldoViaFuncao(id, valorDTO.valor());
-        return this.buscarPorId(id);
+    public ClienteResponseDTO adicionarSaldo(UserDetails authUser, ValorRequestDTO valorDTO) {
+        Cliente clienteLogado = getClienteFromUserDetails(authUser);
+        clienteRepository.adicionarSaldoViaFuncao(clienteLogado.getId(), valorDTO.valor());
+        return this.buscarClienteLogado(authUser);
     }
 
     @Override
@@ -106,7 +97,7 @@ public class ClienteServiceImpl implements ClienteUseCases {
         }
 
         clienteRepository.reativarClienteViaProcedure(id);
-        return this.buscarPorId(id);
+        return this.buscarClienteLogado(authUser);
     }
 
     private Cliente getClienteFromUserDetails(UserDetails userDetails) {

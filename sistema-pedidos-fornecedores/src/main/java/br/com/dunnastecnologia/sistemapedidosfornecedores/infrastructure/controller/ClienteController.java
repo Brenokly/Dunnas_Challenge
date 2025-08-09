@@ -3,9 +3,6 @@ package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.contro
 import java.net.URI;
 import java.util.UUID;
 
-import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -56,44 +53,35 @@ public class ClienteController {
         return ResponseEntity.created(location).body(responseDTO);
     }
 
-    @GetMapping
+    @GetMapping("/meu-perfil")
     @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Lista todos os clientes", description = "Retorna uma lista paginada de todos os clientes.")
-    @ApiResponse(responseCode = "200", description = "Lista de clientes retornada com sucesso.")
-    public ResponseEntity<Page<ClienteResponseDTO>> listar(@ParameterObject Pageable pageable) {
-        Page<ClienteResponseDTO> clientes = clienteUseCases.listarTodos(pageable);
-        return ResponseEntity.ok(clientes);
-    }
-
-    @GetMapping("/{id}")
-    @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Busca um cliente por ID", description = "Retorna os detalhes de um cliente específico.")
+    @Operation(summary = "Busca os dados do cliente autenticado", description = "Retorna os detalhes do cliente autenticado.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Cliente encontrado com sucesso."),
+            @ApiResponse(responseCode = "200", description = "Dados do cliente retornados."),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
-    public ResponseEntity<ClienteResponseDTO> buscarPorId(@PathVariable UUID id) {
-        ClienteResponseDTO cliente = clienteUseCases.buscarPorId(id);
-        return ResponseEntity.ok(cliente);
+    public ResponseEntity<ClienteResponseDTO> buscarMeuPerfil(Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return ResponseEntity.ok(clienteUseCases.buscarClienteLogado(userDetails));
     }
 
-    @PatchMapping("/{id}/saldo")
+    @PatchMapping("/meu-perfil/saldo")
     @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Adiciona saldo a um cliente", description = "Realiza uma operação de adição de saldo na conta de um cliente.")
+    @Operation(summary = "Adiciona saldo à conta do cliente autenticado", description = "Realiza uma operação de adição de saldo na conta do cliente autenticado.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Saldo adicionado com sucesso."),
             @ApiResponse(responseCode = "400", description = "Valor inválido."),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
-    public ResponseEntity<ClienteResponseDTO> adicionarSaldo(@PathVariable UUID id,
-            @RequestBody @Valid ValorRequestDTO valorDTO) {
-        ClienteResponseDTO clienteAtualizado = clienteUseCases.adicionarSaldo(id, valorDTO);
-        return ResponseEntity.ok(clienteAtualizado);
+    public ResponseEntity<ClienteResponseDTO> adicionarSaldo(@RequestBody @Valid ValorRequestDTO valorDTO,
+            Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return ResponseEntity.ok(clienteUseCases.adicionarSaldo(userDetails, valorDTO));
     }
 
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Desativa um cliente", description = "Desativa um cliente pelo seu ID.")
+    @Operation(summary = "Desativa a conta do cliente autenticado", description = "Altera o status da conta do cliente autenticado para 'inativo'.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Cliente desativado com sucesso."),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
@@ -106,7 +94,7 @@ public class ClienteController {
 
     @PostMapping("/{id}/reativar")
     @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Reativa um cliente desativado", description = "Altera o status de um cliente para 'ativo'.")
+    @Operation(summary = "Reativa a conta do cliente autenticado", description = "Altera o status da conta do cliente autenticado para 'ativo'.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Cliente reativado com sucesso."),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")

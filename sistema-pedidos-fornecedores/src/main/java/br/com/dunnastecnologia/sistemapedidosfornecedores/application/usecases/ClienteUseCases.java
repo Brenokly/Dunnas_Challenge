@@ -2,8 +2,6 @@ package br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases;
 
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -29,39 +27,26 @@ public interface ClienteUseCases {
     ClienteResponseDTO cadastrarNovoCliente(ClienteRequestDTO requestDTO);
 
     /**
-     * Busca um cliente por ID.
+     * Busca os dados do cliente LOGADO.
      *
-     * @param id ID do cliente a ser buscado.
-     * @return descrição do retorno.
-     * @pre O cliente deve existir.
-     * @post O cliente é retornado como ClienteResponseDTO.
+     * @param authUser O principal de segurança do usuário logado.
+     * @return dados do cliente logado.
      * @throws EntityNotFoundException se o cliente não for encontrado.
+     * @throws AccessDeniedException   se o usuário logado não for um cliente.
      */
-    ClienteResponseDTO buscarPorId(UUID id);
+    ClienteResponseDTO buscarClienteLogado(UserDetails authUser);
 
     /**
-     * Lista todos os clientes.
+     * Adiciona saldo à conta do cliente LOGADO.
      *
-     * @param pageable informações de paginação.
-     * @return lista de clientes paginada.
-     * @pre Nenhuma.
-     * @post A lista de clientes é retornada.
-     */
-    Page<ClienteResponseDTO> listarTodos(Pageable pageable);
-
-    /**
-     * Adiciona saldo a um cliente.
-     *
-     * @param id       ID do cliente.
+     * @param authUser O principal de segurança do usuário logado.
      * @param valorDTO dados do valor a ser adicionado.
      * @return dados do cliente atualizado.
-     * @pre O cliente deve existir.
-     * @post O saldo do cliente é atualizado.
-     * @throws EntityNotFoundException se o cliente não for encontrado ou
-     *                                 RegraDeNegocioException se alguma regra de
-     *                                 negócio for violada.
+     * @throws EntityNotFoundException se o cliente não for encontrado.
+     * @throws AccessDeniedException   se o usuário logado não for um cliente.
+     * @throws RegraDeNegocioException se alguma regra de negócio for violada.
      */
-    ClienteResponseDTO adicionarSaldo(UUID id, ValorRequestDTO valorDTO);
+    ClienteResponseDTO adicionarSaldo(UserDetails authUser, ValorRequestDTO valorDTO);
 
     /**
      * Desativa um cliente, validando a propriedade.

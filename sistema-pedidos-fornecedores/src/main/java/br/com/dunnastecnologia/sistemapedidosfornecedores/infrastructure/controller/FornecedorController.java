@@ -43,47 +43,65 @@ public class FornecedorController {
         this.produtoUseCases = produtoUseCases;
     }
 
+    // ENDPOINTS PÚBLICOS
+
     @PostMapping
-    @Operation(summary = "Cadastra um novo fornecedor", description = "Cria um novo fornecedor no sistema.")
+    @Operation(summary = "Cadastra um novo fornecedor (Público)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Fornecedor cadastrado com sucesso."),
             @ApiResponse(responseCode = "409", description = "CNPJ ou usuário já cadastrado.")
     })
     public ResponseEntity<FornecedorResponseDTO> cadastrar(@RequestBody @Valid FornecedorRequestDTO requestDTO) {
         FornecedorResponseDTO responseDTO = fornecedorUseCases.cadastrarNovoFornecedor(requestDTO);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(responseDTO.id())
-                .toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(responseDTO.id()).toUri();
         return ResponseEntity.created(location).body(responseDTO);
     }
 
     @GetMapping
-    @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Lista todos os fornecedores ativos", description = "Retorna uma lista paginada de todos os fornecedores ativos.")
-    @ApiResponse(responseCode = "200", description = "Lista de fornecedores retornada com sucesso.")
+    @Operation(summary = "Lista todos os fornecedores ativos (Público)")
     public ResponseEntity<Page<FornecedorResponseDTO>> listar(@ParameterObject Pageable pageable) {
-        Page<FornecedorResponseDTO> fornecedores = fornecedorUseCases.listarTodos(pageable);
-        return ResponseEntity.ok(fornecedores);
+        return ResponseEntity.ok(fornecedorUseCases.listarTodos(pageable));
     }
 
     @GetMapping("/{id}")
-    @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Busca um fornecedor por ID", description = "Retorna os detalhes de um fornecedor ativo específico.")
+    @Operation(summary = "Busca um fornecedor ativo por ID (Público)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Fornecedor encontrado com sucesso."),
+            @ApiResponse(responseCode = "200", description = "Fornecedor encontrado."),
             @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado.")
     })
     public ResponseEntity<FornecedorResponseDTO> buscarPorId(@PathVariable UUID id) {
-        FornecedorResponseDTO fornecedor = fornecedorUseCases.buscarPorId(id);
-        return ResponseEntity.ok(fornecedor);
+        return ResponseEntity.ok(fornecedorUseCases.buscarPorId(id));
+    }
+
+    @GetMapping("/{fornecedorId}/produtos")
+    @Operation(summary = "Lista os produtos ativos de um fornecedor específico (Público)")
+    public ResponseEntity<Page<ProdutoResponseDTO>> listarProdutosPorFornecedor(
+            @PathVariable UUID fornecedorId, @ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(produtoUseCases.listarProdutosAtivosDeFornecedor(fornecedorId, pageable));
+    }
+
+    // ENDPOINTS PRIVADOS (REQUEREM AUTENTICAÇÃO E PROPRIEDADE)
+
+    @GetMapping("/meu-perfil")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Busca os dados do fornecedor autenticado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Dados do fornecedor retornados."),
+            @ApiResponse(responseCode = "403", description = "Acesso negado (usuário não é um fornecedor)."),
+            @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado.")
+    })
+    public ResponseEntity<FornecedorResponseDTO> buscarMeuPerfil(Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return ResponseEntity.ok(fornecedorUseCases.buscarFornecedorLogado(userDetails));
     }
 
     @DeleteMapping("/{id}")
     @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Desativa um fornecedor", description = "Desativa um fornecedor pelo seu ID (soft delete).")
+    @Operation(summary = "Desativa a conta do fornecedor (requer autenticação do próprio fornecedor)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Fornecedor desativado com sucesso."),
+            @ApiResponse(responseCode = "204", description = "Fornecedor desativado."),
+            @ApiResponse(responseCode = "403", description = "Acesso negado."),
             @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado.")
     })
     public ResponseEntity<Void> desativar(@PathVariable UUID id, Authentication authentication) {
@@ -94,24 +112,15 @@ public class FornecedorController {
 
     @PostMapping("/{id}/reativar")
     @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Reativa um fornecedor desativado", description = "Altera o status de um fornecedor para 'ativo'.")
+    @Operation(summary = "Reativa a conta do fornecedor (requer autenticação do próprio fornecedor)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Fornecedor reativado com sucesso."),
+            @ApiResponse(responseCode = "200", description = "Fornecedor reativado."),
+            @ApiResponse(responseCode = "403", description = "Acesso negado."),
             @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado.")
     })
     public ResponseEntity<FornecedorResponseDTO> reativar(@PathVariable UUID id, Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         FornecedorResponseDTO fornecedorReativado = fornecedorUseCases.reativarFornecedor(id, userDetails);
         return ResponseEntity.ok(fornecedorReativado);
-    }
-
-    @GetMapping("/{fornecedorId}/produtos")
-    @Operation(summary = "Lista os produtos ativos de um fornecedor específico (vitrine)")
-    @ApiResponse(responseCode = "200", description = "Lista de produtos retornada.")
-    public ResponseEntity<Page<ProdutoResponseDTO>> listarProdutosPorFornecedor(
-            @PathVariable UUID fornecedorId,
-            @ParameterObject Pageable pageable) {
-        Page<ProdutoResponseDTO> produtos = produtoUseCases.listarProdutosAtivosDeFornecedor(fornecedorId, pageable);
-        return ResponseEntity.ok(produtos);
     }
 }

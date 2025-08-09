@@ -31,22 +31,32 @@ public interface FornecedorUseCases {
      * Lista todos os fornecedores.
      *
      * @param pageable informações de paginação.
-     * @return lista de fornecedores paginada.
-     * @pre Nenhuma.
+     * @return uma página de fornecedores.
+     * @pre nenhuma.
      * @post A lista de fornecedores é retornada.
      */
     Page<FornecedorResponseDTO> listarTodos(Pageable pageable);
 
     /**
-     * Busca um fornecedor pelo ID.
+     * Busca um fornecedor pelo seu ID.
      *
      * @param id ID do fornecedor a ser buscado.
      * @return dados do fornecedor encontrado.
      * @pre O fornecedor deve existir.
-     * @post Os dados do fornecedor são retornados.
+     * @post O fornecedor é retornado.
      * @throws EntityNotFoundException se o fornecedor não for encontrado.
      */
     FornecedorResponseDTO buscarPorId(UUID id);
+
+    /**
+     * Busca os dados do fornecedor LOGADO.
+     *
+     * @param authUser O principal de segurança do usuário logado.
+     * @return dados do fornecedor encontrado.
+     * @throws EntityNotFoundException se o fornecedor não for encontrado.
+     * @throws AccessDeniedException   se o usuário logado não for um fornecedor.
+     */
+    FornecedorResponseDTO buscarFornecedorLogado(UserDetails authUser);
 
     /**
      * Desativa um fornecedor, validando a propriedade.

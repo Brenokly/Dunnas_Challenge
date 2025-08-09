@@ -33,6 +33,8 @@ public class FornecedorServiceImpl implements FornecedorUseCases {
         this.passwordEncoder = passwordEncoder;
     }
 
+    // MÉTODOS PÚBLICOS
+
     @Override
     @Transactional
     public FornecedorResponseDTO cadastrarNovoFornecedor(FornecedorRequestDTO requestDTO) {
@@ -51,17 +53,27 @@ public class FornecedorServiceImpl implements FornecedorUseCases {
 
     @Override
     @Transactional(readOnly = true)
+    public Page<FornecedorResponseDTO> listarTodos(Pageable pageable) {
+        return fornecedorRepository.findAllByAtivoTrue(pageable).map(fornecedorMapper::toResponseDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public FornecedorResponseDTO buscarPorId(UUID id) {
         return fornecedorRepository.findByIdAndAtivoTrue(id)
                 .map(fornecedorMapper::toResponseDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Fornecedor com ID " + id + " não encontrado."));
     }
 
+    // MÉTODOS PRIVADOS (PARA O PRÓPRIO FORNECEDOR DONO DA CONTA)
+
     @Override
     @Transactional(readOnly = true)
-    public Page<FornecedorResponseDTO> listarTodos(Pageable pageable) {
-        return fornecedorRepository.findAllByAtivoTrue(pageable)
-                .map(fornecedorMapper::toResponseDTO);
+    public FornecedorResponseDTO buscarFornecedorLogado(UserDetails authUser) {
+        Fornecedor fornecedor = getFornecedorFromUserDetails(authUser);
+        return fornecedorRepository.findById(fornecedor.getId())
+                .map(fornecedorMapper::toResponseDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Fornecedor não encontrado."));
     }
 
     @Override
@@ -98,7 +110,7 @@ public class FornecedorServiceImpl implements FornecedorUseCases {
         }
 
         fornecedorRepository.reativarFornecedorViaProcedure(id);
-        return this.buscarPorId(id);
+        return this.buscarFornecedorLogado(authUser);
     }
 
     private Fornecedor getFornecedorFromUserDetails(UserDetails userDetails) {
