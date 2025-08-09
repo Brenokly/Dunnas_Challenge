@@ -23,6 +23,8 @@ public class SqlStateErrorMapping {
         errorMap.put("P0005", AccessDeniedException::new);
         errorMap.put("PCU01", RecursoDuplicadoException::new);
         errorMap.put("PCU02", RegraDeNegocioException::new);
+        errorMap.put("PCU03", RegraDeNegocioException::new);
+        errorMap.put("PCU04", RegraDeNegocioException::new);
     }
 
     public Optional<? extends RuntimeException> getExceptionFor(String sqlState, String message) {
