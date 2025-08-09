@@ -16,7 +16,6 @@ import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.pro
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.produto.ProdutoResponseDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.exception.RegraDeNegocioException;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.mapper.ProdutoMapper;
-import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.repository.FornecedorRepository;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.repository.ProdutoRepository;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -24,13 +23,10 @@ import jakarta.persistence.EntityNotFoundException;
 public class ProdutoServiceImpl implements ProdutoUseCases {
 
   private final ProdutoRepository produtoRepository;
-  private final FornecedorRepository fornecedorRepository;
   private final ProdutoMapper produtoMapper;
 
-  public ProdutoServiceImpl(ProdutoRepository produtoRepository, FornecedorRepository fornecedorRepository,
-      ProdutoMapper produtoMapper) {
+  public ProdutoServiceImpl(ProdutoRepository produtoRepository, ProdutoMapper produtoMapper) {
     this.produtoRepository = produtoRepository;
-    this.fornecedorRepository = fornecedorRepository;
     this.produtoMapper = produtoMapper;
   }
 
