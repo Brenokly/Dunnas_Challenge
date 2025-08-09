@@ -87,4 +87,12 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    // Manipulador para recursos duplicados
+    @ExceptionHandler(RecursoDuplicadoException.class)
+    public ResponseEntity<ErrorResponseDTO> handleRecursoDuplicadoException(RecursoDuplicadoException ex) {
+        ErrorResponseDTO error = new ErrorResponseDTO(ex.getMessage(), HttpStatus.CONFLICT.value(),
+                LocalDateTime.now());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
 }
