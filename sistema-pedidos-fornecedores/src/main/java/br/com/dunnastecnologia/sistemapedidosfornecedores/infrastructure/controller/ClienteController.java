@@ -7,6 +7,8 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -96,8 +98,9 @@ public class ClienteController {
             @ApiResponse(responseCode = "204", description = "Cliente desativado com sucesso."),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
-    public ResponseEntity<Void> desativar(@PathVariable UUID id) {
-        clienteUseCases.desativarCliente(id);
+    public ResponseEntity<Void> desativar(@PathVariable UUID id, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        clienteUseCases.desativarCliente(id, userDetails);
         return ResponseEntity.noContent().build();
     }
 
@@ -108,8 +111,9 @@ public class ClienteController {
             @ApiResponse(responseCode = "200", description = "Cliente reativado com sucesso."),
             @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
-    public ResponseEntity<ClienteResponseDTO> reativar(@PathVariable UUID id) {
-        ClienteResponseDTO clienteReativado = clienteUseCases.reativarCliente(id);
+    public ResponseEntity<ClienteResponseDTO> reativar(@PathVariable UUID id, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        ClienteResponseDTO clienteReativado = clienteUseCases.reativarCliente(id, userDetails);
         return ResponseEntity.ok(clienteReativado);
     }
 }
