@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record ItemPedidoRequestDTO(
-        @NotNull UUID produtoId,
+    @NotNull UUID produtoId,
 
-        @NotNull @Positive(message = "A quantidade deve ser um número positivo.") Integer quantidade) {
+    @NotNull @Positive(message = "A quantidade deve ser um número positivo.") Integer quantidade) {
 }
