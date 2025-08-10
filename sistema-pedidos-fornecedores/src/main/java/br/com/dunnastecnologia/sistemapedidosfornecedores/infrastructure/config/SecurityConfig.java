@@ -24,71 +24,20 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.security.JwtAuthenticationFilter;
+import jakarta.servlet.DispatcherType;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
-    private final UserDetailsService userDetailsService;
-
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, UserDetailsService userDetailsService) {
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.userDetailsService = userDetailsService;
-    }
-
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // FILTROS PARA A API REST
     @Bean
-    @Order(1)
-    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher("/api/**")
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/clientes", "/api/v1/fornecedores").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/fornecedores/**", "/api/v1/produtos/**").permitAll()
-                        .anyRequest().authenticated())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }
-
-    // --- CADEIA DE FILTROS PARA A VIEW WEB (STATEFUL) ---
-    @Bean
-    @Order(2)
-    public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/perform_login", "/cadastro-cliente", "/cadastro-fornecedor",
-                                "/css/**", "/js/**", "/images/**")
-                        .permitAll()
-                        .anyRequest().authenticated())
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .loginProcessingUrl("/perform_login")
-                        .defaultSuccessUrl("/dashboard", true)
-                        .failureUrl("/login?error=true")
-                        .permitAll())
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout=true")
-                        .permitAll());
-
-        return http.build();
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(this.userDetailsService);
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService) {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -99,7 +48,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public static CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
@@ -108,5 +57,60 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    // CONFIGURAÇÃO DE SEGURANÇA PARA A API REST
+    @Configuration
+    @Order(1)
+    public static class ApiSecurityConfig {
+
+        @Bean
+        public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthFilter,
+                AuthenticationProvider authenticationProvider) throws Exception {
+            http
+                    .securityMatcher("/api/**")
+                    .csrf(AbstractHttpConfigurer::disable)
+                    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                    .authorizeHttpRequests(auth -> auth
+                            .requestMatchers("/api/v1/auth/**").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/api/v1/clientes", "/api/v1/fornecedores").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/v1/fornecedores/**", "/api/v1/produtos/**")
+                            .permitAll()
+                            .anyRequest().authenticated())
+                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    .authenticationProvider(authenticationProvider)
+                    .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+
+            return http.build();
+        }
+    }
+
+    // CONFIGURAÇÃO DE SEGURANÇA PARA A VIEW WEB
+    @Configuration
+    @Order(2)
+    public static class WebSecurityConfig {
+
+        @Bean
+        public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
+            http
+                    .authorizeHttpRequests(auth -> auth
+                            .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
+                            .requestMatchers("/", "/login", "/perform_login", "/cadastro-cliente",
+                                    "/cadastro-fornecedor", "/css/**", "/js/**", "/images/**")
+                            .permitAll()
+                            .anyRequest().authenticated())
+                    .formLogin(form -> form
+                            .loginPage("/login")
+                            .loginProcessingUrl("/perform_login")
+                            .defaultSuccessUrl("/dashboard", true)
+                            .failureUrl("/login?error=true")
+                            .permitAll())
+                    .logout(logout -> logout
+                            .logoutUrl("/logout")
+                            .logoutSuccessUrl("/login?logout=true")
+                            .permitAll());
+
+            return http.build();
+        }
     }
 }
