@@ -1,0 +1,102 @@
+/* Paleta de Cores e Variáveis */
+:root {
+    --primary-color: #005a9c;
+    --primary-color-dark: #003d6b;
+    --background-color: #f4f4f9;
+    --text-color: #333;
+    --container-bg: #ffffff;
+    --border-color: #ddd;
+    --success-color: #28a745;
+    --error-color: #dc3545;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Layout Principal */
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 1rem 2rem;
+    text-align: center;
+}
+
+header a {
+    color: white;
+    text-decoration: none;
+}
+
+main {
+    padding: 2rem;
+}
+
+footer {
+    text-align: center;
+    padding: 1rem;
+    background-color: #333;
+    color: white;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Estilo do Container Central */
+.container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--container-bg);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos de Formulário */
+form div {
+    margin-bottom: 1rem;
+}
+
+form label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+form input[type="text"],
+form input[type="password"],
+form input[type="date"],
+form input[type="number"] {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+button {
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: var(--primary-color-dark);
+}
+
+/* Mensagens */
+.error-message {
+    color: var(--error-color);
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 0.8rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
