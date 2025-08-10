@@ -1,4 +1,4 @@
-package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.controller;
+package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.controller.api;
 
 import java.net.URI;
 import java.util.UUID;

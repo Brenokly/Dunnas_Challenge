@@ -1,4 +1,4 @@
-package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.controller;
+package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.controller.api;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

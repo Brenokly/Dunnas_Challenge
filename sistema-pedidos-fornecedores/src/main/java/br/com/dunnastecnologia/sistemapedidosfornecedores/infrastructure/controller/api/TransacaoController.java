@@ -1,4 +1,4 @@
-package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.controller;
+package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.controller.api;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
