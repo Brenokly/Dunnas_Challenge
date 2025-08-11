@@ -2,38 +2,35 @@
   <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
     <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 
+      <script src="${pageContext.request.contextPath}/js/header.js" defer></script>
       <header>
         <h1><a href="<c:url value='/' />">Sistema de Pedidos e Pagamentos</a></h1>
 
         <nav>
-          <%-- O menu do usuário só é renderizado se o usuário estiver autenticado --%>
-            <sec:authorize access="isAuthenticated()">
-              <div class="user-menu">
-                <%-- Acessa o username do principal, que agora sabemos que existe --%>
-                  <span class="username">Olá,
-                    <sec:authentication property="principal.username" />
-                  </span>
+          <sec:authorize access="isAuthenticated()">
+            <div class="user-menu">
+              <span class="username">Olá,
+                <sec:authentication property="principal.username" />
+              </span>
+              <div class="dropdown-content">
 
-                  <div class="dropdown-content">
-                    <%-- Verifica se o principal é uma instância da classe Cliente --%>
-                      <sec:authorize
-                        access="principal instanceof T(br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Cliente)">
-                        <a href="#">Meu Perfil de Cliente</a>
-                      </sec:authorize>
+                <sec:authorize
+                  access="principal instanceof T(br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Cliente)">
+                  <a href="<c:url value='/cliente/perfil' />">Meu Perfil</a>
+                </sec:authorize>
 
-                      <%-- Verifica se o principal é uma instância da classe Fornecedor --%>
-                        <sec:authorize
-                          access="principal instanceof T(br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Fornecedor)">
-                          <a href="#">Meu Perfil de Fornecedor</a>
-                        </sec:authorize>
+                <sec:authorize
+                  access="principal instanceof T(br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Fornecedor)">
+                  <a href="<c:url value='/fornecedor/perfil' />">Meu Perfil</a>
+                </sec:authorize>
 
-                        <form action="<c:url value='/logout' />" method="post" class="logout-form">
-                          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-                          <button type="submit" class="logout-button">Sair</button>
-                        </form>
-                  </div>
+                <form action="<c:url value='/logout' />" method="post" class="logout-form">
+                  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                  <button type="submit" class="logout-button">Sair</button>
+                </form>
               </div>
-            </sec:authorize>
+            </div>
+          </sec:authorize>
         </nav>
       </header>
       <main>
