@@ -95,12 +95,6 @@ public class ProdutoServiceImpl implements ProdutoUseCases {
 
   @Override
   @Transactional(readOnly = true)
-  public Page<ProdutoResponseDTO> listarTodosProdutosPublicos(Pageable pageable) {
-    return produtoRepository.findAllPublicosAtivos(pageable).map(produtoMapper::toResponseDTO);
-  }
-
-  @Override
-  @Transactional(readOnly = true)
   public Page<ProdutoResponseDTO> listarProdutosPublicos(Set<UUID> categoriaIds, Pageable pageable) {
     if (categoriaIds == null || categoriaIds.isEmpty()) {
       return produtoRepository.findAllPublicosAtivos(pageable).map(produtoMapper::toResponseDTO);

@@ -85,17 +85,6 @@ public interface ProdutoUseCases {
   ProdutoResponseDTO buscarProdutoPublicoPorId(UUID id);
 
   /**
-   * Lista todos os produtos ativos de todos os fornecedores de forma paginada
-   * (visão pública).
-   *
-   * @param pageable As informações de paginação.
-   * @return Uma lista paginada de produtos ativos.
-   * @pre Nenhuma.
-   * @post A lista de produtos é retornada, podendo estar vazia.
-   */
-  Page<ProdutoResponseDTO> listarTodosProdutosPublicos(Pageable pageable);
-
-  /**
    * Lista os produtos ativos filtrados por um conjunto de categorias (visão
    * pública).
    *

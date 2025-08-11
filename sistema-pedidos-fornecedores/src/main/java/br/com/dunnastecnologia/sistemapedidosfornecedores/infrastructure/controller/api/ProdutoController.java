@@ -45,10 +45,12 @@ public class ProdutoController {
   // ENDPOINTS PÚBLICOS (PARA CLIENTES E VISITANTES)
 
   @GetMapping
-  @Operation(summary = "Lista todos os produtos ativos (visão pública)")
+  @Operation(summary = "Lista todos os produtos ativos (visão pública)", description = "Retorna uma lista paginada de produtos. Pode ser filtrada por uma ou mais categorias via query param `categorias`.")
   @ApiResponse(responseCode = "200", description = "Lista de produtos retornada com sucesso.")
-  public ResponseEntity<Page<ProdutoResponseDTO>> listarPublico(@ParameterObject Pageable pageable) {
-    return ResponseEntity.ok(produtoUseCases.listarTodosProdutosPublicos(pageable));
+  public ResponseEntity<Page<ProdutoResponseDTO>> listarPublico(
+      @RequestParam(required = false) Set<UUID> categorias,
+      @ParameterObject Pageable pageable) {
+    return ResponseEntity.ok(produtoUseCases.listarProdutosPublicos(categorias, pageable));
   }
 
   @GetMapping("/{id}")
@@ -59,15 +61,6 @@ public class ProdutoController {
   })
   public ResponseEntity<ProdutoResponseDTO> buscarPublicoPorId(@PathVariable UUID id) {
     return ResponseEntity.ok(produtoUseCases.buscarProdutoPublicoPorId(id));
-  }
-
-  @GetMapping
-  @Operation(summary = "Lista todos os produtos ativos (visão pública)", description = "Retorna uma lista paginada de produtos. Pode ser filtrada por uma ou mais categorias via query param.")
-  @ApiResponse(responseCode = "200", description = "Lista de produtos retornada com sucesso.")
-  public ResponseEntity<Page<ProdutoResponseDTO>> listarPublico(
-      @RequestParam(required = false) Set<UUID> categorias,
-      @ParameterObject Pageable pageable) {
-    return ResponseEntity.ok(produtoUseCases.listarProdutosPublicos(categorias, pageable));
   }
 
   // ENDPOINTS PRIVADOS (PARA FORNECEDORES GERENCIAREM SEU CATÁLOGO)

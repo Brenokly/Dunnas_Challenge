@@ -28,7 +28,7 @@ public class DashboardController {
 
     if (userDetails instanceof Cliente) {
       model.addAttribute("userType", "cliente");
-      model.addAttribute("paginaDeProdutos", produtoUseCases.listarTodosProdutosPublicos(pageable));
+      model.addAttribute("paginaDeProdutos", produtoUseCases.listarProdutosPublicos(null, pageable));
     } else if (userDetails instanceof Fornecedor) {
       model.addAttribute("userType", "fornecedor");
       model.addAttribute("paginaDeProdutos", produtoUseCases.listarProdutosDoFornecedorLogado(userDetails, pageable));
