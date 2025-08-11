@@ -70,16 +70,4 @@ public interface FornecedorUseCases {
      */
     void desativarFornecedor(UUID id, UserDetails authUser);
 
-    /**
-     * Reativa um fornecedor, validando a propriedade.
-     *
-     * @param id       ID do fornecedor a ser reativado.
-     * @param authUser O principal de segurança do usuário logado.
-     * @return dados do fornecedor reativado.
-     * @pre O fornecedor deve existir e pertencer ao usuário autenticado.
-     * @post O fornecedor é reativado.
-     * @throws EntityNotFoundException se o fornecedor não for encontrado.
-     * @throws AccessDeniedException   se o usuário não for o proprietário.
-     */
-    FornecedorResponseDTO reativarFornecedor(UUID id, UserDetails authUser);
 }

@@ -16,7 +16,10 @@
       <%@ include file="includes/header.jsp" %>
 
         <div class="container profile-container">
-          <h2>Meu Perfil - Cliente</h2>
+          <div class="profile-header">
+            <h2>Meu Perfil - Cliente</h2>
+            <a href="#" class="button-link-secondary">Editar Perfil</a>
+          </div>
 
           <div class="profile-details">
             <div class="detail-item">
@@ -35,20 +38,34 @@
               <span class="label">Data de Nascimento:</span>
               <span class="value">${cliente.dataNascimento()}</span>
             </div>
-            <div class="detail-item">
-              <span class="label">Saldo em Conta:</span>
-              <span class="value balance">R$ ${cliente.saldo()}</span>
-            </div>
           </div>
 
-          <div class="profile-actions">
-            <a href="#" class="button-link">Adicionar Saldo</a>
-            <a href="#" class="button-link-danger">Desativar Conta</a>
+          <div class="saldo-container">
+            <h3>Gestão de Saldo</h3>
+            <div class="saldo-atual">
+              <span>Saldo em Conta:</span>
+              <span class="value balance">R$ ${cliente.saldo()}</span>
+            </div>
+            <form id="add-saldo-form" class="saldo-form">
+              <div class="form-group">
+                <label for="valor">Adicionar Saldo:</label>
+                <input type="number" id="valor" name="valor" placeholder="Ex: 50.00" step="0.01" min="0.01" required>
+              </div>
+              <button type="submit">Adicionar</button>
+            </form>
+          </div>
+
+          <div class="danger-zone">
+            <h3>Área de Risco</h3>
+            <p>A desativação da sua conta é uma ação permanente e não poderá ser desfeita facilmente.</p>
+            <form id="delete-account-form">
+              <button type="submit" class="button-link-danger">Desativar Minha Conta</button>
+            </form>
           </div>
         </div>
 
         <%@ include file="includes/footer.jsp" %>
-
+          <script src="${pageContext.request.contextPath}/js/perfil-cliente.js"></script>
     </body>
 
     </html>

@@ -81,25 +81,6 @@ public class ClienteServiceImpl implements ClienteUseCases {
         clienteRepository.desativarClienteViaProcedure(id);
     }
 
-    @Override
-    @Transactional
-    public ClienteResponseDTO reativarCliente(UUID id, UserDetails authUser) {
-        Cliente clienteLogado = getClienteFromUserDetails(authUser);
-
-        if (!clienteLogado.getId().equals(id)) { // Futuramente poderia adicionar aqui o admin
-            throw new AccessDeniedException("Um cliente só pode reativar a própria conta.");
-        }
-
-        Cliente clienteParaReativar = clienteRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cliente com ID " + id + " não encontrado."));
-        if (clienteParaReativar.getAtivo()) {
-            throw new RegraDeNegocioException("Este cliente já está ativo.");
-        }
-
-        clienteRepository.reativarClienteViaProcedure(id);
-        return this.buscarClienteLogado(authUser);
-    }
-
     private Cliente getClienteFromUserDetails(UserDetails userDetails) {
         if (!(userDetails instanceof Cliente)) {
             throw new AccessDeniedException("Ação permitida apenas para clientes autenticados.");

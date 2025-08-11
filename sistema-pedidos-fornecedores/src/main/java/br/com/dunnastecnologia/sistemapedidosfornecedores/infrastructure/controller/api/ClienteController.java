@@ -92,16 +92,4 @@ public class ClienteController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/reativar")
-    @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Reativa a conta do cliente autenticado", description = "Altera o status da conta do cliente autenticado para 'ativo'.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Cliente reativado com sucesso."),
-            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
-    })
-    public ResponseEntity<ClienteResponseDTO> reativar(@PathVariable UUID id, Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        ClienteResponseDTO clienteReativado = clienteUseCases.reativarCliente(id, userDetails);
-        return ResponseEntity.ok(clienteReativado);
-    }
 }

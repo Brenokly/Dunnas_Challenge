@@ -60,16 +60,4 @@ public interface ClienteUseCases {
      */
     void desativarCliente(UUID id, UserDetails authUser);
 
-    /**
-     * Reativa um cliente, validando a propriedade.
-     *
-     * @param id       ID do cliente a ser reativado.
-     * @param authUser O principal de segurança do usuário logado.
-     * @return dados do cliente reativado.
-     * @pre O cliente deve existir e pertencer ao usuário autenticado.
-     * @post O cliente é reativado.
-     * @throws EntityNotFoundException se o cliente não for encontrado.
-     * @throws AccessDeniedException   se o usuário não for o proprietário.
-     */
-    ClienteResponseDTO reativarCliente(UUID id, UserDetails authUser);
 }

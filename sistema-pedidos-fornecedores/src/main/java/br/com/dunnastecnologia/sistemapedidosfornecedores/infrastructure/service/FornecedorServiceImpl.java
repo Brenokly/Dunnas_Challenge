@@ -94,25 +94,6 @@ public class FornecedorServiceImpl implements FornecedorUseCases {
         fornecedorRepository.desativarFornecedorViaProcedure(id);
     }
 
-    @Override
-    @Transactional
-    public FornecedorResponseDTO reativarFornecedor(UUID id, UserDetails authUser) {
-        Fornecedor fornecedorLogado = getFornecedorFromUserDetails(authUser);
-
-        if (!fornecedorLogado.getId().equals(id)) {
-            throw new AccessDeniedException("Um fornecedor só pode reativar a própria conta.");
-        }
-
-        Fornecedor fornecedorParaReativar = fornecedorRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Fornecedor com ID " + id + " não encontrado."));
-        if (fornecedorParaReativar.getAtivo()) {
-            throw new RegraDeNegocioException("Este fornecedor já está ativo.");
-        }
-
-        fornecedorRepository.reativarFornecedorViaProcedure(id);
-        return this.buscarFornecedorLogado(authUser);
-    }
-
     private Fornecedor getFornecedorFromUserDetails(UserDetails userDetails) {
         if (!(userDetails instanceof Fornecedor)) {
             throw new AccessDeniedException("Ação permitida apenas para fornecedores autenticados.");

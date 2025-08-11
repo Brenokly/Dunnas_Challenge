@@ -110,17 +110,4 @@ public class FornecedorController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/reativar")
-    @SecurityRequirement(name = "bearerAuth")
-    @Operation(summary = "Reativa a conta do fornecedor (requer autenticação do próprio fornecedor)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Fornecedor reativado."),
-            @ApiResponse(responseCode = "403", description = "Acesso negado."),
-            @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado.")
-    })
-    public ResponseEntity<FornecedorResponseDTO> reativar(@PathVariable UUID id, Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        FornecedorResponseDTO fornecedorReativado = fornecedorUseCases.reativarFornecedor(id, userDetails);
-        return ResponseEntity.ok(fornecedorReativado);
-    }
 }

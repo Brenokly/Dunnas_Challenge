@@ -329,3 +329,66 @@ button[type="submit"]:hover {
     border-radius: 12px;
     border: 1px solid var(--border-color);
 }
+
+.profile-container {
+    max-width: 800px;
+    text-align: left;
+}
+
+.profile-details {
+    margin-top: 2rem;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item .label {
+    font-weight: bold;
+    color: var(--text-light-color);
+}
+
+.detail-item .value {
+    color: var(--text-color);
+}
+
+.detail-item .balance {
+    font-weight: bold;
+    color: var(--success-color);
+}
+
+.profile-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.button-link, .button-link-danger {
+    display: inline-block;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    color: white;
+    background-color: var(--primary-color);
+    border-radius: 4px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.button-link:hover {
+    background-color: var(--primary-color-dark);
+}
+
+.button-link-danger {
+    background-color: var(--error-color);
+}
+
+.button-link-danger:hover {
+    background-color: #c82333;
+}
