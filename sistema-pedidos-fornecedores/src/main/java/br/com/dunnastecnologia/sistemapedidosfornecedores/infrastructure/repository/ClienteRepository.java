@@ -18,87 +18,104 @@ import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Cliente;
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
 
-    /**
-     * Chama a função 'cadastrar_novo_cliente' no PostgreSQL para registrar um
-     * novo cliente. Delega a lógica de validação de duplicidade e inserção para
-     * o banco de dados.
-     *
-     * @return o UUID do cliente recém-criado.
-     */
-    @Query(value = "SELECT cadastrar_novo_cliente(:nome, :cpf, :dataNascimento, :usuario, :senhaHash)", nativeQuery = true)
-    UUID registrarClienteViaFuncao(
-            @Param("nome") String nome,
-            @Param("cpf") String cpf,
-            @Param("dataNascimento") LocalDate dataNascimento,
-            @Param("usuario") String usuario,
-            @Param("senhaHash") String senhaHash
-    );
+        /**
+         * Chama a função 'cadastrar_novo_cliente' no PostgreSQL para registrar um
+         * novo cliente. Delega a lógica de validação de duplicidade e inserção para
+         * o banco de dados.
+         *
+         * @return o UUID do cliente recém-criado.
+         */
+        @Query(value = "SELECT cadastrar_novo_cliente(:nome, :cpf, :dataNascimento, :usuario, :senhaHash)", nativeQuery = true)
+        UUID registrarClienteViaFuncao(
+                        @Param("nome") String nome,
+                        @Param("cpf") String cpf,
+                        @Param("dataNascimento") LocalDate dataNascimento,
+                        @Param("usuario") String usuario,
+                        @Param("senhaHash") String senhaHash);
 
-    /**
-     * Chama a função 'adicionar_saldo_cliente' no PostgreSQL. Delega a
-     * transação atômica de atualizar o saldo e criar o registro no histórico
-     * para o banco.
-     *
-     * @return o novo saldo do cliente após a adição.
-     */
-    @Query(value = "SELECT adicionar_saldo_cliente(:clienteId, :valor)", nativeQuery = true)
-    BigDecimal adicionarSaldoViaFuncao(
-            @Param("clienteId") UUID clienteId,
-            @Param("valor") BigDecimal valor
-    );
+        /**
+         * Chama o procedimento 'atualizar_cliente' no PostgreSQL.
+         *
+         * @param clienteId          O ID do cliente a ser atualizado.
+         * @param novoNome           O novo nome para o cliente.
+         * @param novaDataNascimento A nova data de nascimento.
+         * @param novoSenhaHash      O novo hash da senha (pode ser nulo se a senha não
+         *                           for alterada).
+         * @pre O cliente deve existir.
+         * @post Os dados do cliente são atualizados no banco.
+         */
+        @Modifying
+        @Query(value = "CALL atualizar_cliente(:clienteId, :novoNome, :novaDataNascimento, :novoSenhaHash)", nativeQuery = true)
+        void atualizarClienteViaProcedure(
+                        @Param("clienteId") UUID clienteId,
+                        @Param("novoNome") String novoNome,
+                        @Param("novaDataNascimento") LocalDate novaDataNascimento,
+                        @Param("novoSenhaHash") String novoSenhaHash);
 
-    /**
-     * Busca todos os clientes ativos.
-     *
-     * @param pageable informações de paginação.
-     * @return lista de clientes ativos paginada.
-     * @pre Nenhuma.
-     * @post A lista de clientes ativos é retornada.
-     */
-    Page<Cliente> findAllByAtivoTrue(Pageable pageable);
+        /**
+         * Chama a função 'adicionar_saldo_cliente' no PostgreSQL. Delega a
+         * transação atômica de atualizar o saldo e criar o registro no histórico
+         * para o banco.
+         *
+         * @return o novo saldo do cliente após a adição.
+         */
+        @Query(value = "SELECT adicionar_saldo_cliente(:clienteId, :valor)", nativeQuery = true)
+        BigDecimal adicionarSaldoViaFuncao(
+                        @Param("clienteId") UUID clienteId,
+                        @Param("valor") BigDecimal valor);
 
-    /**
-     * Busca um cliente ativo pelo seu ID.
-     *
-     * @param id ID do cliente a ser buscado.
-     * @return um Optional contendo o Cliente, se encontrado.
-     * @pre O cliente deve existir e estar ativo.
-     * @post O cliente é retornado se encontrado, caso contrário, um Optional
-     * vazio é retornado.
-     */
-    Optional<Cliente> findByIdAndAtivoTrue(UUID id);
+        /**
+         * Busca todos os clientes ativos.
+         *
+         * @param pageable informações de paginação.
+         * @return lista de clientes ativos paginada.
+         * @pre Nenhuma.
+         * @post A lista de clientes ativos é retornada.
+         */
+        Page<Cliente> findAllByAtivoTrue(Pageable pageable);
 
-    /**
-     * Busca um cliente ativo pelo nome de usuário.
-     *
-     * @param usuario nome de usuário do cliente a ser buscado.
-     * @return um Optional contendo o Cliente, se encontrado.
-     * @pre O cliente deve existir e estar ativo.
-     * @post O cliente é retornado se encontrado, caso contrário, um Optional
-     * vazio é retornado.
-     */
-    Optional<Cliente> findByUsuarioAndAtivoTrue(String usuario);
+        /**
+         * Busca um cliente ativo pelo seu ID.
+         *
+         * @param id ID do cliente a ser buscado.
+         * @return um Optional contendo o Cliente, se encontrado.
+         * @pre O cliente deve existir e estar ativo.
+         * @post O cliente é retornado se encontrado, caso contrário, um Optional
+         *       vazio é retornado.
+         */
+        Optional<Cliente> findByIdAndAtivoTrue(UUID id);
 
-    /**
-     * Reativa um cliente que foi desativado.
-     *
-     * @param clienteId ID do cliente a ser reativado.
-     * @pre O cliente deve existir e estar desativado.
-     * @post O cliente é reativado.
-     */
-    @Modifying
-    @Query(value = "CALL reativar_cliente(:clienteId)", nativeQuery = true)
-    void reativarClienteViaProcedure(@Param("clienteId") UUID clienteId);
+        /**
+         * Busca um cliente ativo pelo nome de usuário.
+         *
+         * @param usuario nome de usuário do cliente a ser buscado.
+         * @return um Optional contendo o Cliente, se encontrado.
+         * @pre O cliente deve existir e estar ativo.
+         * @post O cliente é retornado se encontrado, caso contrário, um Optional
+         *       vazio é retornado.
+         */
+        Optional<Cliente> findByUsuarioAndAtivoTrue(String usuario);
 
-    /**
-     * Desativa um cliente que está ativo.
-     *
-     * @param clienteId ID do cliente a ser desativado.
-     * @pre O cliente deve existir e estar ativo.
-     * @post O cliente é desativado.
-     */
-    @Modifying
-    @Query(value = "CALL desativar_cliente(:clienteId)", nativeQuery = true)
-    void desativarClienteViaProcedure(@Param("clienteId") UUID clienteId);
-    
+        /**
+         * Reativa um cliente que foi desativado.
+         *
+         * @param clienteId ID do cliente a ser reativado.
+         * @pre O cliente deve existir e estar desativado.
+         * @post O cliente é reativado.
+         */
+        @Modifying
+        @Query(value = "CALL reativar_cliente(:clienteId)", nativeQuery = true)
+        void reativarClienteViaProcedure(@Param("clienteId") UUID clienteId);
+
+        /**
+         * Desativa um cliente que está ativo.
+         *
+         * @param clienteId ID do cliente a ser desativado.
+         * @pre O cliente deve existir e estar ativo.
+         * @post O cliente é desativado.
+         */
+        @Modifying
+        @Query(value = "CALL desativar_cliente(:clienteId)", nativeQuery = true)
+        void desativarClienteViaProcedure(@Param("clienteId") UUID clienteId);
+
 }

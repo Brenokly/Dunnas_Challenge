@@ -1,5 +1,6 @@
 package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.service;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import org.springframework.security.access.AccessDeniedException;
@@ -12,6 +13,7 @@ import br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases.C
 import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Cliente;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteResponseDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteUpdateRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ValorRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.exception.RegraDeNegocioException;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.mapper.ClienteMapper;
@@ -54,6 +56,39 @@ public class ClienteServiceImpl implements ClienteUseCases {
         return clienteRepository.findById(clienteLogado.getId())
                 .map(clienteMapper::toResponseDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado."));
+    }
+
+    @Override
+    @Transactional
+    public ClienteResponseDTO atualizarCliente(UUID id, ClienteUpdateRequestDTO requestDTO, UserDetails authUser) {
+        Cliente clienteLogado = getClienteFromUserDetails(authUser);
+
+        if (!clienteLogado.getId().equals(id)) {
+            throw new AccessDeniedException("Um cliente só pode atualizar a própria conta.");
+        }
+
+        Cliente clienteAtual = clienteRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cliente com ID " + id + " não encontrado."));
+
+        String novoNome = requestDTO.nome() != null ? requestDTO.nome() : clienteAtual.getNome();
+        LocalDate novaDataNascimento = requestDTO.dataNascimento() != null ? requestDTO.dataNascimento()
+                : clienteAtual.getDataNascimento();
+
+        String novoSenhaHash = null;
+        if (requestDTO.senha() != null && !requestDTO.senha().isBlank()) {
+            novoSenhaHash = passwordEncoder.encode(requestDTO.senha());
+        }
+
+        clienteRepository.atualizarClienteViaProcedure(
+                id,
+                novoNome,
+                novaDataNascimento,
+                novoSenhaHash);
+
+        return clienteRepository.findById(id)
+                .map(clienteMapper::toResponseDTO)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Cliente com ID " + id + " não encontrado após atualização."));
     }
 
     @Override

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases.ClienteUseCases;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteResponseDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteUpdateRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ValorRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -63,6 +65,25 @@ public class ClienteController {
     public ResponseEntity<ClienteResponseDTO> buscarMeuPerfil(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return ResponseEntity.ok(clienteUseCases.buscarClienteLogado(userDetails));
+    }
+
+    @PutMapping("/{id}")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Atualiza os dados de um cliente", description = "Atualiza o nome, data de nascimento ou senha de um cliente. Requer autenticação do próprio cliente.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso."),
+            @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos."),
+            @ApiResponse(responseCode = "403", description = "Acesso negado (tentativa de alterar outro cliente)."),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+    })
+    public ResponseEntity<ClienteResponseDTO> atualizar(
+            @PathVariable UUID id,
+            @RequestBody @Valid ClienteUpdateRequestDTO requestDTO,
+            Authentication authentication) {
+
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        ClienteResponseDTO clienteAtualizado = clienteUseCases.atualizarCliente(id, requestDTO, userDetails);
+        return ResponseEntity.ok(clienteAtualizado);
     }
 
     @PatchMapping("/meu-perfil/saldo")
