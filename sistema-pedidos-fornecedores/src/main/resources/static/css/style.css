@@ -1,21 +1,31 @@
 /* Paleta de Cores e Variáveis */
 :root {
-    --primary-color: #005a9c;
-    --primary-color-dark: #003d6b;
+    --primary-color: #005a9c; /* Azul inspirado na marca Dunnas */
+    --primary-color-dark: #004a80;
     --background-color: #f4f4f9;
     --text-color: #333;
+    --text-light-color: #666;
     --container-bg: #ffffff;
     --border-color: #ddd;
     --success-color: #28a745;
     --error-color: #dc3545;
+    --link-color: #007bff;
+}
+
+/* Reset Básico e Padrões Globais */
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--background-color);
     color: var(--text-color);
     margin: 0;
     line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 /* Layout Principal */
@@ -23,7 +33,13 @@ header {
     background-color: var(--primary-color);
     color: white;
     padding: 1rem 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.5rem;
 }
 
 header a {
@@ -32,66 +48,92 @@ header a {
 }
 
 main {
+    flex-grow: 1; /* Faz o conteúdo principal ocupar o espaço disponível */
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 2rem;
 }
 
 footer {
     text-align: center;
-    padding: 1rem;
-    background-color: #333;
+    padding: 1.5rem;
+    background-color: #2c3e50;
     color: white;
-    position: relative;
-    bottom: 0;
-    width: 100%;
 }
 
-/* Estilo do Container Central */
+/* Estilo do Container Central (Login, Cadastro) */
 .container {
-    max-width: 500px;
-    margin: 2rem auto;
-    padding: 2rem;
+    width: 100%;
+    max-width: 450px;
+    padding: 2rem 2.5rem;
     background: var(--container-bg);
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Centraliza o texto como 'Login' */
+}
+
+.container h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
 }
 
 /* Estilos de Formulário */
-form div {
-    margin-bottom: 1rem;
+.form-group {
+    margin-bottom: 1.25rem;
+    text-align: left; /* Alinha labels e inputs à esquerda */
 }
 
-form label {
+.form-group label {
     display: block;
     margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: var(--text-light-color);
 }
 
-form input[type="text"],
-form input[type="password"],
-form input[type="date"],
-form input[type="number"] {
+.form-group input {
     width: 100%;
     padding: 0.8rem;
     border: 1px solid var(--border-color);
     border-radius: 4px;
+    font-size: 1rem;
 }
 
-button {
+button[type="submit"] {
     width: 100%;
-    padding: 0.8rem;
+    padding: 0.9rem;
     border: none;
     border-radius: 4px;
     background-color: var(--primary-color);
     color: white;
-    font-size: 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-button:hover {
+button[type="submit"]:hover {
     background-color: var(--primary-color-dark);
 }
 
-/* Mensagens */
+/* Estilo para os links de navegação (Cadastro) */
+.links {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.links a {
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.links a:hover {
+    text-decoration: underline;
+}
+
+/* Mensagens de Feedback */
 .error-message {
     color: var(--error-color);
     background-color: #f8d7da;
@@ -99,4 +141,5 @@ button:hover {
     padding: 0.8rem;
     border-radius: 4px;
     margin-bottom: 1rem;
+    text-align: center;
 }

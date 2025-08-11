@@ -29,4 +29,9 @@ public class ViewController {
   public String dashboard() {
     return "dashboard";
   }
+
+  @GetMapping("/cadastro-cliente")
+  public String showCadastroClientePage() {
+    return "cadastro-cliente";
+  }
 }
