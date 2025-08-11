@@ -7,8 +7,13 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Cadastro de Fornecedor - Sistema de Pedidos</title>
-      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
       <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico">
+
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/base.css">
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/forms.css">
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/buttons.css">
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/messages.css">
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pages/cadastro-login.css">
     </head>
 
     <body>

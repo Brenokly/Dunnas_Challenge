@@ -1,0 +1,80 @@
+.profile-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem 2.5rem;
+    background: var(--container-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--background-color);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.profile-header h2 {
+    margin: 0;
+    color: var(--primary-color);
+}
+
+.profile-section {
+    background: #fff;
+    padding: 1.5rem 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    margin-bottom: 1.5rem;
+}
+
+.profile-section h3 {
+    margin-top: 0;
+    color: var(--primary-color-dark);
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item .label {
+    font-weight: bold;
+    color: var(--text-light-color);
+}
+
+.detail-item .value.balance {
+    font-weight: bold;
+    color: var(--success-color);
+}
+
+.saldo-form {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.saldo-form .form-group {
+    flex-grow: 1;
+    margin-bottom: 0;
+}
+
+.saldo-form button {
+    width: auto;
+    padding: 0.8rem 1.5rem;
+}
+
+.danger-zone {
+    border: 1px solid var(--error-color);
+    background-color: #f8d7da1a;
+}

@@ -61,7 +61,6 @@ public class SecurityConfig {
         return source;
     }
 
-    //
     @Configuration
     @Order(1)
     public static class StaticResourcesConfig {
@@ -76,7 +75,6 @@ public class SecurityConfig {
         }
     }
 
-    //
     @Configuration
     @Order(2)
     public static class ApiSecurityConfig {
@@ -101,7 +99,6 @@ public class SecurityConfig {
         }
     }
 
-    //
     @Configuration
     @Order(3)
     public static class WebSecurityConfig {

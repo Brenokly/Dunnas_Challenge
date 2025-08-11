@@ -7,8 +7,14 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Dashboard - Sistema de Pedidos</title>
-      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
       <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico">
+
+      <%-- Imports do CSS Modular --%>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/base.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/forms.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/buttons.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/messages.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pages/dashboard.css">
     </head>
 
     <body>
@@ -32,12 +38,11 @@
                 </div>
               </c:forEach>
             </div>
-            <%-- CORREÇÃO AQUI --%>
-              <c:if test="${paginaDeProdutos.isEmpty()}">
-                <div class="empty-list-message">
-                  <p>Nenhum produto disponível no momento. Volte mais tarde!</p>
-                </div>
-              </c:if>
+            <c:if test="${paginaDeProdutos.isEmpty()}">
+              <div class="empty-list-message">
+                <p>Nenhum produto disponível no momento. Volte mais tarde!</p>
+              </div>
+            </c:if>
           </c:if>
 
           <c:if test="${userType == 'fornecedor'}">
@@ -80,6 +85,7 @@
         </div>
 
         <%@ include file="includes/footer.jsp" %>
+
     </body>
 
     </html>
