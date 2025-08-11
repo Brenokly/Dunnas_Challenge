@@ -86,7 +86,7 @@ public class ClienteServiceImpl implements ClienteUseCases {
     public ClienteResponseDTO reativarCliente(UUID id, UserDetails authUser) {
         Cliente clienteLogado = getClienteFromUserDetails(authUser);
 
-        if (!clienteLogado.getId().equals(id)) {
+        if (!clienteLogado.getId().equals(id)) { // Futuramente poderia adicionar aqui o admin
             throw new AccessDeniedException("Um cliente só pode reativar a própria conta.");
         }
 

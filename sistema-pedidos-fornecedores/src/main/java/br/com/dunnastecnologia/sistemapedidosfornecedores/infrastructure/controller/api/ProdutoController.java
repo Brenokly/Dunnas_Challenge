@@ -1,6 +1,7 @@
 package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.controller.api;
 
 import java.net.URI;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springdoc.core.annotations.ParameterObject;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -57,6 +59,15 @@ public class ProdutoController {
   })
   public ResponseEntity<ProdutoResponseDTO> buscarPublicoPorId(@PathVariable UUID id) {
     return ResponseEntity.ok(produtoUseCases.buscarProdutoPublicoPorId(id));
+  }
+
+  @GetMapping
+  @Operation(summary = "Lista todos os produtos ativos (visão pública)", description = "Retorna uma lista paginada de produtos. Pode ser filtrada por uma ou mais categorias via query param.")
+  @ApiResponse(responseCode = "200", description = "Lista de produtos retornada com sucesso.")
+  public ResponseEntity<Page<ProdutoResponseDTO>> listarPublico(
+      @RequestParam(required = false) Set<UUID> categorias,
+      @ParameterObject Pageable pageable) {
+    return ResponseEntity.ok(produtoUseCases.listarProdutosPublicos(categorias, pageable));
   }
 
   // ENDPOINTS PRIVADOS (PARA FORNECEDORES GERENCIAREM SEU CATÁLOGO)

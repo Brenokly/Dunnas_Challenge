@@ -1,5 +1,6 @@
 package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.service;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -96,6 +97,17 @@ public class ProdutoServiceImpl implements ProdutoUseCases {
   @Transactional(readOnly = true)
   public Page<ProdutoResponseDTO> listarTodosProdutosPublicos(Pageable pageable) {
     return produtoRepository.findAllPublicosAtivos(pageable).map(produtoMapper::toResponseDTO);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<ProdutoResponseDTO> listarProdutosPublicos(Set<UUID> categoriaIds, Pageable pageable) {
+    if (categoriaIds == null || categoriaIds.isEmpty()) {
+      return produtoRepository.findAllPublicosAtivos(pageable).map(produtoMapper::toResponseDTO);
+    } else {
+      return produtoRepository.findAllByCategoriasInPublicoAtivo(categoriaIds, pageable)
+          .map(produtoMapper::toResponseDTO);
+    }
   }
 
   @Override

@@ -33,9 +33,12 @@ public class SqlStateErrorMapping {
         errorMap.put("PCU03", RegraDeNegocioException::new);
         errorMap.put("PCU04", RegraDeNegocioException::new);
 
-        // ERROS DE PEDIDO 
+        // ERROS DE PEDIDO
         errorMap.put("PPE01", RegraDeNegocioException::new);
         errorMap.put("PPE02", RegraDeNegocioException::new);
+
+        // Erros de Categoria
+        errorMap.put("PCA01", RecursoDuplicadoException::new);
     }
 
     public Optional<? extends RuntimeException> getExceptionFor(String sqlState, String message) {

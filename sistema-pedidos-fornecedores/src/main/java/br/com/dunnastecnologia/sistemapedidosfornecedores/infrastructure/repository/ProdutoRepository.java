@@ -2,6 +2,7 @@ package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.reposi
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -81,6 +82,34 @@ public interface ProdutoRepository extends JpaRepository<Produto, UUID> {
          * @post Uma página de produtos é retornada, podendo estar vazia.
          */
         Page<Produto> findAllByFornecedorId(UUID fornecedorId, Pageable pageable);
+
+        /**
+         * Busca uma página de produtos ATIVOS que pertencem a uma Categoria ATIVA
+         * específica.
+         *
+         * @param categoriaId O ID da categoria pela qual os produtos serão filtrados.
+         * @param pageable    O objeto contendo as informações de paginação.
+         * @return uma Página (Page) de Produtos que correspondem ao critério de busca.
+         * @pre O ID da categoria deve ser válido.
+         * @post Uma página de produtos é retornada, podendo estar vazia.
+         */
+        @Query("SELECT p FROM Produto p JOIN p.categorias c WHERE c.id = :categoriaId AND p.ativo = true AND p.fornecedor.ativo = true AND c.ativo = true")
+        Page<Produto> findAllByCategoriaIdPublicoAtivo(@Param("categoriaId") UUID categoriaId, Pageable pageable);
+
+        /**
+         * Busca uma página de produtos ATIVOS que pertencem a QUALQUER UMA das
+         * categorias
+         * fornecidas.
+         *
+         * @param categoriaIds Um conjunto de IDs de categorias para o filtro.
+         * @param pageable     O objeto contendo as informações de paginação.
+         * @return uma Página (Page) de Produtos que correspondem ao critério de busca.
+         * @pre O conjunto de IDs não deve ser nulo ou vazio.
+         * @post Uma página de produtos é retornada.
+         */
+        @Query("SELECT DISTINCT p FROM Produto p JOIN p.categorias c WHERE c.id IN :categoriaIds AND p.ativo = true AND p.fornecedor.ativo = true AND c.ativo = true")
+        Page<Produto> findAllByCategoriasInPublicoAtivo(@Param("categoriaIds") Set<UUID> categoriaIds,
+                        Pageable pageable);
 
         /**
          * Chama a função 'cadastrar_novo_produto' no PostgreSQL.

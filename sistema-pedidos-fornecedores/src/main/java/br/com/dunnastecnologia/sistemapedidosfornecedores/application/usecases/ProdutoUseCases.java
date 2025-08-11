@@ -1,5 +1,6 @@
 package br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases;
 
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -93,6 +94,16 @@ public interface ProdutoUseCases {
    * @post A lista de produtos é retornada, podendo estar vazia.
    */
   Page<ProdutoResponseDTO> listarTodosProdutosPublicos(Pageable pageable);
+
+  /**
+   * Lista os produtos ativos filtrados por um conjunto de categorias (visão
+   * pública).
+   *
+   * @param categoriaIds O conjunto de IDs de categoria para filtrar os produtos.
+   * @param pageable     As informações de paginação.
+   * @return Uma lista paginada de produtos ativos.
+   */
+  Page<ProdutoResponseDTO> listarProdutosPublicos(Set<UUID> categoriaIds, Pageable pageable);
 
   /**
    * Lista todos os produtos (ativos e inativos) do fornecedor logado.
