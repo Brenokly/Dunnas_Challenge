@@ -11,4 +11,8 @@ public class CadastroController {
     return "cadastro-cliente";
   }
 
+  @GetMapping("/cadastro-fornecedor")
+  public String showCadastroFornecedorPage() {
+    return "cadastro-fornecedor";
+  }
 }

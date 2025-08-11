@@ -24,20 +24,18 @@
           </c:if>
 
           <form action="<c:url value='/perform_login' />" method="post">
-            <%-- MUDANÇA AQUI: Adicionando a classe 'form-group' --%>
-              <div class="form-group">
-                <label for="username">Usuário:</label>
-                <input type="text" id="username" name="username" required autofocus>
-              </div>
-              <%-- MUDANÇA AQUI: Adicionando a classe 'form-group' --%>
-                <div class="form-group">
-                  <label for="password">Senha:</label>
-                  <input type="password" id="password" name="password" required>
-                </div>
+            <div class="form-group">
+              <label for="username">Usuário:</label>
+              <input type="text" id="username" name="username" required autofocus>
+            </div>
+            <div class="form-group">
+              <label for="password">Senha:</label>
+              <input type="password" id="password" name="password" required>
+            </div>
 
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 
-                <button type="submit">Entrar</button>
+            <button type="submit">Entrar</button>
           </form>
 
           <div class="links">
