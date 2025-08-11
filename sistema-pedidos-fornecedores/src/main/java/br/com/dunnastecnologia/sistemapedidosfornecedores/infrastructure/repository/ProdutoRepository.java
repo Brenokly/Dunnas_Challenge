@@ -113,30 +113,29 @@ public interface ProdutoRepository extends JpaRepository<Produto, UUID> {
 
         /**
          * Chama a função 'cadastrar_novo_produto' no PostgreSQL.
-         *
-         * @return o UUID do produto recém-criado.
          */
-        @Query(value = "SELECT cadastrar_novo_produto(:nome, :descricao, :preco, :percentualDesconto, :fornecedorId)", nativeQuery = true)
+        @Query(value = "SELECT cadastrar_novo_produto(:nome, :descricao, :preco, :percentualDesconto, :fornecedorId, :categoriaIds)", nativeQuery = true)
         UUID registrarProdutoViaFuncao(
                         @Param("nome") String nome,
                         @Param("descricao") String descricao,
                         @Param("preco") BigDecimal preco,
                         @Param("percentualDesconto") BigDecimal percentualDesconto,
-                        @Param("fornecedorId") UUID fornecedorId);
+                        @Param("fornecedorId") UUID fornecedorId,
+                        @Param("categoriaIds") UUID[] categoriaIds);
 
         /**
-         * Chama o procedimento 'atualizar_produto' no PostgreSQL, que valida a
-         * propriedade antes de alterar.
+         * Chama o procedimento 'atualizar_produto' no PostgreSQL.
          */
         @Modifying
-        @Query(value = "CALL atualizar_produto(:produtoId, :fornecedorId, :nome, :descricao, :preco, :percentualDesconto)", nativeQuery = true)
+        @Query(value = "CALL atualizar_produto(:produtoId, :fornecedorId, :nome, :descricao, :preco, :percentualDesconto, :categoriaIds)", nativeQuery = true)
         void atualizarProdutoViaProcedure(
                         @Param("produtoId") UUID produtoId,
                         @Param("fornecedorId") UUID fornecedorId,
                         @Param("nome") String nome,
                         @Param("descricao") String descricao,
                         @Param("preco") BigDecimal preco,
-                        @Param("percentualDesconto") BigDecimal percentualDesconto);
+                        @Param("percentualDesconto") BigDecimal percentualDesconto,
+                        @Param("categoriaIds") UUID[] categoriaIds);
 
         /**
          * Chama o procedimento 'desativar_produto' no PostgreSQL, que valida a

@@ -35,12 +35,17 @@ public class ProdutoServiceImpl implements ProdutoUseCases {
   @Transactional
   public ProdutoResponseDTO cadastrarNovoProduto(ProdutoRequestDTO requestDTO, UserDetails fornecedorAutenticado) {
     Fornecedor fornecedor = getFornecedorFromUserDetails(fornecedorAutenticado);
+
+    UUID[] categoriaIdsArray = requestDTO.categoriaIds().toArray(new UUID[0]);
+
     UUID novoProdutoId = produtoRepository.registrarProdutoViaFuncao(
         requestDTO.nome(),
         requestDTO.descricao(),
         requestDTO.preco(),
         requestDTO.percentualDesconto(),
-        fornecedor.getId());
+        fornecedor.getId(),
+        categoriaIdsArray);
+
     Produto produtoSalvo = produtoRepository.findById(novoProdutoId)
         .orElseThrow(() -> new IllegalStateException("ERRO CRÍTICO: Produto não encontrado após o cadastro."));
     return produtoMapper.toResponseDTO(produtoSalvo);
@@ -51,13 +56,18 @@ public class ProdutoServiceImpl implements ProdutoUseCases {
   public ProdutoResponseDTO atualizarProduto(UUID produtoId, ProdutoRequestDTO requestDTO,
       UserDetails fornecedorAutenticado) {
     Fornecedor fornecedor = getFornecedorFromUserDetails(fornecedorAutenticado);
+
+    UUID[] categoriaIdsArray = requestDTO.categoriaIds().toArray(new UUID[0]);
+
     produtoRepository.atualizarProdutoViaProcedure(
         produtoId,
         fornecedor.getId(),
         requestDTO.nome(),
         requestDTO.descricao(),
         requestDTO.preco(),
-        requestDTO.percentualDesconto());
+        requestDTO.percentualDesconto(),
+        categoriaIdsArray);
+
     return this.buscarProdutoPublicoPorId(produtoId);
   }
 

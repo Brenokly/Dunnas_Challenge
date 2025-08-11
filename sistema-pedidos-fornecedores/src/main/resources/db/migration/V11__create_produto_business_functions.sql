@@ -1,5 +1,3 @@
--- V11__create_produto_business_functions.sql
-
 -- Função para cadastrar um novo produto, garantindo a associação a um fornecedor.
 CREATE OR REPLACE FUNCTION cadastrar_novo_produto(
     p_nome VARCHAR,
