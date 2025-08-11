@@ -2,9 +2,9 @@ package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.config
 
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -12,6 +12,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -59,58 +60,61 @@ public class SecurityConfig {
         return source;
     }
 
-    // CONFIGURAÇÃO DE SEGURANÇA PARA A API REST
-    @Configuration
-    @Order(1)
-    public static class ApiSecurityConfig {
-
-        @Bean
-        public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthFilter,
-                AuthenticationProvider authenticationProvider) throws Exception {
-            http
-                    .securityMatcher("/api/**")
-                    .csrf(AbstractHttpConfigurer::disable)
-                    .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                    .authorizeHttpRequests(auth -> auth
-                            .requestMatchers("/api/v1/auth/**").permitAll()
-                            .requestMatchers(HttpMethod.POST, "/api/v1/clientes", "/api/v1/fornecedores").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/api/v1/fornecedores/**", "/api/v1/produtos/**")
-                            .permitAll()
-                            .anyRequest().authenticated())
-                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                    .authenticationProvider(authenticationProvider)
-                    .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
-            return http.build();
-        }
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
-    // CONFIGURAÇÃO DE SEGURANÇA PARA A VIEW WEB
-    @Configuration
-    @Order(2)
-    public static class WebSecurityConfig {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthFilter)
+            throws Exception {
+        http
+                // 1. Configuração de Autorização (O mais importante)
+                .authorizeHttpRequests(auth -> auth
+                        // Regra 1: Libera todos os recursos estáticos. Esta é a forma moderna e
+                        // recomendada.
+                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
 
-        @Bean
-        public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
-            http
-                    .authorizeHttpRequests(auth -> auth
-                            .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
-                            .requestMatchers("/", "/login", "/perform_login", "/cadastro-cliente",
-                                    "/cadastro-fornecedor", "/css/**", "/js/**", "/images/**")
-                            .permitAll()
-                            .anyRequest().authenticated())
-                    .formLogin(form -> form
-                            .loginPage("/login")
-                            .loginProcessingUrl("/perform_login")
-                            .defaultSuccessUrl("/dashboard", true)
-                            .failureUrl("/login?error=true")
-                            .permitAll())
-                    .logout(logout -> logout
-                            .logoutUrl("/logout")
-                            .logoutSuccessUrl("/login?logout=true")
-                            .permitAll());
+                        // Regra 2: Libera os redirecionamentos internos do JSP para evitar o loop.
+                        .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
 
-            return http.build();
-        }
+                        // Regra 3: Libera as páginas web públicas.
+                        .requestMatchers("/", "/login", "/perform_login", "/cadastro-cliente", "/cadastro-fornecedor")
+                        .permitAll()
+
+                        // Regra 4: Libera os endpoints públicos da API.
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/clientes", "/api/v1/fornecedores").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/fornecedores/**", "/api/v1/produtos/**").permitAll()
+
+                        // Regra 5: Qualquer outra requisição (seja web ou API) precisa de autenticação.
+                        .anyRequest().authenticated())
+
+                // 2. Gerenciamento de Sessão: A API não criará sessões.
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 3. Login via Formulário (para a parte Web/JSP)
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/perform_login")
+                        .defaultSuccessUrl("/dashboard", true)
+                        .failureUrl("/login?error=true"))
+
+                // 4. Logout (para a parte Web/JSP)
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout=true"))
+
+                // 5. Filtro JWT (para a parte API)
+                // Ele é inteligente e só agirá se encontrar um header "Authorization: Bearer
+                // ..."
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // 6. Desabilita o CSRF. Em um projeto real, configuraríamos para ignorar apenas
+                // as rotas da API.
+                // Para o escopo do desafio, esta simplificação é aceitável.
+                .csrf(AbstractHttpConfigurer::disable);
+
+        return http.build();
     }
 }
