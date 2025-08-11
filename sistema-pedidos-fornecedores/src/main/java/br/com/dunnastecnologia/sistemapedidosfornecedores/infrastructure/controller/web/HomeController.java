@@ -6,12 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class ViewController {
-
-  @GetMapping("/login")
-  public String showLoginPage() {
-    return "login";
-  }
+public class HomeController {
 
   @GetMapping("/")
   public String home() {
@@ -21,17 +16,6 @@ public class ViewController {
         && !"anonymousUser".equals(authentication.getPrincipal())) {
       return "redirect:/dashboard";
     }
-
     return "redirect:/login";
-  }
-
-  @GetMapping("/dashboard")
-  public String dashboard() {
-    return "dashboard";
-  }
-
-  @GetMapping("/cadastro-cliente")
-  public String showCadastroClientePage() {
-    return "cadastro-cliente";
   }
 }

@@ -31,7 +31,7 @@ import jakarta.servlet.DispatcherType;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // --- BEANS GLOBAIS COMPARTILHADOS ---
+    //
     @Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -61,7 +61,7 @@ public class SecurityConfig {
         return source;
     }
 
-    // --- CADEIA DE SEGURANÇA PARA RECURSOS ESTÁTICOS (MAIS ALTA PRIORIDADE) ---
+    //
     @Configuration
     @Order(1)
     public static class StaticResourcesConfig {
@@ -76,7 +76,7 @@ public class SecurityConfig {
         }
     }
 
-    // --- CADEIA DE SEGURANÇA PARA A API REST (PRIORIDADE INTERMEDIÁRIA) ---
+    //
     @Configuration
     @Order(2)
     public static class ApiSecurityConfig {
@@ -101,7 +101,7 @@ public class SecurityConfig {
         }
     }
 
-    // --- CADEIA DE SEGURANÇA PARA A VIEW WEB (MENOR PRIORIDADE) ---
+    //
     @Configuration
     @Order(3)
     public static class WebSecurityConfig {
