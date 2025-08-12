@@ -210,7 +210,6 @@
   cursor: not-allowed;
 }
 
-/* Toast básico */
 .toast {
   position: fixed;
   bottom: 20px;
@@ -285,6 +284,5 @@
 .quantidade-controls .quantidade-display {
   display: inline-block;
   min-width: 25px;
-  /* Garante que a largura não mude com a quantidade */
   text-align: center;
 }

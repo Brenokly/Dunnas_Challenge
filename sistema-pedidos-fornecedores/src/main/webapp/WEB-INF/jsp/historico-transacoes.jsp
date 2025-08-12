@@ -61,7 +61,7 @@
         </div>
 
         <%@ include file="includes/footer.jsp" %>
-          <script src="${pageContext.request.contextPath}/js/historico.js"></script>
+          <script src="${pageContext.request.contextPath}/js/historico-transacoes.js"></script>
     </body>
 
     </html>

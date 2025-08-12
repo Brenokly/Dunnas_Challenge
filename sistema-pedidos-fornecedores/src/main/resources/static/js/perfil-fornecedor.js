@@ -6,10 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const formDesativar = document.getElementById("delete-account-form");
-  const fornecedorId = formDesativar.dataset.fornecedorId; // Obtém o ID do data-attribute
-
-  // A controller já está preenchendo os dados, então não é necessário o fetch inicial aqui.
-  // Opcional: Se precisar de dados dinâmicos, você pode fazer a chamada.
+  const fornecedorId = formDesativar.dataset.fornecedorId;
 
   formDesativar.addEventListener("submit", async (e) => {
     e.preventDefault();

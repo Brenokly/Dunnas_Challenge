@@ -7,7 +7,6 @@
   gap: 1rem;
 }
 
-/* Título da seção */
 .top-section h2 {
   margin: 0;
   font-size: 1.8rem;
@@ -15,7 +14,6 @@
   font-weight: 600;
 }
 
-/* === Seção de produtos (vitrine) === */
 #produtos-container {
   max-width: 960px;
   margin: 0 auto;
@@ -27,7 +25,6 @@
   padding: 1.5rem;
 }
 
-/* Grid de produtos */
 #product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -37,7 +34,6 @@
   margin: 0;
 }
 
-/* --- Estilos dos Cards de Produto --- */
 .product-card {
   background: var(--container-bg);
   border-radius: 16px;
@@ -56,7 +52,6 @@
   transform: translateY(-8px);
 }
 
-/* Título do produto */
 .product-card h3 {
   font-size: 1.2rem;
   font-weight: 600;
@@ -66,7 +61,6 @@
   line-height: 1.3;
 }
 
-/* Descrição do produto (opcional, mas boa prática) */
 .product-card p.description {
     font-size: 0.9rem;
     color: var(--text-light-color);
@@ -74,7 +68,6 @@
     flex-grow: 1;
 }
 
-/* Preço */
 .product-card .price {
   font-weight: 700;
   color: var(--primary-color-dark);
@@ -82,7 +75,6 @@
   margin-bottom: 1rem;
 }
 
-/* Tags de categorias */
 .category-list {
   margin-bottom: 1rem;
 }
@@ -98,7 +90,6 @@
   user-select: none;
 }
 
-/* Botão "Adicionar ao Carrinho" */
 .add-to-cart-btn {
   background-color: var(--primary-color);
   border: none;
@@ -123,7 +114,6 @@
   cursor: not-allowed;
 }
 
-/* --- Botão e modal de filtro --- */
 .primary-btn-icon {
   background-color: var(--primary-color);
   color: white;
@@ -151,7 +141,6 @@
   transform: translateY(0);
 }
 
-/* Modal fundo */
 .modal-backdrop {
     position: fixed;
     top: 0;
@@ -170,7 +159,6 @@
     display: flex;
 }
 
-/* Modal conteúdo */
 .modal-content {
     background-color: var(--container-bg);
     border-radius: 16px;
@@ -192,7 +180,6 @@
     user-select: none;
 }
 
-/* Lista categorias modal */
 .modal-categorias-list {
     display: flex;
     flex-direction: column;
@@ -221,13 +208,12 @@
     accent-color: var(--primary-color);
 }
 
-/* Botões do modal */
 .modal-buttons {
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
 }
-/* Estilos refatorados para os botões do modal */
+
 .modal-buttons .btn {
   padding: 0.75rem 1.5rem;
   font-weight: 600;
@@ -257,7 +243,6 @@
   background-color: #e9e9f2;
 }
 
-/* === Paginação === */
 #paginacao-produtos {
   display: flex;
   justify-content: center;
@@ -292,13 +277,11 @@
   opacity: 0.5;
 }
 
-/* Mensagens de erro/vazio */
 .error-message,
 .empty-message {
   padding: 2rem;
 }
 
-/* Spinner e outros componentes... */
 .spinner {
     border: 5px solid rgba(0, 90, 156, 0.1);
     border-top: 5px solid var(--primary-color);

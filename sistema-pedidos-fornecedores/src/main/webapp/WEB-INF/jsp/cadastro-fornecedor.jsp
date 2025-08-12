@@ -53,7 +53,7 @@
 
         <%@ include file="includes/footer.jsp" %>
 
-          <script src="${pageContext.request.contextPath}/js/cadastro-form.js"></script>
+          <script src="${pageContext.request.contextPath}/js/cadastro-fornecedor.js"></script>
 
     </body>
 

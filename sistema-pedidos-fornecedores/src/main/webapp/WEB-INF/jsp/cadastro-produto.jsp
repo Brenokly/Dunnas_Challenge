@@ -68,7 +68,7 @@
         </div>
 
         <%@ include file="includes/footer.jsp" %>
-          <script src="${pageContext.request.contextPath}/js/produto-form.js"></script>
+          <script src="${pageContext.request.contextPath}/js/cadastro-produto.js"></script>
     </body>
 
     </html>

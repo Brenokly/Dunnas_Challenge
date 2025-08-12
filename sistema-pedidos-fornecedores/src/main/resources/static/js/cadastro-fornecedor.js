@@ -1,28 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const cpfInput = document.getElementById("cpf");
-
-  if (cpfInput) {
-    cpfInput.addEventListener("input", function (e) {
-      let value = e.target.value.replace(/\D/g, "");
-      value = value.substring(0, 11);
-
-      if (value.length > 9) {
-        value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
-      } else if (value.length > 6) {
-        value = value.replace(/(\d{3})(\d{3})(\d{1,3})/, "$1.$2.$3");
-      } else if (value.length > 3) {
-        value = value.replace(/(\d{3})(\d{1,3})/, "$1.$2");
-      }
-      e.target.value = value;
-    });
-  }
-
   const cnpjInput = document.getElementById("cnpj");
+
+  // Aplica a máscara de formatação para o campo CNPJ
   if (cnpjInput) {
     cnpjInput.addEventListener("input", function (e) {
       let value = e.target.value.replace(/\D/g, "");
       value = value.substring(0, 14);
 
+      // Aplica a formatação XX.XXX.XXX/XXXX-XX
       if (value.length > 12) {
         value = value.replace(
           /(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/,
@@ -39,67 +24,22 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  const formCliente = document.getElementById("cadastro-cliente-form");
-  if (formCliente) {
-    formCliente.addEventListener("submit", function (event) {
+  const formFornecedor = document.getElementById("cadastro-fornecedor-form");
+
+  // Lida com a submissão do formulário de fornecedor
+  if (formFornecedor) {
+    formFornecedor.addEventListener("submit", function (event) {
       // Previne o comportamento padrão de recarregar a página
       event.preventDefault();
 
-      // Coleta os dados do formulário
-      const formData = new FormData(formCliente);
-      const data = Object.fromEntries(formData.entries());
-
-      // Remove a formatação do CPF antes de enviar
-      if (data.cpf) {
-        data.cpf = data.cpf.replace(/\D/g, "");
-      }
-
-      // Envia os dados para a API
-      fetch("/api/v1/clientes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            return response.json().then((err) => Promise.reject(err));
-          }
-          return response.json();
-        })
-        .then((data) => {
-          mostrarMensagem(
-            "Cadastro realizado com sucesso! Redirecionando para o login...",
-            "success"
-          );
-          setTimeout(() => {
-            window.location.href = "/login";
-          }, 2000); // Atraso de 2 segundos
-        })
-        .catch((error) => {
-          console.error("Erro no cadastro:", error);
-          mostrarMensagem(
-            error.message || "Ocorreu um erro no cadastro.",
-            "error"
-          );
-        });
-    });
-  }
-
-  const formFornecedor = document.getElementById("cadastro-fornecedor-form");
-  if (formFornecedor) {
-    formFornecedor.addEventListener("submit", function (event) {
-      event.preventDefault();
       const formData = new FormData(formFornecedor);
       const data = Object.fromEntries(formData.entries());
 
-      // Remove a formatação do CNPJ antes de enviar
+      // Remove a formatação do CNPJ antes de enviar para a API
       if (data.cnpj) {
         data.cnpj = data.cnpj.replace(/\D/g, "");
       }
 
-      // Envia os dados para a API
       fetch("/api/v1/fornecedores", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -107,6 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
       })
         .then((response) => {
           if (!response.ok) {
+            // Se a resposta não for OK, rejeita a promise com o erro
             return response.json().then((err) => Promise.reject(err));
           }
           return response.json();
@@ -116,12 +57,13 @@ document.addEventListener("DOMContentLoaded", function () {
             "Cadastro realizado com sucesso! Redirecionando para o login...",
             "success"
           );
+          // Redireciona para a página de login após 2 segundos
           setTimeout(() => {
             window.location.href = "/login";
           }, 2000);
         })
         .catch((error) => {
-          console.error("Erro no cadastro:", error);
+          console.error("Erro no cadastro do fornecedor:", error);
           mostrarMensagem(
             error.message || "Ocorreu um erro no cadastro.",
             "error"
@@ -130,7 +72,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Função utilitária para mostrar mensagens de feedback na tela
   function mostrarMensagem(mensagem, tipo) {
     const feedbackDiv = document.getElementById("feedback-message");
     if (feedbackDiv) {

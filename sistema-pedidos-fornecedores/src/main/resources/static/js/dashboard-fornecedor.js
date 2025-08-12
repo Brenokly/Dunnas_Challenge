@@ -340,7 +340,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
   }
 
-  // --- LÓGICA GENÉRICA DE PAGINAÇÃO ---
+  // LÓGICA GENÉRICA DE PAGINAÇÃO
   function renderizarPaginacao(
     totalPages,
     currentPage,
@@ -371,7 +371,6 @@ document.addEventListener("DOMContentLoaded", () => {
     container.appendChild(btnNext);
   }
 
-  // --- LÓGICA DE TOAST (MENSAGENS) ---
   function mostrarToast(mensagem, tipo) {
     let toast = document.getElementById("toast-message");
     if (!toast) {
@@ -387,6 +386,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 4000);
   }
 
-  // --- INICIALIZAÇÃO ---
   carregarProdutos(0);
 });

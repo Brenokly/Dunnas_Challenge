@@ -7,17 +7,37 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases.ClienteUseCases;
-import br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases.FornecedorUseCases;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Cliente;
 
 @Controller
-public class PerfilController {
+public class TelasClienteController {
 
   private final ClienteUseCases clienteUseCases;
-  private final FornecedorUseCases fornecedorUseCases;
 
-  public PerfilController(ClienteUseCases clienteUseCases, FornecedorUseCases fornecedorUseCases) {
+  public TelasClienteController(ClienteUseCases clienteUseCases) {
     this.clienteUseCases = clienteUseCases;
-    this.fornecedorUseCases = fornecedorUseCases;
+  }
+
+  @GetMapping("/cadastro-cliente")
+  public String showCadastroClientePage() {
+    return "cadastro-cliente";
+  }
+
+  @GetMapping("/carrinho")
+  public String abrirCarrinho(Model model, Authentication authentication) {
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+    if (userDetails instanceof Cliente) {
+      model.addAttribute("username", userDetails.getUsername());
+      return "carrinho";
+    }
+
+    return "redirect:/login";
+  }
+
+  @GetMapping("/cliente/historico")
+  public String telaHistorico() {
+    return "historico-transacoes";
   }
 
   @GetMapping("/cliente/perfil")
@@ -32,19 +52,5 @@ public class PerfilController {
     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
     model.addAttribute("cliente", clienteUseCases.buscarClienteLogado(userDetails));
     return "perfil-cliente-editar";
-  }
-
-  @GetMapping("/fornecedor/perfil")
-  public String showPerfilFornecedor(Model model, Authentication authentication) {
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    model.addAttribute("fornecedor", fornecedorUseCases.buscarFornecedorLogado(userDetails));
-    return "perfil-fornecedor";
-  }
-
-  @GetMapping("/fornecedor/perfil/editar")
-  public String showEditarPerfilFornecedor(Model model, Authentication authentication) {
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    model.addAttribute("fornecedor", fornecedorUseCases.buscarFornecedorLogado(userDetails));
-    return "perfil-fornecedor-editar";
   }
 }

@@ -36,7 +36,7 @@
         </main>
 
         <%@ include file="includes/footer.jsp" %>
-          <script src="${pageContext.request.contextPath}/js/cart.js" defer></script>
+          <script src="${pageContext.request.contextPath}/js/carrinho.js" defer></script>
     </body>
 
     </html>

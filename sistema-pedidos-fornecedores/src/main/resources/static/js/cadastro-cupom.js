@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const limiteDeUsos = formData.get("limiteDeUsos");
     const dataValidadeStr = formData.get("dataValidade");
 
-    // CORREÇÃO: Validação de data mais robusta com objeto Date
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
     const dataValidade = new Date(dataValidadeStr);

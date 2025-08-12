@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let categoriasSelecionadas = new Set();
   let categoriasSelecionadasModal = new Set();
 
-  // --- Lógica da Modal ---
+  // Lógica da Modal
   function abrirModal() {
     modal.classList.add("active");
     categoriasSelecionadasModal = new Set(categoriasSelecionadas);
@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // --- Lógica de Carregamento de Dados ---
+  // Lógica de Carregamento de Dados
   async function carregarCategorias() {
     try {
       const res = await fetch("/api/v1/categorias?page=0&size=100", {
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // --- Lógica de Formulário ---
+  // Lógica de Formulário
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const btnSubmit = document.getElementById("btn-submit");
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- Event Listeners ---
+  // Event Listeners
   btnSelecionarCategorias.addEventListener("click", abrirModal);
   modalApplyBtn.addEventListener("click", () => {
     categoriasSelecionadas = new Set(categoriasSelecionadasModal);
@@ -168,7 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- Funções de utilidade ---
   function mostrarToast(mensagem, tipo) {
     let toast = document.getElementById("toast-message");
     if (!toast) {
@@ -184,6 +183,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 4000);
   }
 
-  // --- Inicialização ---
   carregarCategorias();
 });

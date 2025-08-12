@@ -56,7 +56,7 @@
         <div id="toast-message" class="toast"></div>
 
         <%@ include file="includes/footer.jsp" %>
-          <script src="${pageContext.request.contextPath}/js/cupom-form.js"></script>
+          <script src="${pageContext.request.contextPath}/js/cadastro-cupom.js"></script>
     </body>
 
     </html>

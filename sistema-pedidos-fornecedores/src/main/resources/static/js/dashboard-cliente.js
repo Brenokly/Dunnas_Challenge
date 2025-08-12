@@ -21,9 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let categoriasSelecionadasModal = new Set();
   let paginaAtual = 0;
   const tamanhoPagina = 12;
-  let carregandoPagina = true; // Use um estado único para o carregamento inicial
+  let carregandoPagina = true;
 
-  // ---------- Modal Filtro Categorias -----------
+  // Modal Filtro Categorias
   function abrirModal() {
     modalFiltro.classList.add("active");
     btnFiltrarCategorias.setAttribute("aria-expanded", "true");
@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnFiltrarCategorias.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg><span>Filtrar (${qtd})</span>`;
   }
 
-  // ---------- Carregamento de categorias -----------
+  // Carregamento de categorias
   async function carregarCategorias() {
     try {
       const res = await fetch("/api/v1/categorias?page=0&size=100", {
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // ---------- Carregamento de produtos -----------
+  // Carregamento de produtos
   async function carregarProdutos(pagina = 0) {
     paginaAtual = pagina;
     desabilitarComponentes(true);
@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
     botoesPaginacao.forEach((btn) => (btn.disabled = flag));
   }
 
-  // ---------- Renderização produtos -----------
+  // Renderização produtos
   function renderizarProdutos(produtos) {
     productGrid.innerHTML = "";
     if (!produtos || produtos.length === 0) {
@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
       productGrid.appendChild(card);
     });
   }
-  // ---------- Renderizar paginação -----------
+  // Renderizar paginação
   function renderizarPaginacao(
     totalPages,
     paginaAtual,
@@ -232,7 +232,6 @@ document.addEventListener("DOMContentLoaded", () => {
   modalCancelBtn.addEventListener("click", fecharModal);
   modalApplyBtn.addEventListener("click", aplicarFiltros);
 
-  // Inicialização
   (async function init() {
     desabilitarComponentes(true);
     await carregarCategorias();
