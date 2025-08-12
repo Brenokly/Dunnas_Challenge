@@ -67,18 +67,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const grupos = agruparItensPorFornecedor(cart);
-    const nomesPromises = Object.keys(grupos).map((fornecedorId) =>
+    const fornecedorIds = Object.keys(grupos);
+    const nomesPromises = fornecedorIds.map((fornecedorId) =>
       buscarNomeFornecedor(fornecedorId)
     );
-    const nomesFornecedores = await Promise.all(nomesPromises);
+    const nomesFornecedoresArray = await Promise.all(nomesPromises);
 
-    let index = 0;
+    // Mapeia os IDs dos fornecedores para seus respectivos nomes
+    const nomesPorId = fornecedorIds.reduce((acc, id, index) => {
+      acc[id] = nomesFornecedoresArray[index];
+      return acc;
+    }, {});
+
     for (const fornecedorId in grupos) {
       const itens = grupos[fornecedorId];
       if (!itens.length) continue;
 
-      const nomeFornecedor =
-        nomesFornecedores[index++] || `Fornecedor ${fornecedorId}`;
+      // Pega o nome do fornecedor do novo objeto de mapeamento
+      const nomeFornecedor = nomesPorId[fornecedorId];
 
       const fornecedorDiv = document.createElement("div");
       fornecedorDiv.className = "fornecedor-group";
@@ -175,9 +181,9 @@ document.addEventListener("DOMContentLoaded", () => {
             subtotalFornecedor < cupom.valorMinimoPedido
           ) {
             throw new Error(
-              `Pedido mínimo de R$ ${cupom.valorMinimoPedido.toFixed(
-                2
-              )} não atingido para este cupom.`
+              `Pedido mínimo de R$ ${cupom.valorMinimoPedido
+                .toFixed(2)
+                .replace(".", ",")} não atingido para este cupom.`
             );
           }
 
@@ -186,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
             `Cupom "${codigo}" aplicado com sucesso! Desconto: ${
               cupom.tipoDesconto === "P"
                 ? cupom.valor + "%"
-                : "R$ " + cupom.valor
+                : "R$ " + cupom.valor.toFixed(2).replace(".", ",")
             }`,
             "success"
           );

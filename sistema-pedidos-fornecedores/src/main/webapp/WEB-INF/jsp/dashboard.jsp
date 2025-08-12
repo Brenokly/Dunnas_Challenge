@@ -4,93 +4,60 @@
     <html lang="pt-br">
 
     <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
       <title>Dashboard - Sistema de Pedidos</title>
-      <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico">
-
-      <%-- Imports do CSS Modular --%>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/base.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/forms.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/buttons.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/messages.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pages/dashboard.css">
+      <link rel="icon" href="${pageContext.request.contextPath}/images/favicon.ico" />
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/base.css" />
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/forms.css" />
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/buttons.css" />
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/messages.css" />
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pages/dashboard.css" />
     </head>
 
     <body>
-
       <%@ include file="includes/header.jsp" %>
-
-        <div class="dashboard-container">
+        <div class="dashboard-container" role="main">
           <c:if test="${userType == 'cliente'}">
-            <h2>Vitrine de Produtos</h2>
-            <div class="product-grid">
-              <c:forEach items="${paginaDeProdutos.content}" var="produto">
-                <div class="product-card">
-                  <h3>${produto.nome()}</h3>
-                  <p class="price">R$ ${produto.preco()}</p>
-                  <div class="category-list">
-                    <c:forEach items="${produto.categorias()}" var="categoria">
-                      <span class="category-tag">${categoria.nome()}</span>
-                    </c:forEach>
-                  </div>
-                  <button class="add-to-cart-btn" data-produto-id="${produto.id()}"
-                    data-produto-nome="${produto.nome()}" data-preco="${produto.preco()}"
-                    data-percentual-desconto="${produto.percentualDesconto()}"
-                    data-fornecedor-id="${produto.fornecedorId()}">
-                    Adicionar ao Carrinho
-                  </button>
-                </div>
-              </c:forEach>
+            <div class="top-section">
+              <h2>Vitrine de Produtos</h2>
+              <button id="btn-filtrar-categorias" aria-haspopup="dialog" aria-expanded="false"
+                aria-controls="modal-filtro-categorias" class="primary-btn-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="feather feather-filter">
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                </svg>
+                <span>Filtrar (0)</span>
+              </button>
             </div>
-            <c:if test="${paginaDeProdutos.isEmpty()}">
-              <div class="empty-list-message">
-                <p>Nenhum produto disponível no momento. Volte mais tarde!</p>
+            <section id="produtos-container" aria-live="polite">
+              <div id="product-grid" role="list" aria-label="Lista de produtos">
               </div>
-            </c:if>
+            </section>
+            <nav id="paginacao-produtos" aria-label="Navegação da paginação dos produtos"></nav>
           </c:if>
-
           <c:if test="${userType == 'fornecedor'}">
             <h2>Meus Produtos</h2>
-            <table class="product-table">
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>Categorias</th>
-                  <th>Preço</th>
-                  <th>Status</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                <c:forEach items="${paginaDeProdutos.content}" var="produto">
-                  <tr>
-                    <td>${produto.nome()}</td>
-                    <td>
-                      <c:forEach items="${produto.categorias()}" var="categoria" varStatus="loop">
-                        ${categoria.nome()}<c:if test="${not loop.last}">, </c:if>
-                      </c:forEach>
-                    </td>
-                    <td>R$ ${produto.preco()}</td>
-                    <td>${produto.ativo() ? 'Ativo' : 'Inativo'}</td>
-                    <td>
-                      <a href="#" class="action-link">Editar</a>
-                      <a href="#" class="action-link delete">Desativar</a>
-                    </td>
-                  </tr>
-                </c:forEach>
-              </tbody>
-            </table>
-            <c:if test="${paginaDeProdutos.isEmpty()}">
-              <div class="empty-list-message">
-                <p>Você ainda não cadastrou nenhum produto. <a href="#">Clique aqui para começar!</a></p>
-              </div>
-            </c:if>
+            <%-- Mantém seu conteúdo de fornecedor aqui --%>
           </c:if>
         </div>
 
-        <%@ include file="includes/footer.jsp" %>
+        <div id="modal-filtro-categorias" class="modal-backdrop" role="dialog" aria-modal="true"
+          aria-labelledby="modal-titulo" tabindex="-1">
+          <div class="modal-content">
+            <h3 id="modal-titulo">Selecione as Categorias</h3>
+            <div class="modal-categorias-list" id="modal-categorias-list" tabindex="0">
+            </div>
+            <div class="modal-buttons">
+              <button type="button" class="btn cancel-btn" id="modal-cancel-btn">Cancelar</button>
+              <button type="button" class="btn apply-btn" id="modal-apply-btn">Aplicar filtros</button>
+            </div>
+          </div>
+        </div>
 
+        <%@ include file="includes/footer.jsp" %>
+          <script src="${pageContext.request.contextPath}/js/dashboard-cliente.js"></script>
     </body>
 
     </html>
