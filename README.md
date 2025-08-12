@@ -102,8 +102,7 @@ A API é protegida por um sistema de autenticação e autorização robusto e st
 ---
 
 ## 📁 Estrutura de Pastas do Projeto
-
-
+```
 src
 └── main
 ├── java
@@ -138,8 +137,7 @@ src
 └── jsp/
 ├── includes/             # Componentes JSP reutilizáveis
 └── ...                   # Demais páginas .jsp
-
-
+```
 ---
 
 ## 🔌 Documentação da API (Endpoints)
