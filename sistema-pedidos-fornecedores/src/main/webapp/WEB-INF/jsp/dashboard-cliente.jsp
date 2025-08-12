@@ -18,7 +18,7 @@
     <body>
       <%@ include file="includes/header.jsp" %>
         <div class="dashboard-container" role="main">
-          <c:if test="${userType == 'cliente'}">
+          <%-- REMOVIDA A CONDIÇÃO <c:if test="${userType == 'cliente'}"> --%>
             <div class="top-section">
               <h2>Vitrine de Produtos</h2>
               <button id="btn-filtrar-categorias" aria-haspopup="dialog" aria-expanded="false"
@@ -36,7 +36,7 @@
               </div>
             </section>
             <nav id="paginacao-produtos" aria-label="Navegação da paginação dos produtos"></nav>
-          </c:if>
+            <%-- FIM DO CONTEÚDO --%>
         </div>
 
         <div id="modal-filtro-categorias" class="modal-backdrop" role="dialog" aria-modal="true"

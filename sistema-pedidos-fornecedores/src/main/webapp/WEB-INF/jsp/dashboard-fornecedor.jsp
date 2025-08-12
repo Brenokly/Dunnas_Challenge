@@ -19,52 +19,53 @@
       <%@ include file="includes/header.jsp" %>
         <div class="dashboard-container" role="main">
           <h2>Dashboard do Fornecedor</h2>
-          <p>Bem-vindo ao seu painel de controle. Aqui você poderá gerenciar seus produtos e pedidos.</p>
+          <p>Gerencie seus produtos e pedidos de forma eficiente.</p>
 
           <section class="fornecedor-painel">
-            <div class="card-metricas">
-              <div class="card">
-                <h4>Total de Pedidos Pendentes</h4>
-                <p class="valor">15</p>
-              </div>
-              <div class="card">
-                <h4>Produtos Cadastrados</h4>
-                <p class="valor">32</p>
-              </div>
-              <div class="card">
-                <h4>Pedidos Finalizados</h4>
-                <p class="valor">145</p>
-              </div>
+
+            <div class="tabs">
+              <button class="tab-button active" data-tab="produtos">Meus Produtos</button>
+              <button class="tab-button" data-tab="pedidos">Meus Pedidos</button>
             </div>
 
-            <h3>Últimos Pedidos</h3>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>ID Pedido</th>
-                  <th>Cliente</th>
-                  <th>Status</th>
-                  <th>Valor Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>#12345</td>
-                  <td>João da Silva</td>
-                  <td><span class="status-pendente">Pendente</span></td>
-                  <td>R$ 150,00</td>
-                </tr>
-                <tr>
-                  <td>#12344</td>
-                  <td>Maria Oliveira</td>
-                  <td><span class="status-finalizado">Finalizado</span></td>
-                  <td>R$ 230,50</td>
-                </tr>
-              </tbody>
-            </table>
+            <section id="produtos" class="tab-content active">
+              <div class="top-section">
+                <h3>Lista de Produtos</h3>
+                <%-- ADICIONA AS CLASSES DE BOTÃO CORRETAS --%>
+                  <a href="<c:url value='/fornecedor/produtos/cadastrar' />" class="btn primary-btn">
+                    Adicionar Produto
+                  </a>
+              </div>
+              <div class="product-grid-wrapper">
+                <div id="product-grid" role="list" aria-label="Lista de produtos">
+                </div>
+              </div>
+              <nav id="paginacao-produtos" class="paginacao" aria-label="Navegação da paginação dos produtos"></nav>
+            </section>
+
+            <section id="pedidos" class="tab-content">
+              <div class="header-content">
+                <h3>Pedidos Recentes</h3>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID Pedido</th>
+                    <th>Cliente</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="pedidos-tbody">
+                </tbody>
+              </table>
+              <nav id="paginacao-pedidos" class="paginacao" aria-label="Navegação da paginação dos pedidos"></nav>
+            </section>
           </section>
 
         </div>
+
         <%@ include file="includes/footer.jsp" %>
           <script src="${pageContext.request.contextPath}/js/dashboard-fornecedor.js"></script>
     </body>

@@ -1,77 +1,319 @@
-/* Styles for the Fornecedor dashboard */
+/* Importando os estilos de base para usar as variáveis */
+/* @import '../base.css'; */
 
-.fornecedor-painel {
-    max-width: 1200px;
+/* === Estilos de layout principais === */
+.dashboard-container {
+    max-width: 1100px;
     margin: 2rem auto;
-    padding: 2rem;
-    background-color: var(--container-bg);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 0 1.5rem;
 }
 
-.card-metricas {
-    display: flex;
-    justify-content: space-between;
-    gap: 1.5rem;
+.dashboard-container h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.dashboard-container p {
+    font-size: 1rem;
+    color: var(--text-light-color);
     margin-bottom: 2rem;
 }
 
-.card-metricas .card {
-    flex: 1;
-    background-color: var(--background-color);
-    padding: 1.5rem;
-    border-radius: 8px;
-    text-align: center;
-    border: 1px solid var(--border-color);
+/* === Layout de abas === */
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #ddd;
 }
 
-.card-metricas h4 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1rem;
+.tab-button {
+    padding: 1rem 2rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
     color: var(--text-light-color);
-    font-weight: 500;
+    position: relative;
+    transition: color 0.2s ease;
 }
 
-.card-metricas .valor {
-    font-size: 2.5rem;
-    font-weight: 700;
+.tab-button::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--primary-color);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.tab-button:hover {
+    color: var(--text-color);
+}
+
+.tab-button.active {
     color: var(--primary-color);
 }
 
+.tab-button.active::after {
+    transform: scaleX(1);
+}
+
+.tab-content {
+    display: none;
+    padding: 1rem 0;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* === Seção de produtos (vitrine) para fornecedor === */
+.top-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.top-section h3 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.product-grid-wrapper {
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background-color: var(--container-bg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Reutilizando os estilos de card de produto do cliente */
+#product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    justify-items: center;
+    padding: 0;
+    margin: 0;
+}
+
+.product-card {
+    background: var(--container-bg);
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    cursor: default;
+    min-height: 250px;
+}
+
+.product-card:hover {
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-8px);
+}
+
+.product-card h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 0.6rem;
+    min-height: 3.2rem;
+    line-height: 1.3;
+}
+
+.product-card p.description {
+    font-size: 0.9rem;
+    color: var(--text-light-color);
+    margin-bottom: 1rem;
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    line-clamp: 3;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.product-card .price {
+    font-weight: 700;
+    color: var(--primary-color-dark);
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+.category-list {
+    margin-bottom: 1rem;
+}
+.category-tag {
+    display: inline-block;
+    background-color: #e7eafc;
+    color: #2f80ed;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin: 0 0.4rem 0.4rem 0;
+    user-select: none;
+}
+
+/* === Botões de ação do fornecedor === */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    text-decoration: none;
+}
+
+/* Reutilizando as classes de cor do seu buttons.css */
+.primary-btn {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 90, 156, 0.3);
+}
+
+.primary-btn:hover {
+    background-color: var(--primary-color-dark);
+    box-shadow: 0 6px 16px rgba(0, 74, 128, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Estilo para o link "Editar" no card */
+.product-card .edit-btn {
+    background-color: var(--primary-color);
+    color: white;
+    flex: 1;
+    padding: 0.6rem 1rem; /* Reduz o padding para se ajustar melhor ao card */
+    font-size: 0.9rem;
+    text-align: center;
+    text-decoration: none;
+}
+.product-card .edit-btn:hover {
+    background-color: var(--primary-color-dark);
+}
+
+/* Estilo para o botão de status (Desativar/Reativar) */
+.product-card .toggle-status-btn {
+    background-color: var(--error-color); /* Cor vermelha para desativar */
+    color: white;
+    flex: 1;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+}
+
+.product-card .toggle-status-btn:hover {
+    background-color: #c82333;
+}
+
+.product-card .toggle-status-btn.reativar {
+    background-color: var(--success-color); /* Cor verde para reativar */
+}
+.product-card .toggle-status-btn.reativar:hover {
+    background-color: #218838;
+}
+
+
+/* === Estilos para as Tabelas (reutilizados) === */
 .data-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 1.5rem;
+    background-color: var(--container-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
 }
 
-.data-table th, .data-table td {
+.data-table thead th {
+    background-color: var(--primary-color);
+    color: white;
     padding: 1rem;
     text-align: left;
-    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
 }
 
-.data-table th {
-    background-color: #f8f8fb;
-    font-weight: 600;
-    color: var(--text-light-color);
+.data-table tbody tr {
+    transition: background-color 0.2s ease;
 }
 
 .data-table tbody tr:hover {
+    background-color: var(--background-color);
+}
+
+.data-table tbody td {
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem;
+    color: var(--text-light-color);
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table .status-pendente {
+    background-color: #ffc107;
+    color: #333;
+    padding: 0.3rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.data-table .status-finalizado {
+    background-color: #17a2b8;
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* === Paginação (reutilizada) === */
+.paginacao {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+.paginacao button {
     background-color: #f0f0f5;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    font-weight: 500;
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
-
-.status-pendente {
-    background-color: #ffeadb;
-    color: #fd9b31;
-    padding: 0.3rem 0.6rem;
-    border-radius: 12px;
-    font-weight: 600;
+.paginacao button:hover:not(:disabled) {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
 }
-
-.status-finalizado {
-    background-color: #d1fae5;
-    color: #059669;
-    padding: 0.3rem 0.6rem;
-    border-radius: 12px;
-    font-weight: 600;
+.paginacao button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
 }

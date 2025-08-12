@@ -28,18 +28,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, UUID> {
     Page<Pedido> findAllByClienteId(UUID clienteId, Pageable pageable);
 
     /**
-     * Busca uma página de pedidos de um fornecedor específico. Essencial para a
-     * funcionalidade de "visualização do histórico de transações".
-     *
-     * @param fornecedorId O ID do fornecedor cujos pedidos serão buscados.
-     * @param pageable     O objeto contendo as informações de paginação.
-     * @return uma Página (Page) de Pedidos do fornecedor.
-     * @pre O ID do fornecedor deve ser válido.
-     * @post Uma página de pedidos é retornada, podendo estar vazia.
-     */
-    Page<Pedido> findAllByFornecedorId(UUID fornecedorId, Pageable pageable);
-
-    /**
      * Busca uma página de pedidos de um cliente específico com um determinado
      * status.
      *
