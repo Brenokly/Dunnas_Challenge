@@ -37,17 +37,36 @@
               <input type="number" id="percentualDesconto" name="percentualDesconto" min="0" max="100" value="0"
                 required>
             </div>
+
             <div class="form-group">
               <label>Categorias</label>
-              <div id="categorias-list" class="checkbox-group">
+              <button type="button" class="btn secondary-btn" id="btn-selecionar-categorias">
+                Selecionar Categorias
+              </button>
+              <div id="categorias-tags-container" class="tags-container">
               </div>
             </div>
+
             <div class="form-actions">
               <a href="<c:url value='/dashboard' />" class="btn secondary-btn">Cancelar</a>
               <button type="submit" id="btn-submit" class="btn primary-btn">Salvar Produto</button>
             </div>
           </form>
         </div>
+
+        <div id="modal-selecionar-categorias" class="modal-backdrop" role="dialog" aria-modal="true"
+          aria-labelledby="modal-titulo" tabindex="-1">
+          <div class="modal-content">
+            <h3 id="modal-titulo">Selecione as Categorias</h3>
+            <div class="modal-categorias-list" id="modal-categorias-list" tabindex="0">
+            </div>
+            <div class="modal-buttons">
+              <button type="button" class="btn secondary-btn" id="modal-cancel-btn">Cancelar</button>
+              <button type="button" class="btn primary-btn" id="modal-apply-btn">Aplicar</button>
+            </div>
+          </div>
+        </div>
+
         <%@ include file="includes/footer.jsp" %>
           <script src="${pageContext.request.contextPath}/js/produto-form.js"></script>
     </body>

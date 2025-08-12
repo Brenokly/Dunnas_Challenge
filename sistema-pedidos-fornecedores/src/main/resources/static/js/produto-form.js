@@ -6,8 +6,85 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const form = document.getElementById("form-novo-produto");
-  const categoriasList = document.getElementById("categorias-list");
+  const categoriasList = document.getElementById("modal-categorias-list");
+  const btnSelecionarCategorias = document.getElementById(
+    "btn-selecionar-categorias"
+  );
+  const modal = document.getElementById("modal-selecionar-categorias");
+  const modalApplyBtn = document.getElementById("modal-apply-btn");
+  const modalCancelBtn = document.getElementById("modal-cancel-btn");
+  const tagsContainer = document.getElementById("categorias-tags-container");
 
+  let todasCategorias = [];
+  let categoriasSelecionadas = new Set();
+  let categoriasSelecionadasModal = new Set();
+
+  // --- Lógica da Modal ---
+  function abrirModal() {
+    modal.classList.add("active");
+    categoriasSelecionadasModal = new Set(categoriasSelecionadas);
+    renderizarCategoriasModal();
+  }
+
+  function fecharModal() {
+    modal.classList.remove("active");
+  }
+
+  function renderizarCategoriasModal() {
+    categoriasList.innerHTML = "";
+    todasCategorias.forEach((cat) => {
+      const label = document.createElement("label");
+      const isChecked = categoriasSelecionadasModal.has(cat.id);
+      label.innerHTML = `
+                <input type="checkbox" data-id="${cat.id}" ${
+        isChecked ? "checked" : ""
+      } />
+                ${cat.nome}
+            `;
+      categoriasList.appendChild(label);
+    });
+
+    // Adiciona event listener para as checkboxes do modal
+    categoriasList
+      .querySelectorAll('input[type="checkbox"]')
+      .forEach((checkbox) => {
+        checkbox.addEventListener("change", () => {
+          const id = checkbox.dataset.id;
+          if (checkbox.checked) {
+            categoriasSelecionadasModal.add(id);
+          } else {
+            categoriasSelecionadasModal.delete(id);
+          }
+        });
+      });
+  }
+
+  function renderizarTags() {
+    tagsContainer.innerHTML = "";
+    categoriasSelecionadas.forEach((id) => {
+      const categoria = todasCategorias.find((c) => c.id === id);
+      if (categoria) {
+        const tag = document.createElement("span");
+        tag.className = "category-tag";
+        tag.innerHTML = `
+                    <span>${categoria.nome}</span>
+                    <button type="button" class="remove-tag-btn" data-id="${id}">&times;</button>
+                `;
+        tagsContainer.appendChild(tag);
+      }
+    });
+
+    // Adiciona event listener para o botão de remover tag
+    tagsContainer.querySelectorAll(".remove-tag-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.id;
+        categoriasSelecionadas.delete(id);
+        renderizarTags();
+      });
+    });
+  }
+
+  // --- Lógica de Carregamento de Dados ---
   async function carregarCategorias() {
     try {
       const res = await fetch("/api/v1/categorias?page=0&size=100", {
@@ -16,29 +93,26 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!res.ok) throw new Error("Erro ao carregar categorias.");
 
       const data = await res.json();
-      renderizarCategorias(data.content);
+      todasCategorias = data.content || [];
     } catch (error) {
-      categoriasList.innerHTML = `<p class="error-message">Erro ao carregar categorias. Tente recarregar a página.</p>`;
+      tagsContainer.innerHTML = `<p class="error-message">Erro ao carregar categorias.</p>`;
       console.error(error);
     }
   }
 
-  function renderizarCategorias(categorias) {
-    categoriasList.innerHTML = "";
-    categorias.forEach((cat) => {
-      const label = document.createElement("label");
-      label.innerHTML = `
-                <input type="checkbox" name="categoriaIds" value="${cat.id}" />
-                ${cat.nome}
-            `;
-      categoriasList.appendChild(label);
-    });
-  }
-
+  // --- Lógica de Formulário ---
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const btnSubmit = document.getElementById("btn-submit");
     btnSubmit.disabled = true;
+    btnSubmit.textContent = "Salvando...";
+
+    if (categoriasSelecionadas.size === 0) {
+      mostrarToast("Selecione pelo menos uma categoria.", "error");
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = "Salvar Produto";
+      return;
+    }
 
     const formData = new FormData(form);
     const data = {
@@ -46,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
       descricao: formData.get("descricao"),
       preco: parseFloat(formData.get("preco")),
       percentualDesconto: parseInt(formData.get("percentualDesconto")),
-      categoriaIds: Array.from(formData.getAll("categoriaIds")),
+      categoriaIds: Array.from(categoriasSelecionadas),
     };
 
     try {
@@ -65,15 +139,36 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       mostrarToast("Produto cadastrado com sucesso!", "success");
-      window.location.href = "/dashboard";
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 2000);
     } catch (error) {
       mostrarToast(error.message, "error");
       btnSubmit.disabled = false;
+      btnSubmit.textContent = "Salvar Produto";
     }
   });
 
-  carregarCategorias();
+  // --- Event Listeners ---
+  btnSelecionarCategorias.addEventListener("click", abrirModal);
+  modalApplyBtn.addEventListener("click", () => {
+    categoriasSelecionadas = new Set(categoriasSelecionadasModal);
+    renderizarTags();
+    fecharModal();
+  });
+  modalCancelBtn.addEventListener("click", fecharModal);
 
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) fecharModal();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("active")) {
+      fecharModal();
+    }
+  });
+
+  // --- Funções de utilidade ---
   function mostrarToast(mensagem, tipo) {
     let toast = document.getElementById("toast-message");
     if (!toast) {
@@ -88,4 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
       toast.className = "toast";
     }, 4000);
   }
+
+  // --- Inicialização ---
+  carregarCategorias();
 });

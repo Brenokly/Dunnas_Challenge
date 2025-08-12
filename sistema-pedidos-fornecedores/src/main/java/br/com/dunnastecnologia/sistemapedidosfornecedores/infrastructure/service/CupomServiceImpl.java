@@ -70,6 +70,7 @@ public class CupomServiceImpl implements CupomUseCases {
   }
 
   @Override
+  @Transactional
   public void desativarCupom(UUID id, UserDetails authUser) {
     Fornecedor fornecedor = getFornecedorFromUserDetails(authUser);
 
@@ -84,6 +85,7 @@ public class CupomServiceImpl implements CupomUseCases {
   }
 
   @Override
+  @Transactional
   public CupomResponseDTO reativarCupom(UUID id, UserDetails authUser) {
     Fornecedor fornecedor = getFornecedorFromUserDetails(authUser);
 

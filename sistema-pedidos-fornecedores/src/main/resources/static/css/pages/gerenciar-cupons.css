@@ -1,0 +1,153 @@
+/* Importando os estilos de base para usar as variáveis */
+/* @import '../base.css'; */
+
+/* Estilos de layout principais */
+.dashboard-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.top-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.top-section h2 {
+  margin: 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+/* === Estilização dos botões === */
+.btn {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  text-decoration: none;
+  /* Para remover o sublinhado dos links */
+  display: inline-block;
+  /* Garante que o link se comporte como um botão */
+  text-align: center;
+}
+
+.primary-btn {
+  background-color: var(--primary-color);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 90, 156, 0.3);
+}
+
+.primary-btn:hover {
+  background-color: var(--primary-color-dark);
+  box-shadow: 0 6px 16px rgba(0, 74, 128, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Estilos para a tabela de cupons */
+#cupons-container {
+  background-color: var(--container-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  padding: 1.5rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead th {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+}
+
+.data-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.data-table tbody tr:hover {
+  background-color: var(--background-color);
+}
+
+.data-table tbody td {
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem;
+  color: var(--text-light-color);
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Estilos para os botões de ação */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.toggle-status-btn {
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-status-btn.reativar {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.toggle-status-btn.reativar:hover {
+  background-color: #218838;
+}
+
+.toggle-status-btn:not(.reativar) {
+  background-color: var(--error-color);
+  color: white;
+}
+
+.toggle-status-btn:not(.reativar):hover {
+  background-color: #c82333;
+}
+
+/* Estilos de status para os cupons */
+.status-ativo {
+  background-color: var(--success-color);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-inativo {
+  background-color: var(--error-color);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Paginação */
+.paginacao {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}

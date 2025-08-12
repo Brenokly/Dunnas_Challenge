@@ -31,9 +31,14 @@
             <section id="produtos" class="tab-content active">
               <div class="top-section">
                 <h3>Lista de Produtos</h3>
-                <a href="<c:url value='/fornecedor/produtos/cadastrar' />" class="btn primary-btn">
-                  Adicionar Produto
-                </a>
+                <div class="top-actions">
+                  <a href="<c:url value='/fornecedor/cupons' />" class="btn primary-btn">
+                    Gerenciar Cupons
+                  </a>
+                  <a href="<c:url value='/fornecedor/produtos/cadastrar' />" class="btn primary-btn">
+                    Adicionar Produto
+                  </a>
+                </div>
               </div>
               <div class="product-grid-wrapper">
                 <div id="product-grid" role="list" aria-label="Lista de produtos">
