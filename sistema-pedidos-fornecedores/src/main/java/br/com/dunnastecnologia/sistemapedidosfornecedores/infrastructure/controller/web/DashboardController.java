@@ -27,13 +27,13 @@ public class DashboardController {
     model.addAttribute("username", userDetails.getUsername());
 
     if (userDetails instanceof Cliente) {
-      model.addAttribute("userType", "cliente");
       model.addAttribute("paginaDeProdutos", produtoUseCases.listarProdutosPublicos(null, pageable));
+      return "dashboard-cliente"; // Retorna a página específica do cliente
     } else if (userDetails instanceof Fornecedor) {
-      model.addAttribute("userType", "fornecedor");
       model.addAttribute("paginaDeProdutos", produtoUseCases.listarProdutosDoFornecedorLogado(userDetails, pageable));
+      return "dashboard-fornecedor"; // Retorna a nova página do fornecedor
     }
 
-    return "dashboard";
+    return "redirect:/login";
   }
 }

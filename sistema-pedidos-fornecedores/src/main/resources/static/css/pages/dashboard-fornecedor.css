@@ -1,0 +1,77 @@
+/* Styles for the Fornecedor dashboard */
+
+.fornecedor-painel {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: var(--container-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.card-metricas {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.card-metricas .card {
+    flex: 1;
+    background-color: var(--background-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.card-metricas h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: var(--text-light-color);
+    font-weight: 500;
+}
+
+.card-metricas .valor {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5rem;
+}
+
+.data-table th, .data-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    background-color: #f8f8fb;
+    font-weight: 600;
+    color: var(--text-light-color);
+}
+
+.data-table tbody tr:hover {
+    background-color: #f0f0f5;
+}
+
+.status-pendente {
+    background-color: #ffeadb;
+    color: #fd9b31;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.status-finalizado {
+    background-color: #d1fae5;
+    color: #059669;
+    padding: 0.3rem 0.6rem;
+    border-radius: 12px;
+    font-weight: 600;
+}

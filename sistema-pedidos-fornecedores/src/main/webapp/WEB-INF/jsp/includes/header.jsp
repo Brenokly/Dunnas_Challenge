@@ -9,30 +9,34 @@
         <h1><a href="<c:url value='/' />">Sistema de Pedidos e Pagamentos</a></h1>
         <nav>
           <sec:authorize access="isAuthenticated()">
-            <a href="<c:url value='/carrinho' />" class="cart-icon">
-              🛒
-              <span id="cart-counter">0</span>
-            </a>
-            <div class="user-menu">
-              <span class="username">Olá,
-                <sec:authentication property="principal.username" />
-              </span>
-              <div class="dropdown-content">
-                <sec:authorize
-                  access="principal instanceof T(br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Cliente)">
-                  <a href="<c:url value='/cliente/perfil' />">Meu Perfil</a>
-                </sec:authorize>
-                <sec:authorize
-                  access="principal instanceof T(br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Fornecedor)">
-                  <a href="<c:url value='/fornecedor/perfil' />">Meu Perfil</a>
-                </sec:authorize>
+              <sec:authorize
+                access="principal instanceof T(br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Cliente)">
+                <a href="<c:url value='/carrinho' />" class="cart-icon">
+                  🛒
+                  <span id="cart-counter">0</span>
+                </a>
+              </sec:authorize>
 
-                <form action="<c:url value='/logout' />" method="post" class="logout-form">
-                  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-                  <button type="submit" class="logout-button">Sair</button>
-                </form>
+              <div class="user-menu">
+                <span class="username">Olá,
+                  <sec:authentication property="principal.username" />
+                </span>
+                <div class="dropdown-content">
+                  <sec:authorize
+                    access="principal instanceof T(br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Cliente)">
+                    <a href="<c:url value='/cliente/perfil' />">Meu Perfil</a>
+                  </sec:authorize>
+                  <sec:authorize
+                    access="principal instanceof T(br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Fornecedor)">
+                    <a href="<c:url value='/fornecedor/perfil' />">Meu Perfil</a>
+                  </sec:authorize>
+
+                  <form action="<c:url value='/logout' />" method="post" class="logout-form">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                    <button type="submit" class="logout-button">Sair</button>
+                  </form>
+                </div>
               </div>
-            </div>
           </sec:authorize>
         </nav>
       </header>

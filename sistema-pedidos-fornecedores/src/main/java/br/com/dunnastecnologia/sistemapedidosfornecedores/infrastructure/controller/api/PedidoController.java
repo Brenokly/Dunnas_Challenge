@@ -20,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases.PedidoUseCases;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.utils.enums.StatusPedido;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.pedido.PedidoFornecedorDetalhadoResponseDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.pedido.PedidoRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.pedido.PedidoResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -90,5 +91,20 @@ public class PedidoController {
     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
     PedidoResponseDTO pedido = pedidoUseCases.buscarPedidoPorId(id, userDetails);
     return ResponseEntity.ok(pedido);
+  }
+
+  @GetMapping("/fornecedor")
+  @SecurityRequirement(name = "bearerAuth")
+  @Operation(summary = "Fornecedor lista seus pedidos", description = "Retorna uma lista paginada de pedidos feitos para o fornecedor autenticado.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Lista de pedidos do fornecedor retornada com sucesso."),
+      @ApiResponse(responseCode = "403", description = "Acesso negado (usuário não é um fornecedor).")
+  })
+  public ResponseEntity<Page<PedidoFornecedorDetalhadoResponseDTO>> listarPedidosFornecedor(
+      @ParameterObject Pageable pageable, Authentication authentication) {
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    Page<PedidoFornecedorDetalhadoResponseDTO> pedidos = pedidoUseCases.listarPedidosDoFornecedor(userDetails,
+        pageable);
+    return ResponseEntity.ok(pedidos);
   }
 }

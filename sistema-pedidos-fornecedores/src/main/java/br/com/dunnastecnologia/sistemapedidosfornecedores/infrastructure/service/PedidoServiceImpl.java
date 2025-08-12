@@ -1,8 +1,12 @@
 package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.service;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,12 +18,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases.PedidoUseCases;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Cliente;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Fornecedor;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.ItensPedido;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Pedido;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.utils.enums.StatusPedido;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.pedido.PedidoFornecedorDetalhadoResponseDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.pedido.PedidoRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.pedido.PedidoResponseDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.exception.RegraDeNegocioException;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.mapper.PedidoFornecedorMapper;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.mapper.PedidoMapper;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.repository.ItensPedidoRepository;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.repository.PedidoRepository;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -27,12 +36,17 @@ import jakarta.persistence.EntityNotFoundException;
 public class PedidoServiceImpl implements PedidoUseCases {
 
   private final PedidoRepository pedidoRepository;
+  private final ItensPedidoRepository itensPedidoRepository;
   private final PedidoMapper pedidoMapper;
+  private final PedidoFornecedorMapper pedidoFornecedorMapper;
   private final ObjectMapper objectMapper;
 
-  public PedidoServiceImpl(PedidoRepository pedidoRepository, PedidoMapper pedidoMapper, ObjectMapper objectMapper) {
+  public PedidoServiceImpl(PedidoRepository pedidoRepository, ItensPedidoRepository itensPedidoRepository,
+      PedidoMapper pedidoMapper, PedidoFornecedorMapper pedidoFornecedorMapper, ObjectMapper objectMapper) {
     this.pedidoRepository = pedidoRepository;
+    this.itensPedidoRepository = itensPedidoRepository;
     this.pedidoMapper = pedidoMapper;
+    this.pedidoFornecedorMapper = pedidoFornecedorMapper;
     this.objectMapper = objectMapper;
   }
 
@@ -57,6 +71,25 @@ public class PedidoServiceImpl implements PedidoUseCases {
         .orElseThrow(() -> new IllegalStateException("ERRO CRÍTICO: Pedido não encontrado após o cadastro."));
 
     return pedidoMapper.toResponseDTO(pedidoSalvo);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<PedidoFornecedorDetalhadoResponseDTO> listarPedidosDoFornecedor(UserDetails authUser, Pageable pageable) {
+    Fornecedor fornecedorLogado = getFornecedorFromUserDetails(authUser);
+
+    Page<ItensPedido> itensPedidosPage = itensPedidoRepository.findByProdutoFornecedorId(fornecedorLogado.getId(),
+        pageable);
+
+    Set<Pedido> pedidosUnicos = itensPedidosPage.stream()
+        .map(ItensPedido::getPedido)
+        .collect(Collectors.toSet());
+
+    List<PedidoFornecedorDetalhadoResponseDTO> dtos = pedidosUnicos.stream()
+        .map(pedidoFornecedorMapper::toDetailedResponseDTO)
+        .collect(Collectors.toList());
+
+    return new PageImpl<>(dtos, pageable, itensPedidosPage.getTotalElements());
   }
 
   @Override
@@ -96,4 +129,12 @@ public class PedidoServiceImpl implements PedidoUseCases {
     }
     return (Cliente) userDetails;
   }
+
+  private Fornecedor getFornecedorFromUserDetails(UserDetails userDetails) {
+    if (!(userDetails instanceof Fornecedor)) {
+      throw new AccessDeniedException("Ação permitida apenas para fornecedores autenticados.");
+    }
+    return (Fornecedor) userDetails;
+  }
+
 }

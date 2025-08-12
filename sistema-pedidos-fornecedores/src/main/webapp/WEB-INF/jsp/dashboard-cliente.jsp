@@ -12,7 +12,7 @@
       <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/forms.css" />
       <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/buttons.css" />
       <link rel="stylesheet" href="${pageContext.request.contextPath}/css/components/messages.css" />
-      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pages/dashboard.css" />
+      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/pages/dashboard-cliente.css" />
     </head>
 
     <body>
@@ -36,10 +36,6 @@
               </div>
             </section>
             <nav id="paginacao-produtos" aria-label="Navegação da paginação dos produtos"></nav>
-          </c:if>
-          <c:if test="${userType == 'fornecedor'}">
-            <h2>Meus Produtos</h2>
-            <%-- Mantém seu conteúdo de fornecedor aqui --%>
           </c:if>
         </div>
 

@@ -8,6 +8,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.utils.enums.StatusPedido;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.pedido.PedidoFornecedorDetalhadoResponseDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.pedido.PedidoRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.pedido.PedidoResponseDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.exception.RegraDeNegocioException;
@@ -31,6 +32,18 @@ public interface PedidoUseCases {
    *                                 (saldo, cupom, produto).
    */
   PedidoResponseDTO criarNovoPedido(PedidoRequestDTO requestDTO, UserDetails authUser);
+
+  /**
+   * Lista os pedidos do fornecedor autenticado de forma paginada.
+   *
+   * @param authUser O principal de segurança do fornecedor logado.
+   * @param pageable As informações de paginação.
+   * @return Uma página de pedidos do fornecedor.
+   * @pre O usuário autenticado deve ser um Fornecedor.
+   * @post A lista de pedidos é retornada, podendo estar vazia.
+   * @throws AccessDeniedException se o usuário autenticado não for um Fornecedor.
+   */
+  public Page<PedidoFornecedorDetalhadoResponseDTO> listarPedidosDoFornecedor(UserDetails authUser, Pageable pageable);
 
   /**
    * Lista o histórico de pedidos do cliente autenticado de forma paginada.
