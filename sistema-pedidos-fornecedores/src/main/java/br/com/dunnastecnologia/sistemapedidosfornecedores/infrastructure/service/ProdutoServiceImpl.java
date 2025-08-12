@@ -4,7 +4,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -114,13 +116,18 @@ public class ProdutoServiceImpl implements ProdutoUseCases {
     }
   }
 
-  @Override
   @Transactional(readOnly = true)
-  public Page<ProdutoResponseDTO> listarProdutosDoFornecedorLogado(UserDetails fornecedorAutenticado,
-      Pageable pageable) {
-    Fornecedor fornecedor = getFornecedorFromUserDetails(fornecedorAutenticado);
-    return produtoRepository.findAllByFornecedorId(fornecedor.getId(), pageable)
-        .map(produtoMapper::toResponseDTO);
+  public Page<ProdutoResponseDTO> listarProdutosDoFornecedorLogado(UserDetails authUser, Pageable pageable) {
+    Fornecedor fornecedorLogado = getFornecedorFromUserDetails(authUser);
+
+    Sort sort = Sort.by(Sort.Direction.DESC, "ativo")
+        .and(Sort.by(Sort.Direction.DESC, "dataCriacao"));
+
+    Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+    Page<Produto> produtos = produtoRepository.findAllByFornecedorId(fornecedorLogado.getId(), sortedPageable);
+
+    return produtos.map(produtoMapper::toResponseDTO);
   }
 
   @Override
