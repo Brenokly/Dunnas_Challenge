@@ -11,11 +11,12 @@ public class AuthController {
 
   @GetMapping("/login")
   public String showLoginPage() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null && authentication.isAuthenticated()
         && !"anonymousUser".equals(authentication.getPrincipal())) {
       return "redirect:/dashboard";
     }
-
     return "login";
   }
+
 }

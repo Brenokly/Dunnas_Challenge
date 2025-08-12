@@ -32,10 +32,10 @@ public class Cupom {
     private String codigo;
 
     @Column(name = "tipo_desconto", nullable = false, length = 1)
-    private Character tipoDesconto;
+    private Character tipoDesconto; // F - Fixo, P - Percentual
 
     @Column(name = "valor", nullable = false, precision = 19, scale = 2)
-    private BigDecimal valor;
+    private BigDecimal valor; // Se Fixo 10 = 10 reais de desconto, Se Percentual 10 = 10% de desconto
 
     @Column(name = "data_validade", nullable = false)
     private LocalDate dataValidade;

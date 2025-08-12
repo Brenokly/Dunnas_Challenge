@@ -3,7 +3,11 @@ package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.contro
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +21,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @RestController
@@ -41,12 +47,27 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "200", description = "Autenticação bem-sucedida."),
             @ApiResponse(responseCode = "401", description = "Credenciais inválidas.")
     })
-    public ResponseEntity<AuthenticationResponseDTO> login(@RequestBody @Valid AuthenticationRequestDTO request) {
-        authenticationManager.authenticate(
+    public ResponseEntity<AuthenticationResponseDTO> login(
+            @RequestBody @Valid AuthenticationRequestDTO request,
+            HttpServletRequest httpRequest) {
+
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.usuario(), request.senha()));
 
+        // Cria e configura o SecurityContext com a autenticação
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(authentication);
+
+        // Salva na sessão HTTP o SecurityContext para manter o usuário autenticado via
+        // sessão
+        HttpSession session = httpRequest.getSession(true);
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+
+        // Gera o token JWT com base no UserDetails
         final UserDetails user = authenticationService.loadUserByUsername(request.usuario());
         final String token = jwtService.generateToken(user);
+
         return ResponseEntity.ok(new AuthenticationResponseDTO(token));
     }
+
 }

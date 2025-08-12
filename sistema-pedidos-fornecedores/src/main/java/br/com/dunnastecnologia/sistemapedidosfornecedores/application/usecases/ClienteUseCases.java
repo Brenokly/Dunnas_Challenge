@@ -7,7 +7,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteResponseDTO;
-import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteUpdateRequestDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteUpdateDadosPessoaisDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteUpdateSenhaDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ValorRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.exception.RegraDeNegocioException;
 import jakarta.persistence.EntityNotFoundException;
@@ -38,18 +39,23 @@ public interface ClienteUseCases {
     ClienteResponseDTO buscarClienteLogado(UserDetails authUser);
 
     /**
-     * Atualiza os dados de um cliente, validando a propriedade.
+     * Atualiza os dados pessoais (nome, data de nascimento) do cliente autenticado.
      *
      * @param id         O ID do cliente a ser atualizado.
-     * @param requestDTO Os dados do cliente a serem atualizados (campos opcionais).
+     * @param requestDTO Os novos dados.
      * @param authUser   O principal de segurança do usuário logado.
      * @return Os dados do cliente atualizado.
-     * @pre O cliente deve existir e pertencer ao usuário autenticado.
-     * @post Os dados do cliente são atualizados no repositório.
-     * @throws AccessDeniedException   se o usuário não for o proprietário.
-     * @throws EntityNotFoundException se o cliente não for encontrado.
      */
-    ClienteResponseDTO atualizarCliente(UUID id, ClienteUpdateRequestDTO requestDTO, UserDetails authUser);
+    ClienteResponseDTO atualizarDadosPessoais(UUID id, ClienteUpdateDadosPessoaisDTO requestDTO, UserDetails authUser);
+
+    /**
+     * Atualiza a senha do cliente autenticado, validando a senha atual.
+     *
+     * @param id         O ID do cliente a ser atualizado.
+     * @param requestDTO A senha atual e a nova senha com confirmação.
+     * @param authUser   O principal de segurança do usuário logado.
+     */
+    void atualizarSenha(UUID id, ClienteUpdateSenhaDTO requestDTO, UserDetails authUser);
 
     /**
      * Adiciona saldo à conta do cliente LOGADO.

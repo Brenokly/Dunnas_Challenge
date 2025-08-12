@@ -33,4 +33,11 @@ public class PerfilController {
     model.addAttribute("fornecedor", fornecedorUseCases.buscarFornecedorLogado(userDetails));
     return "perfil-fornecedor";
   }
+
+  @GetMapping("/cliente/perfil/editar")
+  public String showEditarPerfilCliente(Model model, Authentication authentication) {
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    model.addAttribute("cliente", clienteUseCases.buscarClienteLogado(userDetails));
+    return "perfil-cliente-editar";
+  }
 }

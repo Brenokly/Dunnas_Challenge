@@ -34,7 +34,11 @@
                       <span class="category-tag">${categoria.nome()}</span>
                     </c:forEach>
                   </div>
-                  <button>Adicionar ao Carrinho</button>
+                  <button class="add-to-cart-btn" data-produto-id="${produto.id()}"
+                    data-produto-nome="${produto.nome()}" data-preco="${produto.preco()}"
+                    data-percentual-desconto="${produto.percentualDesconto()}">
+                    Adicionar ao Carrinho
+                  </button>
                 </div>
               </c:forEach>
             </div>

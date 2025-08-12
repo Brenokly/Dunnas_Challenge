@@ -75,3 +75,42 @@ header a {
 .dropdown-content a:hover, .logout-button:hover {
     background-color: var(--background-color);
 }
+
+header nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-left {
+    margin-right: auto; /* empurra os itens seguintes para a direita */
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cart-icon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    font-size: 1.2rem;
+}
+
+#cart-counter {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background-color: var(--error-color);
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

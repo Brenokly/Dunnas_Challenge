@@ -78,3 +78,20 @@
     border: 1px solid var(--error-color);
     background-color: #f8d7da1a;
 }
+
+.form-group.readonly input {
+    background-color: var(--background-color);
+    cursor: not-allowed;
+}
+
+.form-actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.form-actions button, .form-actions a {
+    width: auto;
+    min-width: 120px;
+}

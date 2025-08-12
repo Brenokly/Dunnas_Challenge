@@ -19,6 +19,8 @@ public class SqlStateErrorMapping {
         errorMap.put("PC002", ContaInativaException::new);
         errorMap.put("PC003", RegraDeNegocioException::new);
         errorMap.put("PC004", LimiteDeSaldoException::new);
+        errorMap.put("P0006", RegraDeNegocioException::new);
+        errorMap.put("P0007", RegraDeNegocioException::new);
 
         // Erros de Fornecedor
         errorMap.put("PF001", RecursoDuplicadoException::new);

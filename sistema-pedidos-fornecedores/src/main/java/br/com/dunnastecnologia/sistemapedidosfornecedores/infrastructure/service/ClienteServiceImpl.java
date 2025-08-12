@@ -13,7 +13,8 @@ import br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases.C
 import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Cliente;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteResponseDTO;
-import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteUpdateRequestDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteUpdateDadosPessoaisDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ClienteUpdateSenhaDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.cliente.ValorRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.exception.RegraDeNegocioException;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.mapper.ClienteMapper;
@@ -60,9 +61,9 @@ public class ClienteServiceImpl implements ClienteUseCases {
 
     @Override
     @Transactional
-    public ClienteResponseDTO atualizarCliente(UUID id, ClienteUpdateRequestDTO requestDTO, UserDetails authUser) {
+    public ClienteResponseDTO atualizarDadosPessoais(UUID id, ClienteUpdateDadosPessoaisDTO requestDTO,
+            UserDetails authUser) {
         Cliente clienteLogado = getClienteFromUserDetails(authUser);
-
         if (!clienteLogado.getId().equals(id)) {
             throw new AccessDeniedException("Um cliente só pode atualizar a própria conta.");
         }
@@ -74,21 +75,25 @@ public class ClienteServiceImpl implements ClienteUseCases {
         LocalDate novaDataNascimento = requestDTO.dataNascimento() != null ? requestDTO.dataNascimento()
                 : clienteAtual.getDataNascimento();
 
-        String novoSenhaHash = null;
-        if (requestDTO.senha() != null && !requestDTO.senha().isBlank()) {
-            novoSenhaHash = passwordEncoder.encode(requestDTO.senha());
+        clienteRepository.atualizarClienteViaProcedure(id, novoNome, novaDataNascimento, null, null);
+
+        return this.buscarClienteLogado(authUser);
+    }
+
+    @Override
+    @Transactional
+    public void atualizarSenha(UUID id, ClienteUpdateSenhaDTO requestDTO, UserDetails authUser) {
+        Cliente clienteLogado = getClienteFromUserDetails(authUser);
+        if (!clienteLogado.getId().equals(id)) {
+            throw new AccessDeniedException("Um cliente só pode alterar a própria senha.");
+        }
+        if (!requestDTO.novaSenha().equals(requestDTO.confirmacaoNovaSenha())) {
+            throw new RegraDeNegocioException("A nova senha e a confirmação não correspondem.");
         }
 
-        clienteRepository.atualizarClienteViaProcedure(
-                id,
-                novoNome,
-                novaDataNascimento,
-                novoSenhaHash);
+        String novaSenhaHash = passwordEncoder.encode(requestDTO.novaSenha());
 
-        return clienteRepository.findById(id)
-                .map(clienteMapper::toResponseDTO)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Cliente com ID " + id + " não encontrado após atualização."));
+        clienteRepository.atualizarClienteViaProcedure(id, null, null, requestDTO.senhaAtual(), novaSenhaHash);
     }
 
     @Override

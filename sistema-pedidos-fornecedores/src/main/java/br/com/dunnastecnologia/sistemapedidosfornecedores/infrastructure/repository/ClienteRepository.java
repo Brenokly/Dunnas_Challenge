@@ -34,22 +34,17 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
                         @Param("senhaHash") String senhaHash);
 
         /**
-         * Chama o procedimento 'atualizar_cliente' no PostgreSQL.
-         *
-         * @param clienteId          O ID do cliente a ser atualizado.
-         * @param novoNome           O novo nome para o cliente.
-         * @param novaDataNascimento A nova data de nascimento.
-         * @param novoSenhaHash      O novo hash da senha (pode ser nulo se a senha não
-         *                           for alterada).
-         * @pre O cliente deve existir.
-         * @post Os dados do cliente são atualizados no banco.
+         * Chama o procedimento 'atualizar_cliente' no PostgreSQL, que lida com a
+         * atualização
+         * de dados pessoais e a validação/atualização opcional de senha.
          */
         @Modifying
-        @Query(value = "CALL atualizar_cliente(:clienteId, :novoNome, :novaDataNascimento, :novoSenhaHash)", nativeQuery = true)
+        @Query(value = "CALL atualizar_cliente(:clienteId, :novoNome, :novaDataNascimento, :senhaAtual, :novoSenhaHash)", nativeQuery = true)
         void atualizarClienteViaProcedure(
                         @Param("clienteId") UUID clienteId,
                         @Param("novoNome") String novoNome,
                         @Param("novaDataNascimento") LocalDate novaDataNascimento,
+                        @Param("senhaAtual") String senhaAtual,
                         @Param("novoSenhaHash") String novoSenhaHash);
 
         /**
