@@ -301,11 +301,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const statusClass = `status-${pedido.status.toLowerCase()}`;
 
     // Calcula o valor total do pedido
-    let valorTotal = 0;
     const itensHtml = pedido.itens
       .map((item) => {
         const totalItem = item.quantidade * item.precoUnitarioCobrado;
-        valorTotal += totalItem;
         return `
             <li class="item-pedido">
                 <span class="item-nome">${item.nomeProduto}</span>
@@ -323,19 +321,12 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="detalhes-header">
             <p><strong>Cliente:</strong> ${pedido.nomeCliente}</p>
             <p><strong>Data:</strong> ${dataPedido}</p>
-            <p><strong>Status:</strong> <span class="${statusClass}">${
-      pedido.status
-    }</span></p>
+            <p><strong>Status:</strong> <span class="${statusClass}">${pedido.status}</span></p>
             <hr/>
             <h4>Itens do Pedido:</h4>
         </div>
         <div class="detalhes-body">
             <ul class="lista-itens">${itensHtml}</ul>
-        </div>
-        <div class="detalhes-footer">
-            <p><strong>Valor Total do Pedido:</strong> R$ ${valorTotal
-              .toFixed(2)
-              .replace(".", ",")}</p>
         </div>
     `;
   }
