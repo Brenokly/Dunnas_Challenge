@@ -35,7 +35,7 @@ Antes de começar, é crucial configurar o ambiente no Postman para automatizar 
 ### 1.3. Onde Colocar os Scripts
 
 Para cada requisição listada abaixo, vá para a aba **"Tests"** e cole o código JavaScript fornecido. Este script será executado após a resposta do servidor chegar, permitindo validar o resultado e salvar variáveis para os próximos testes.
-> **Importante:** Dependendo da versão do seu postman possa ser que a aba **"Tests"**, seja na verdade a aba **"Scripts"**, nesse caso você acessa aba **"Scripts"** da requisição e cola o script na seção **Post-Response**.
+> **Importante:** Dependendo da versão do seu Postman, possa ser que a aba **"Tests"** seja, na verdade, a aba **"Scripts"**. Nesse caso, você acessa aba **"Scripts"** da requisição e cola o script na seção **Post-Response**.
 ---
 
 ## FLUXO 1: CADASTRO E AUTENTICAÇÃO
