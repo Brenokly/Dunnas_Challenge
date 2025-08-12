@@ -31,7 +31,6 @@ import jakarta.servlet.DispatcherType;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    //
     @Bean
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -90,7 +89,6 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.POST, "/api/v1/clientes", "/api/v1/fornecedores").permitAll()
                             .requestMatchers(HttpMethod.GET, "/api/v1/fornecedores/**", "/api/v1/produtos/**")
                             .permitAll()
-                            .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                             .anyRequest().authenticated())
                     .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .authenticationProvider(authenticationProvider)
@@ -108,7 +106,9 @@ public class SecurityConfig {
                     .authorizeHttpRequests(auth -> auth
                             .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
                             .requestMatchers("/", "/login", "/perform_login", "/cadastro-cliente",
-                                    "/cadastro-fornecedor")
+                                    "/cadastro-fornecedor",
+                                    // ROTAS DO SWAGGER NO LUGAR CORRETO
+                                    "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                             .permitAll()
                             .anyRequest().authenticated())
                     .formLogin(form -> form
