@@ -15,13 +15,13 @@ Antes de começar, é crucial configurar o ambiente no Postman para automatizar 
 
 * No painel esquerdo, vá para a aba **Environments**.
 * Clique em "Create Environment" e nomeie-o como `Desenvolvimento Local`.
-* Adicione a seguinte variável inicial:
+* Adicione as seguintes variáveis:
 
 | VARIABLE | INITIAL VALUE |
 | :--- | :--- |
 | `BASE_URL` | `http://localhost:8080` |
 
-* As outras variáveis serão preenchidas automaticamente pelos scripts. Deixe os valores iniciais em branco:
+* As outras variáveis serão preenchidas automaticamente pelos scripts. Crie e deixe os valores iniciais em branco:
     * `CLIENTE_TOKEN`
     * `FORNECEDOR_TOKEN`
     * `CLIENTE_ID`
