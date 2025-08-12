@@ -25,6 +25,17 @@ public interface CupomUseCases {
   CupomResponseDTO criarNovoCupom(CupomRequestDTO requestDTO, UserDetails authUser);
 
   /**
+   * Busca um cupom por fornecedor e código.
+   *
+   * @param fornecedorId ID do fornecedor.
+   * @param codigo       Código do cupom.
+   * @return um Optional contendo o cupom encontrado, se existir.
+   * @pre O fornecedor deve existir.
+   * @post O cupom é retornado, se encontrado.
+   */
+  CupomResponseDTO buscarCupomPorFornecedorECodigo(UUID fornecedorId, String codigo);
+
+  /**
    * Lista todos os cupons (ativos e inativos) do fornecedor logado.
    *
    * @param authUser O principal de segurança do fornecedor logado.

@@ -57,6 +57,23 @@ public class CupomController {
     return ResponseEntity.created(location).body(responseDTO);
   }
 
+  @GetMapping("/{fornecedorId}/cupom/{codigo}")
+  @SecurityRequirement(name = "bearerAuth")
+  @Operation(summary = "Valida cupom de um fornecedor", description = "Verifica se o cupom existe e é válido para o fornecedor informado.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Cupom válido e retornado com sucesso."),
+      @ApiResponse(responseCode = "404", description = "Cupom não encontrado ou inválido para o fornecedor."),
+      @ApiResponse(responseCode = "401", description = "Não autorizado")
+  })
+  public ResponseEntity<CupomResponseDTO> validarCupomFornecedor(
+      @PathVariable UUID fornecedorId,
+      @PathVariable String codigo) {
+
+    CupomResponseDTO cupom = cupomUseCases.buscarCupomPorFornecedorECodigo(fornecedorId, codigo);
+
+    return ResponseEntity.ok(cupom);
+  }
+
   @GetMapping
   @SecurityRequirement(name = "bearerAuth")
   @Operation(summary = "Fornecedor lista seus próprios cupons", description = "Retorna uma lista paginada de todos os cupons (ativos e inativos) pertencentes ao fornecedor autenticado.")

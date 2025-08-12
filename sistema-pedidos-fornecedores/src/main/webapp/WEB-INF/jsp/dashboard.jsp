@@ -36,7 +36,8 @@
                   </div>
                   <button class="add-to-cart-btn" data-produto-id="${produto.id()}"
                     data-produto-nome="${produto.nome()}" data-preco="${produto.preco()}"
-                    data-percentual-desconto="${produto.percentualDesconto()}">
+                    data-percentual-desconto="${produto.percentualDesconto()}"
+                    data-fornecedor-id="${produto.fornecedorId()}">
                     Adicionar ao Carrinho
                   </button>
                 </div>

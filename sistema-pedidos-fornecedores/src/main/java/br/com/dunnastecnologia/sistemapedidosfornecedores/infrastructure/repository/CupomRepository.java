@@ -18,51 +18,55 @@ import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Cupom;
 @Repository
 public interface CupomRepository extends JpaRepository<Cupom, UUID> {
 
-    /**
-     * Busca um cupom pelo seu código único.
-     *
-     * @param codigo O código do cupom.
-     * @return um Optional contendo o Cupom, se encontrado.
-     */
-    Optional<Cupom> findByCodigo(String codigo);
+        /**
+         * Busca um cupom pelo seu código único.
+         *
+         * @param codigo O código do cupom.
+         * @return um Optional contendo o Cupom, se encontrado.
+         */
+        Optional<Cupom> findByCodigo(String codigo);
 
-    /**
-     * Busca todos os cupons de um fornecedor específico.
-     *
-     * @param fornecedorId O ID do fornecedor.
-     * @param pageable     As informações de paginação.
-     * @return uma página de cupons do fornecedor.
-     */
-    Page<Cupom> findAllByFornecedorId(UUID fornecedorId, Pageable pageable);
+        @Query("SELECT c FROM Cupom c WHERE c.fornecedor.id = :fornecedorId AND c.codigo = :codigo AND c.ativo = true AND c.fornecedor.ativo = true")
+        Optional<Cupom> findByFornecedorIdAndCodigoAtivos(@Param("fornecedorId") UUID fornecedorId,
+                        @Param("codigo") String codigo);
 
-    /**
-     * Chama a função 'cadastrar_novo_cupom' no PostgreSQL.
-     *
-     * @return o UUID do cupom recém-criado.
-     */
-    @Query(value = "SELECT cadastrar_novo_cupom(:codigo, :tipo, :valor, :validade, :valorMinimo, :limiteUsos, :fornId)", nativeQuery = true)
-    UUID registrarCupomViaFuncao(
-            @Param("codigo") String codigo, @Param("tipo") Character tipo, @Param("valor") BigDecimal valor,
-            @Param("validade") LocalDate validade, @Param("valorMinimo") BigDecimal valorMinimo,
-            @Param("limiteUsos") Integer limiteUsos, @Param("fornId") UUID fornecedorId);
+        /**
+         * Busca todos os cupons de um fornecedor específico.
+         *
+         * @param fornecedorId O ID do fornecedor.
+         * @param pageable     As informações de paginação.
+         * @return uma página de cupons do fornecedor.
+         */
+        Page<Cupom> findAllByFornecedorId(UUID fornecedorId, Pageable pageable);
 
-    /**
-     * Chama o procedimento 'desativar_cupom' no PostgreSQL.
-     *
-     * @param cupomId      ID do cupom a ser desativado.
-     * @param fornecedorId ID do fornecedor autenticado para validação.
-     */
-    @Modifying
-    @Query(value = "CALL desativar_cupom(:cupomId, :fornecedorId)", nativeQuery = true)
-    void desativarCupomViaProcedure(@Param("cupomId") UUID cupomId, @Param("fornecedorId") UUID fornecedorId);
+        /**
+         * Chama a função 'cadastrar_novo_cupom' no PostgreSQL.
+         *
+         * @return o UUID do cupom recém-criado.
+         */
+        @Query(value = "SELECT cadastrar_novo_cupom(:codigo, :tipo, :valor, :validade, :valorMinimo, :limiteUsos, :fornId)", nativeQuery = true)
+        UUID registrarCupomViaFuncao(
+                        @Param("codigo") String codigo, @Param("tipo") Character tipo, @Param("valor") BigDecimal valor,
+                        @Param("validade") LocalDate validade, @Param("valorMinimo") BigDecimal valorMinimo,
+                        @Param("limiteUsos") Integer limiteUsos, @Param("fornId") UUID fornecedorId);
 
-    /**
-     * Chama o procedimento 'reativar_cupom' no PostgreSQL.
-     *
-     * @param cupomId      ID do cupom a ser reativado.
-     * @param fornecedorId ID do fornecedor autenticado para validação.
-     */
-    @Modifying
-    @Query(value = "CALL reativar_cupom(:cupomId, :fornecedorId)", nativeQuery = true)
-    void reativarCupomViaProcedure(@Param("cupomId") UUID cupomId, @Param("fornecedorId") UUID fornecedorId);
+        /**
+         * Chama o procedimento 'desativar_cupom' no PostgreSQL.
+         *
+         * @param cupomId      ID do cupom a ser desativado.
+         * @param fornecedorId ID do fornecedor autenticado para validação.
+         */
+        @Modifying
+        @Query(value = "CALL desativar_cupom(:cupomId, :fornecedorId)", nativeQuery = true)
+        void desativarCupomViaProcedure(@Param("cupomId") UUID cupomId, @Param("fornecedorId") UUID fornecedorId);
+
+        /**
+         * Chama o procedimento 'reativar_cupom' no PostgreSQL.
+         *
+         * @param cupomId      ID do cupom a ser reativado.
+         * @param fornecedorId ID do fornecedor autenticado para validação.
+         */
+        @Modifying
+        @Query(value = "CALL reativar_cupom(:cupomId, :fornecedorId)", nativeQuery = true)
+        void reativarCupomViaProcedure(@Param("cupomId") UUID cupomId, @Param("fornecedorId") UUID fornecedorId);
 }

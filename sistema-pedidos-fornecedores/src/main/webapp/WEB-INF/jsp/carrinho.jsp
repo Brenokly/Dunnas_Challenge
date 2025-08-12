@@ -26,14 +26,6 @@
           <div id="cart-summary-values"
             style="margin-top:1.5rem; font-size:1.1rem; text-align:right; color: var(--text-color);"></div>
 
-          <!-- Campo para inserção do cupom e botão para aplicar -->
-          <div class="cart-summary" style="margin-top:1rem;">
-            <label for="coupon-code">Cupom de desconto (opcional):</label><br />
-            <input type="text" id="coupon-code" name="couponCode" placeholder="Insira o código do cupom" />
-            <button id="apply-coupon-btn" class="button-link">Aplicar Cupom</button>
-            <div id="coupon-feedback" class="coupon-feedback" style="margin-top:0.5rem;"></div>
-          </div>
-
           <!-- Botão para finalizar pedido -->
           <div class="cart-actions" style="margin-top:1.5rem;">
             <button id="finalize-order-btn" class="button-link" disabled>Finalizar Pedido</button>

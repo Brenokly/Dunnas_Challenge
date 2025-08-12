@@ -1,0 +1,66 @@
+.container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 0 10px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  background: #eee;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 5px 5px 0 0;
+}
+
+.tab-button.active {
+  background: #fff;
+  border-bottom: 2px solid #007bff;
+}
+
+.tab-content {
+  display: none;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  padding: 15px;
+  border-radius: 0 5px 5px 5px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+}
+
+thead th {
+  background: #007bff;
+  color: white;
+  padding: 8px;
+  text-align: left;
+}
+
+tbody td {
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
+}
+
+.paginacao {
+  text-align: center;
+}
+
+.paginacao button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}

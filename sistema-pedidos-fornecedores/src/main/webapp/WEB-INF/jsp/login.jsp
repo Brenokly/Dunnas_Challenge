@@ -22,14 +22,6 @@
 
         <div class="container">
           <h2>Login</h2>
-
-          <!-- REMOVIDO: tratamento antigo via parâmetro error -->
-          <!-- <c:if test="${not empty param.error}">
-      <div class="error-message" style="display:block; color:red; margin-bottom:1rem;">
-        Usuário ou senha inválidos. Por favor, tente novamente.
-      </div>
-    </c:if> -->
-
           <form id="login-form" autocomplete="off">
             <div class="form-group">
               <label for="username">Usuário:</label>
@@ -41,13 +33,9 @@
               <input type="password" id="password" name="password" required />
             </div>
 
-            <!-- REMOVIDO: CSRF token pois a API REST não usa session -->
-            <!-- <input type="hidden" name="_csrf" value="${_csrf.token}" /> -->
-
             <button type="submit">Entrar</button>
           </form>
 
-          <!-- Div para mostrar erros da autenticação via JS -->
           <div class="error-message" style="display:none; color:red; margin-top:1rem;"></div>
 
           <div class="links" style="margin-top: 1.5rem;">

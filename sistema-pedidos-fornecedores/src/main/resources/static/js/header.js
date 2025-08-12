@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const produtoPreco = parseFloat(button.dataset.preco);
     const produtoPercentualDesconto =
       parseFloat(button.dataset.percentualDesconto) || 0;
+    const fornecedorId = button.dataset.fornecedorId;
 
     let cart = JSON.parse(localStorage.getItem("shoppingCart")) || [];
     const existingProductIndex = cart.findIndex(
@@ -41,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
         preco: produtoPreco,
         percentualDesconto: produtoPercentualDesconto,
         quantidade: 1,
+        fornecedorId: fornecedorId,
       });
     }
 

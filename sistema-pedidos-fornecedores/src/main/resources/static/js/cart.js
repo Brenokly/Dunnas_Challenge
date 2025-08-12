@@ -1,10 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const cartItemsContainer = document.getElementById("cart-items-container");
   const finalizeOrderBtn = document.getElementById("finalize-order-btn");
-  const couponInput = document.getElementById("coupon-code");
-  const applyCouponBtn = document.getElementById("apply-coupon-btn");
   const feedbackDiv = document.getElementById("feedback-message");
-  const couponFeedbackDiv = document.getElementById("coupon-feedback");
   const resumoContainer = document.getElementById("cart-summary-values");
 
   const token = localStorage.getItem("jwtToken");
@@ -14,10 +11,52 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let cart = JSON.parse(localStorage.getItem("shoppingCart")) || [];
-  let appliedCoupon = null;
-  let cupomPercentualDesconto = 0; // para depois poder estender
+  let appliedCoupons = {};
+  let fornecedoresCache = {}; // fornecedorId -> nomeFornecedor
 
-  function renderCartItems() {
+  function agruparItensPorFornecedor(cart) {
+    return cart.reduce((acc, item) => {
+      if (!acc[item.fornecedorId]) {
+        acc[item.fornecedorId] = [];
+      }
+      acc[item.fornecedorId].push(item);
+      return acc;
+    }, {});
+  }
+
+  async function buscarNomeFornecedor(fornecedorId) {
+    if (fornecedoresCache[fornecedorId]) {
+      return fornecedoresCache[fornecedorId];
+    }
+
+    const res = await fetch(`/api/v1/fornecedores/${fornecedorId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) {
+      fornecedoresCache[fornecedorId] = `Fornecedor ${fornecedorId}`;
+      return fornecedoresCache[fornecedorId];
+    }
+
+    const data = await res.json();
+    fornecedoresCache[fornecedorId] = data.nome || `Fornecedor ${fornecedorId}`;
+    return fornecedoresCache[fornecedorId];
+  }
+
+  async function validarCupom(fornecedorId, codigo) {
+    const res = await fetch(`/api/v1/cupons/${fornecedorId}/cupom/${codigo}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(
+        errorData.message || "Cupom inválido para este fornecedor"
+      );
+    }
+    return await res.json();
+  }
+
+  async function renderCartItems() {
     cartItemsContainer.innerHTML = "";
 
     if (cart.length === 0) {
@@ -27,80 +66,212 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const table = document.createElement("table");
-    table.className = "product-table";
+    const grupos = agruparItensPorFornecedor(cart);
+    const nomesPromises = Object.keys(grupos).map((fornecedorId) =>
+      buscarNomeFornecedor(fornecedorId)
+    );
+    const nomesFornecedores = await Promise.all(nomesPromises);
 
-    table.innerHTML = `
-      <thead>
-        <tr>
-          <th>Produto</th>
-          <th>Valor Cheio (R$)</th>
-          <th>Desconto Fornecedor (R$)</th>
-          <th>Quantidade</th>
-          <th>Valor Total (R$)</th>
-        </tr>
-      </thead>
-    `;
+    let index = 0;
+    for (const fornecedorId in grupos) {
+      const itens = grupos[fornecedorId];
+      if (!itens.length) continue;
 
-    const tbody = document.createElement("tbody");
+      const nomeFornecedor =
+        nomesFornecedores[index++] || `Fornecedor ${fornecedorId}`;
 
-    cart.forEach((item) => {
-      const valorCheio = item.preco || 0;
-      const descontoFornecedor =
-        valorCheio * ((item.percentualDesconto || 0) / 100);
-      const valorComDesconto = valorCheio - descontoFornecedor;
-      const valorTotalItem = valorComDesconto * item.quantidade;
+      const fornecedorDiv = document.createElement("div");
+      fornecedorDiv.className = "fornecedor-group";
 
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${item.nome}</td>
-        <td>${valorCheio.toFixed(2).replace(".", ",")}</td>
-        <td>- ${descontoFornecedor.toFixed(2).replace(".", ",")}</td>
-        <td>${item.quantidade}</td>
-        <td>${valorTotalItem.toFixed(2).replace(".", ",")}</td>
+      const fornecedorTitulo = document.createElement("h3");
+      fornecedorTitulo.textContent = nomeFornecedor;
+      fornecedorDiv.appendChild(fornecedorTitulo);
+
+      const table = document.createElement("table");
+      table.className = "product-table";
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Valor Cheio (R$)</th>
+            <th>Desconto Fornecedor (R$)</th>
+            <th>Quantidade</th>
+            <th>Valor Total (R$)</th>
+          </tr>
+        </thead>
+      `;
+      const tbody = document.createElement("tbody");
+
+      itens.forEach((item) => {
+        const valorCheio = item.preco || 0;
+        const descontoFornecedor =
+          valorCheio * ((item.percentualDesconto || 0) / 100);
+        const valorComDesconto = valorCheio - descontoFornecedor;
+        const valorTotalItem = valorComDesconto * item.quantidade;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.nome}</td>
+          <td>${valorCheio.toFixed(2).replace(".", ",")}</td>
+          <td>- ${descontoFornecedor.toFixed(2).replace(".", ",")}</td>
+          <td>${item.quantidade}</td>
+          <td>${valorTotalItem.toFixed(2).replace(".", ",")}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      table.appendChild(tbody);
+      fornecedorDiv.appendChild(table);
+
+      // Input e botão para cupom (com classes para visual melhor)
+      const cupomDiv = document.createElement("div");
+      cupomDiv.className = "coupon-section";
+      cupomDiv.innerHTML = `
+        <input type="text" class="coupon-input" placeholder="Código do cupom para este fornecedor" id="coupon-code-${fornecedorId}" />
+        <button class="coupon-btn" id="apply-coupon-btn-${fornecedorId}">Aplicar Cupom</button>
       `;
 
-      tbody.appendChild(tr);
-    });
+      fornecedorDiv.appendChild(cupomDiv);
+      cartItemsContainer.appendChild(fornecedorDiv);
 
-    table.appendChild(tbody);
-    cartItemsContainer.appendChild(table);
+      // Se cupom aplicado, preenche input
+      if (appliedCoupons[fornecedorId]) {
+        const input = cupomDiv.querySelector(`#coupon-code-${fornecedorId}`);
+        input.value = appliedCoupons[fornecedorId].codigo;
+      }
+
+      const applyBtn = cupomDiv.querySelector(
+        `#apply-coupon-btn-${fornecedorId}`
+      );
+      applyBtn.addEventListener("click", async () => {
+        const input = cupomDiv.querySelector(`#coupon-code-${fornecedorId}`);
+        const codigo = input.value.trim();
+
+        if (!codigo) {
+          mostrarToast("Informe um código de cupom válido.", "error");
+          delete appliedCoupons[fornecedorId];
+          renderResumoPedido();
+          return;
+        }
+
+        applyBtn.disabled = true;
+        input.disabled = true;
+
+        try {
+          const cupom = await validarCupom(fornecedorId, codigo);
+
+          if (!cupom.ativo) throw new Error("Cupom inativo.");
+          const hoje = new Date().toISOString().slice(0, 10);
+          if (cupom.dataValidade < hoje) throw new Error("Cupom expirado.");
+          if (
+            cupom.limiteDeUsos !== null &&
+            cupom.usosAtuais >= cupom.limiteDeUsos
+          )
+            throw new Error("Cupom já atingiu o limite de usos.");
+
+          const subtotalFornecedor = calcularSubtotalFornecedor(itens);
+          if (
+            cupom.valorMinimoPedido !== null &&
+            subtotalFornecedor < cupom.valorMinimoPedido
+          ) {
+            throw new Error(
+              `Pedido mínimo de R$ ${cupom.valorMinimoPedido.toFixed(
+                2
+              )} não atingido para este cupom.`
+            );
+          }
+
+          appliedCoupons[fornecedorId] = cupom;
+          mostrarToast(
+            `Cupom "${codigo}" aplicado com sucesso! Desconto: ${
+              cupom.tipoDesconto === "P"
+                ? cupom.valor + "%"
+                : "R$ " + cupom.valor
+            }`,
+            "success"
+          );
+
+          renderResumoPedido();
+        } catch (error) {
+          delete appliedCoupons[fornecedorId];
+          mostrarToast(error.message, "error");
+          renderResumoPedido();
+        } finally {
+          applyBtn.disabled = false;
+          input.disabled = false;
+        }
+      });
+    }
 
     finalizeOrderBtn.disabled = false;
-
     renderResumoPedido();
   }
 
-  function calcularResumoCarrinho() {
+  function calcularSubtotalFornecedor(itens) {
     let valorBruto = 0;
     let descontoFornecedor = 0;
-
-    cart.forEach((item) => {
+    itens.forEach((item) => {
       valorBruto += (item.preco || 0) * item.quantidade;
       descontoFornecedor +=
         (item.preco || 0) *
         ((item.percentualDesconto || 0) / 100) *
         item.quantidade;
     });
+    return valorBruto - descontoFornecedor;
+  }
 
-    const subtotalComDescontoFornecedor = valorBruto - descontoFornecedor;
+  function calcularResumoPedido() {
+    let valorBrutoTotal = 0;
+    let descontoFornecedorTotal = 0;
+    let descontoCupomTotal = 0;
 
-    // cupomPercentualDesconto deve ser ajustado ao aplicar cupom (atualmente só simulação)
-    let descontoCupom = appliedCoupon
-      ? subtotalComDescontoFornecedor * (cupomPercentualDesconto / 100)
-      : 0;
+    const grupos = agruparItensPorFornecedor(cart);
 
-    if (descontoCupom > subtotalComDescontoFornecedor) {
-      descontoCupom = subtotalComDescontoFornecedor;
+    for (const fornecedorId in grupos) {
+      const itens = grupos[fornecedorId];
+
+      let valorBruto = 0;
+      let descontoFornecedor = 0;
+
+      itens.forEach((item) => {
+        valorBruto += (item.preco || 0) * item.quantidade;
+        descontoFornecedor +=
+          (item.preco || 0) *
+          ((item.percentualDesconto || 0) / 100) *
+          item.quantidade;
+      });
+
+      const subtotalComDescontoFornecedor = valorBruto - descontoFornecedor;
+      valorBrutoTotal += valorBruto;
+      descontoFornecedorTotal += descontoFornecedor;
+
+      const cupom = appliedCoupons[fornecedorId];
+      if (cupom) {
+        let descontoCupom = 0;
+
+        if (cupom.tipoDesconto === "P") {
+          descontoCupom =
+            subtotalComDescontoFornecedor * (parseFloat(cupom.valor) / 100);
+        } else if (cupom.tipoDesconto === "F") {
+          descontoCupom = parseFloat(cupom.valor);
+        }
+
+        if (descontoCupom > subtotalComDescontoFornecedor) {
+          descontoCupom = subtotalComDescontoFornecedor;
+        }
+
+        descontoCupomTotal += descontoCupom;
+      }
     }
 
-    let valorFinal = subtotalComDescontoFornecedor - descontoCupom;
+    let valorFinal =
+      valorBrutoTotal - descontoFornecedorTotal - descontoCupomTotal;
     if (valorFinal < 0) valorFinal = 0;
 
     return {
-      valorBruto,
-      descontoFornecedor,
-      descontoCupom,
+      valorBrutoTotal,
+      descontoFornecedorTotal,
+      descontoCupomTotal,
       valorFinal,
     };
   }
@@ -113,139 +284,97 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const resumo = calcularResumoCarrinho();
+    const resumo = calcularResumoPedido();
 
     resumoContainer.innerHTML = `
-      <p><strong>Valor Bruto:</strong> R$ ${resumo.valorBruto
+      <p><strong>Valor Bruto:</strong> R$ ${resumo.valorBrutoTotal
         .toFixed(2)
         .replace(".", ",")}</p>
-      <p><strong>Desconto do Fornecedor:</strong> - R$ ${resumo.descontoFornecedor
+      <p><strong>Desconto do Fornecedor:</strong> - R$ ${resumo.descontoFornecedorTotal
         .toFixed(2)
         .replace(".", ",")}</p>
-      ${
-        appliedCoupon
-          ? `<p><strong>Desconto do Cupom (${appliedCoupon}):</strong> - R$ ${resumo.descontoCupom
-              .toFixed(2)
-              .replace(".", ",")}</p>`
-          : ""
-      }
+      <p><strong>Desconto dos Cupons:</strong> - R$ ${resumo.descontoCupomTotal
+        .toFixed(2)
+        .replace(".", ",")}</p>
       <p><strong>Valor Final:</strong> R$ ${resumo.valorFinal
         .toFixed(2)
         .replace(".", ",")}</p>
     `;
   }
 
-  async function validarCupom(codigo) {
-    try {
-      const response = await fetch(`/api/v1/cupons/${codigo}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Cupom inválido");
-      }
-      // Exemplo para simular cupom percentual, pode adaptar para tipo real
-      // Aqui só um exemplo, se seu backend retorna tipo/valor, armazene para usar no cálculo
-      const cupomData = await response.json();
-      cupomPercentualDesconto =
-        cupomData.tipoDesconto === "P" ? parseFloat(cupomData.valor) : 0;
-      return cupomData;
-    } catch (error) {
-      throw error;
+  function mostrarToast(mensagem, tipo) {
+    let toast = document.getElementById("toast-message");
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.id = "toast-message";
+      toast.className = "toast";
+      document.body.appendChild(toast);
     }
+
+    toast.textContent = mensagem;
+    toast.className = `toast show ${tipo}`;
+
+    setTimeout(() => {
+      toast.className = "toast";
+    }, 4000);
   }
-
-  applyCouponBtn.addEventListener("click", async () => {
-    const code = couponInput.value.trim();
-    couponFeedbackDiv.textContent = "";
-    couponFeedbackDiv.className = "";
-
-    if (!code) {
-      couponFeedbackDiv.textContent = "Informe um código de cupom válido.";
-      couponFeedbackDiv.classList.add("error");
-      appliedCoupon = null;
-      cupomPercentualDesconto = 0;
-      renderResumoPedido();
-      return;
-    }
-
-    applyCouponBtn.disabled = true;
-    couponInput.disabled = true;
-
-    try {
-      const cupom = await validarCupom(code);
-      appliedCoupon = code;
-      couponFeedbackDiv.textContent = `Cupom "${code}" aplicado com sucesso!`;
-      couponFeedbackDiv.classList.add("success");
-      renderResumoPedido();
-    } catch (error) {
-      appliedCoupon = null;
-      cupomPercentualDesconto = 0;
-      couponFeedbackDiv.textContent = error.message;
-      couponFeedbackDiv.classList.add("error");
-      renderResumoPedido();
-    } finally {
-      applyCouponBtn.disabled = false;
-      couponInput.disabled = false;
-    }
-  });
 
   async function finalizarPedido() {
     if (cart.length === 0) {
-      mostrarMensagem("O carrinho está vazio.", "error");
+      mostrarToast("O carrinho está vazio.", "error");
       return;
     }
 
-    const pedidoDTO = {
-      itens: cart.map((item) => ({
-        produtoId: item.id,
-        quantidade: item.quantidade,
-      })),
-      codigoCupom: appliedCoupon || null,
-    };
-
+    const grupos = agruparItensPorFornecedor(cart);
     finalizeOrderBtn.disabled = true;
 
     try {
-      const response = await fetch("/api/v1/pedidos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(pedidoDTO),
-      });
+      for (const fornecedorId in grupos) {
+        const itens = grupos[fornecedorId];
+        let itensPedido = itens.map((item) => ({
+          produtoId: item.id,
+          quantidade: item.quantidade,
+        }));
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Erro ao finalizar pedido");
+        const cupomFornecedor = appliedCoupons[fornecedorId];
+        const codigoCupom = cupomFornecedor ? cupomFornecedor.codigo : null;
+
+        const pedidoDTO = {
+          itens: itensPedido,
+          codigoCupom: codigoCupom,
+        };
+
+        const response = await fetch("/api/v1/pedidos", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(pedidoDTO),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(
+            `Erro ao finalizar pedido do fornecedor ${fornecedorId}: ${
+              errorData.message || "Erro desconhecido"
+            }`
+          );
+        }
+
+        await response.json();
       }
 
-      await response.json();
-      mostrarMensagem("Pedido realizado com sucesso!", "success");
+      mostrarToast("Todos os pedidos foram realizados com sucesso!", "success");
       localStorage.removeItem("shoppingCart");
       cart = [];
-      appliedCoupon = null;
-      cupomPercentualDesconto = 0;
-      couponInput.value = "";
-      couponFeedbackDiv.textContent = "";
-      couponFeedbackDiv.className = "";
+      appliedCoupons = {};
       renderCartItems();
     } catch (error) {
-      mostrarMensagem(error.message, "error");
+      mostrarToast(error.message, "error");
     } finally {
       finalizeOrderBtn.disabled = false;
     }
-  }
-
-  function mostrarMensagem(mensagem, tipo) {
-    feedbackDiv.textContent = mensagem;
-    feedbackDiv.className =
-      tipo === "success" ? "success-message" : "error-message";
-    feedbackDiv.style.display = "block";
-    setTimeout(() => {
-      feedbackDiv.style.display = "none";
-    }, 5000);
   }
 
   finalizeOrderBtn.addEventListener("click", finalizarPedido);

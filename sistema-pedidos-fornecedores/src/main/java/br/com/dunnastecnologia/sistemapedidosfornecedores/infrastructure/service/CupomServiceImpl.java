@@ -1,5 +1,6 @@
 package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -39,6 +40,13 @@ public class CupomServiceImpl implements CupomUseCases {
     Cupom cupomSalvo = cupomRepository.findById(novoCupomId)
         .orElseThrow(() -> new IllegalStateException("ERRO CRÍTICO: Cupom não encontrado após cadastro."));
     return cupomMapper.toResponseDTO(cupomSalvo);
+  }
+
+  @Transactional(readOnly = true)
+  public CupomResponseDTO buscarCupomPorFornecedorECodigo(UUID fornecedorId, String codigo) {
+    Optional<Cupom> cupom = cupomRepository.findByFornecedorIdAndCodigoAtivos(fornecedorId, codigo);
+    return cupom.map(cupomMapper::toResponseDTO)
+        .orElseThrow(() -> new EntityNotFoundException("Cupom não encontrado."));
   }
 
   @Override

@@ -56,6 +56,10 @@
               </div>
               <button type="submit">Adicionar</button>
             </form>
+
+            <div style="margin-top: 1.5rem;">
+              <a href="<c:url value='/cliente/historico' />" class="button-link-primary">Ver Histórico de Transações</a>
+            </div>
           </section>
 
           <section class="profile-section danger-zone">
