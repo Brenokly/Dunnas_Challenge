@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,7 @@ import br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases.F
 import br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases.ProdutoUseCases;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.fornecedor.FornecedorRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.fornecedor.FornecedorResponseDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.fornecedor.FornecedorUpdateSenhaDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.produto.ProdutoResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -94,6 +96,22 @@ public class FornecedorController {
     public ResponseEntity<FornecedorResponseDTO> buscarMeuPerfil(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return ResponseEntity.ok(fornecedorUseCases.buscarFornecedorLogado(userDetails));
+    }
+
+    @PatchMapping("/{id}/senha")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Atualiza a senha de um fornecedor", description = "Atualiza a senha. Requer a senha atual e autenticação do próprio fornecedor.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Senha alterada com sucesso."),
+            @ApiResponse(responseCode = "400", description = "Regra de negócio violada (ex: senha atual incorreta)."),
+            @ApiResponse(responseCode = "403", description = "Acesso negado."),
+            @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado.")
+    })
+    public ResponseEntity<Void> atualizarSenha(@PathVariable UUID id,
+            @RequestBody @Valid FornecedorUpdateSenhaDTO requestDTO, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        fornecedorUseCases.atualizarSenha(id, requestDTO, userDetails);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")

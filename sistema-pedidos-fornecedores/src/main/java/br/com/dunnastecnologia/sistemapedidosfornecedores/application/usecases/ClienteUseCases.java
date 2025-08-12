@@ -45,6 +45,8 @@ public interface ClienteUseCases {
      * @param requestDTO Os novos dados.
      * @param authUser   O principal de segurança do usuário logado.
      * @return Os dados do cliente atualizado.
+     * @throws AccessDeniedException   se o usuário não for o proprietário.
+     * @throws EntityNotFoundException se o cliente não for encontrado.
      */
     ClienteResponseDTO atualizarDadosPessoais(UUID id, ClienteUpdateDadosPessoaisDTO requestDTO, UserDetails authUser);
 
@@ -54,6 +56,8 @@ public interface ClienteUseCases {
      * @param id         O ID do cliente a ser atualizado.
      * @param requestDTO A senha atual e a nova senha com confirmação.
      * @param authUser   O principal de segurança do usuário logado.
+     * @throws AccessDeniedException   se o usuário não for o proprietário.
+     * @throws EntityNotFoundException se o cliente não for encontrado.
      */
     void atualizarSenha(UUID id, ClienteUpdateSenhaDTO requestDTO, UserDetails authUser);
 

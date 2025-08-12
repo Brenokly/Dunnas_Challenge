@@ -14,6 +14,7 @@ import br.com.dunnastecnologia.sistemapedidosfornecedores.application.usecases.F
 import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Fornecedor;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.fornecedor.FornecedorRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.fornecedor.FornecedorResponseDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.fornecedor.FornecedorUpdateSenhaDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.exception.RegraDeNegocioException;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.mapper.FornecedorMapper;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.repository.FornecedorRepository;
@@ -66,6 +67,22 @@ public class FornecedorServiceImpl implements FornecedorUseCases {
     }
 
     // MÉTODOS PRIVADOS (PARA O PRÓPRIO FORNECEDOR DONO DA CONTA)
+
+    @Override
+    @Transactional
+    public void atualizarSenha(UUID id, FornecedorUpdateSenhaDTO requestDTO, UserDetails authUser) {
+        Fornecedor fornecedorLogado = getFornecedorFromUserDetails(authUser);
+        if (!fornecedorLogado.getId().equals(id)) {
+            throw new AccessDeniedException("Um fornecedor só pode alterar a própria senha.");
+        }
+        if (!requestDTO.novaSenha().equals(requestDTO.confirmacaoNovaSenha())) {
+            throw new RegraDeNegocioException("A nova senha e a confirmação não correspondem.");
+        }
+
+        String novaSenhaHash = passwordEncoder.encode(requestDTO.novaSenha());
+
+        fornecedorRepository.atualizarSenhaFornecedorViaProcedure(id, requestDTO.senhaAtual(), novaSenhaHash);
+    }
 
     @Override
     @Transactional(readOnly = true)

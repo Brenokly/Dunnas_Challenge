@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.fornecedor.FornecedorRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.fornecedor.FornecedorResponseDTO;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.fornecedor.FornecedorUpdateSenhaDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.exception.RegraDeNegocioException;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -57,6 +58,17 @@ public interface FornecedorUseCases {
      * @throws AccessDeniedException   se o usuário logado não for um fornecedor.
      */
     FornecedorResponseDTO buscarFornecedorLogado(UserDetails authUser);
+
+    /**
+     * Atualiza a senha do fornecedor autenticado, validando a senha atual.
+     *
+     * @param id         O ID do fornecedor a ser atualizado.
+     * @param requestDTO A senha atual e a nova senha com confirmação.
+     * @param authUser   O principal de segurança do usuário logado.
+     * @throws AccessDeniedException   se o usuário não for o proprietário.
+     * @throws EntityNotFoundException se o fornecedor não for encontrado.
+     */
+    void atualizarSenha(UUID id, FornecedorUpdateSenhaDTO requestDTO, UserDetails authUser);
 
     /**
      * Desativa um fornecedor, validando a propriedade.

@@ -27,6 +27,13 @@ public class PerfilController {
     return "perfil-cliente";
   }
 
+  @GetMapping("/cliente/perfil/editar")
+  public String showEditarPerfilCliente(Model model, Authentication authentication) {
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    model.addAttribute("cliente", clienteUseCases.buscarClienteLogado(userDetails));
+    return "perfil-cliente-editar";
+  }
+
   @GetMapping("/fornecedor/perfil")
   public String showPerfilFornecedor(Model model, Authentication authentication) {
     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -34,10 +41,10 @@ public class PerfilController {
     return "perfil-fornecedor";
   }
 
-  @GetMapping("/cliente/perfil/editar")
-  public String showEditarPerfilCliente(Model model, Authentication authentication) {
+  @GetMapping("/fornecedor/perfil/editar")
+  public String showEditarPerfilFornecedor(Model model, Authentication authentication) {
     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    model.addAttribute("cliente", clienteUseCases.buscarClienteLogado(userDetails));
-    return "perfil-cliente-editar";
+    model.addAttribute("fornecedor", fornecedorUseCases.buscarFornecedorLogado(userDetails));
+    return "perfil-fornecedor-editar";
   }
 }
