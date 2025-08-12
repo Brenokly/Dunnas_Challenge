@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.utils.enums.StatusPedido;
@@ -43,7 +44,20 @@ public interface PedidoUseCases {
    * @post A lista de pedidos é retornada, podendo estar vazia.
    * @throws AccessDeniedException se o usuário autenticado não for um Fornecedor.
    */
-  public Page<PedidoFornecedorDetalhadoResponseDTO> listarPedidosDoFornecedor(UserDetails authUser, Pageable pageable);
+  Page<PedidoFornecedorDetalhadoResponseDTO> listarPedidosDoFornecedor(UserDetails authUser, Pageable pageable);
+
+  /**
+   * Busca os detalhes de um pedido específico do fornecedor autenticado.
+   *
+   * @param pedidoId O ID do pedido a ser buscado.
+   * @param authUser O principal de segurança do fornecedor logado.
+   * @return Os detalhes do pedido encontrado.
+   * @pre O usuário autenticado deve ser um Fornecedor.
+   * @post Os detalhes do pedido são retornados.
+   * @throws AccessDeniedException se o usuário autenticado não for um Fornecedor.
+   * @throws NotFoundException se o pedido não for encontrado.
+   */
+  PedidoFornecedorDetalhadoResponseDTO buscarDetalhesPedidoFornecedor(UUID pedidoId, UserDetails authUser);
 
   /**
    * Lista o histórico de pedidos do cliente autenticado de forma paginada.

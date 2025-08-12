@@ -1,7 +1,6 @@
 package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -9,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +22,12 @@ import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Fornecedo
 import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.ItensPedido;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Pedido;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.utils.enums.StatusPedido;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.pedido.ItemPedidoResponseDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.pedido.PedidoFornecedorDetalhadoResponseDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.pedido.PedidoRequestDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.pedido.PedidoResponseDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.exception.RegraDeNegocioException;
+import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.mapper.ItemPedidoMapper;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.mapper.PedidoFornecedorMapper;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.mapper.PedidoMapper;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.repository.ItensPedidoRepository;
@@ -39,14 +41,17 @@ public class PedidoServiceImpl implements PedidoUseCases {
   private final ItensPedidoRepository itensPedidoRepository;
   private final PedidoMapper pedidoMapper;
   private final PedidoFornecedorMapper pedidoFornecedorMapper;
+  private final ItemPedidoMapper itemPedidoMapper;
   private final ObjectMapper objectMapper;
 
   public PedidoServiceImpl(PedidoRepository pedidoRepository, ItensPedidoRepository itensPedidoRepository,
-      PedidoMapper pedidoMapper, PedidoFornecedorMapper pedidoFornecedorMapper, ObjectMapper objectMapper) {
+      PedidoMapper pedidoMapper, PedidoFornecedorMapper pedidoFornecedorMapper, ItemPedidoMapper itemPedidoMapper,
+      ObjectMapper objectMapper) {
     this.pedidoRepository = pedidoRepository;
     this.itensPedidoRepository = itensPedidoRepository;
     this.pedidoMapper = pedidoMapper;
     this.pedidoFornecedorMapper = pedidoFornecedorMapper;
+    this.itemPedidoMapper = itemPedidoMapper;
     this.objectMapper = objectMapper;
   }
 
@@ -81,15 +86,46 @@ public class PedidoServiceImpl implements PedidoUseCases {
     Page<ItensPedido> itensPedidosPage = itensPedidoRepository.findByProdutoFornecedorId(fornecedorLogado.getId(),
         pageable);
 
-    Set<Pedido> pedidosUnicos = itensPedidosPage.stream()
+    List<Pedido> pedidosUnicos = itensPedidosPage.getContent().stream()
         .map(ItensPedido::getPedido)
-        .collect(Collectors.toSet());
+        .distinct()
+        .collect(Collectors.toList());
+
+    pedidosUnicos.sort((p1, p2) -> p2.getDataPedido().compareTo(p1.getDataPedido()));
 
     List<PedidoFornecedorDetalhadoResponseDTO> dtos = pedidosUnicos.stream()
         .map(pedidoFornecedorMapper::toDetailedResponseDTO)
         .collect(Collectors.toList());
 
     return new PageImpl<>(dtos, pageable, itensPedidosPage.getTotalElements());
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public PedidoFornecedorDetalhadoResponseDTO buscarDetalhesPedidoFornecedor(UUID pedidoId, UserDetails authUser) {
+    Fornecedor fornecedorLogado = getFornecedorFromUserDetails(authUser);
+
+    Pedido pedido = pedidoRepository.findById(pedidoId)
+        .orElseThrow(() -> new NotFoundException("Pedido não encontrado."));
+
+    List<ItensPedido> itensDoFornecedor = pedido.getItens().stream()
+        .filter(item -> item.getProduto().getFornecedor().getId().equals(fornecedorLogado.getId()))
+        .collect(Collectors.toList());
+
+    if (itensDoFornecedor.isEmpty()) {
+      throw new AccessDeniedException("Acesso negado. O pedido não contém produtos deste fornecedor.");
+    }
+
+    List<ItemPedidoResponseDTO> itensDto = itensDoFornecedor.stream()
+        .map(itemPedidoMapper::toResponseDTO)
+        .collect(Collectors.toList());
+
+    return new PedidoFornecedorDetalhadoResponseDTO(
+        pedido.getId(),
+        pedido.getDataPedido(),
+        pedido.getCliente().getNome(),
+        pedido.getStatus().toString(),
+        itensDto);
   }
 
   @Override

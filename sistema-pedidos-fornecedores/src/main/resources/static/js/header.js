@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Dropdown menu usuário
   const userMenu = document.querySelector(".user-menu");
   let timeoutId;
 
@@ -8,7 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
       clearTimeout(timeoutId);
       userMenu.classList.add("dropdown-active");
     });
-
     userMenu.addEventListener("mouseleave", function () {
       timeoutId = setTimeout(() => {
         userMenu.classList.remove("dropdown-active");
@@ -16,10 +14,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Delegação de evento: captura clique em botões add-to-cart-btn em qualquer lugar
   document.addEventListener("click", function (event) {
     const button = event.target.closest(".add-to-cart-btn");
-    if (!button) return; // não é botão add-to-cart
+    if (!button) return;
 
     const produtoId = button.dataset.produtoId;
     const produtoNome = button.dataset.produtoNome;
@@ -47,12 +44,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     localStorage.setItem("shoppingCart", JSON.stringify(cart));
-
     showToast(`${produtoNome} foi adicionado ao carrinho!`);
     updateCartCounter();
   });
 
-  function updateCartCounter() {
+  // A função `updateCartCounter` precisa ser globalmente acessível
+  window.updateCartCounter = function () {
     const cart = JSON.parse(localStorage.getItem("shoppingCart")) || [];
     const cartCounter = document.getElementById("cart-counter");
 
@@ -66,11 +63,11 @@ document.addEventListener("DOMContentLoaded", function () {
         cartCounter.style.display = "none";
       }
     }
-  }
+  };
 
   function showToast(message) {
     const toast = document.getElementById("toast");
-    if (!toast) return; // evitar erro se não existir toast
+    if (!toast) return;
 
     toast.textContent = message;
     toast.classList.add("show");

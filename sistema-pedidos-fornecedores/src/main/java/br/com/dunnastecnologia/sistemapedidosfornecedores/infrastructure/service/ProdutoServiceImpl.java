@@ -120,8 +120,7 @@ public class ProdutoServiceImpl implements ProdutoUseCases {
   public Page<ProdutoResponseDTO> listarProdutosDoFornecedorLogado(UserDetails authUser, Pageable pageable) {
     Fornecedor fornecedorLogado = getFornecedorFromUserDetails(authUser);
 
-    Sort sort = Sort.by(Sort.Direction.DESC, "ativo")
-        .and(Sort.by(Sort.Direction.DESC, "dataCriacao"));
+    Sort sort = Sort.by(Sort.Direction.DESC, "ativo");
 
     Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 

@@ -19,6 +19,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const paginacaoPedidos = document.getElementById("paginacao-pedidos");
   const TAB_PEDIDOS_ID = "pedidos";
 
+  // Elementos DOM da modal de detalhes do pedido
+  const modalDetalhesPedido = document.getElementById("modal-detalhes-pedido");
+  const modalDetalhesBody = document.getElementById("modal-detalhes-body");
+  const modalCloseBtns = document.querySelectorAll(".modal-close-btn");
+
   // Estado da paginação
   let paginaAtualProdutos = 0;
   const tamanhoPagina = 8;
@@ -54,7 +59,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // --- LÓGICA DE PRODUTOS ---
+  // --- LÓGICA DA MODAL ---
+  function openModal() {
+    modalDetalhesPedido.classList.add("active");
+  }
+
+  function closeModal() {
+    modalDetalhesPedido.classList.remove("active");
+    modalDetalhesBody.innerHTML = "";
+  }
+
+  modalCloseBtns.forEach((btn) => btn.addEventListener("click", closeModal));
+
+  modalDetalhesPedido.addEventListener("click", (e) => {
+    if (e.target === modalDetalhesPedido) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (
+      e.key === "Escape" &&
+      modalDetalhesPedido.classList.contains("active")
+    ) {
+      closeModal();
+    }
+  });
+
+  // --- LÓGICA DE PRODUTOS (SEM ALTERAÇÕES) ---
   async function carregarProdutos(pagina = 0) {
     paginaAtualProdutos = pagina;
     productGrid.innerHTML = `<div class="spinner-wrapper"><div class="spinner"></div></div>`;
@@ -96,7 +128,6 @@ document.addEventListener("DOMContentLoaded", () => {
       card.setAttribute("role", "listitem");
 
       const precoFormatado = produto.preco.toFixed(2).replace(".", ",");
-      const statusClass = produto.ativo ? "status-ativo" : "status-desativado";
       const statusText = produto.ativo ? "Ativo" : "Inativo";
 
       const categoriasTags = document.createElement("div");
@@ -178,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // --- LÓGICA DE PEDIDOS ---
+  // --- LÓGICA DE PEDIDOS (COM MODAL DE DETALHES) ---
   async function carregarPedidos(pagina = 0) {
     paginaAtualPedidos = pagina;
     pedidosTbody.innerHTML = `<tr><td colspan="5"><div class="spinner-wrapper"><div class="spinner"></div></div></td></tr>`;
@@ -229,14 +260,84 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td><span class="${statusClass}">${pedido.status}</span></td>
                 <td>
                     <div class="action-buttons">
-                        <a href="/fornecedor/pedidos/${
+                        <button class="btn primary-btn btn-detalhes-pedido" data-id="${
                           pedido.id
-                        }" class="btn primary-btn">Detalhes</a>
+                        }">Detalhes</button>
                     </div>
                 </td>
             `;
       pedidosTbody.appendChild(tr);
+
+      // Adiciona o eventListener para o botão de detalhes
+      tr.querySelector(".btn-detalhes-pedido").addEventListener(
+        "click",
+        (e) => {
+          const pedidoId = e.target.dataset.id;
+          carregarDetalhesPedido(pedidoId);
+        }
+      );
     });
+  }
+
+  async function carregarDetalhesPedido(pedidoId) {
+    openModal();
+    modalDetalhesBody.innerHTML = `<div class="spinner-wrapper"><div class="spinner"></div></div>`;
+
+    try {
+      const res = await fetch(`/api/v1/pedidos/fornecedor/${pedidoId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Detalhes do pedido não encontrados.");
+
+      const pedido = await res.json();
+      renderizarDetalhesPedido(pedido);
+    } catch (error) {
+      modalDetalhesBody.innerHTML = `<p class="error-message">Erro: ${error.message}</p>`;
+    }
+  }
+
+  function renderizarDetalhesPedido(pedido) {
+    const dataPedido = new Date(pedido.dataPedido).toLocaleString("pt-BR");
+    const statusClass = `status-${pedido.status.toLowerCase()}`;
+
+    // Calcula o valor total do pedido
+    let valorTotal = 0;
+    const itensHtml = pedido.itens
+      .map((item) => {
+        const totalItem = item.quantidade * item.precoUnitarioCobrado;
+        valorTotal += totalItem;
+        return `
+            <li class="item-pedido">
+                <span class="item-nome">${item.nomeProduto}</span>
+                <span class="item-quantidade">Qtd: ${item.quantidade}</span>
+                <span class="item-preco">R$ ${item.precoUnitarioCobrado
+                  .toFixed(2)
+                  .replace(".", ",")}</span>
+            </li>
+        `;
+      })
+      .join("");
+
+    // Adiciona o valor total ao cabeçalho da modal
+    modalDetalhesBody.innerHTML = `
+        <div class="detalhes-header">
+            <p><strong>Cliente:</strong> ${pedido.nomeCliente}</p>
+            <p><strong>Data:</strong> ${dataPedido}</p>
+            <p><strong>Status:</strong> <span class="${statusClass}">${
+      pedido.status
+    }</span></p>
+            <hr/>
+            <h4>Itens do Pedido:</h4>
+        </div>
+        <div class="detalhes-body">
+            <ul class="lista-itens">${itensHtml}</ul>
+        </div>
+        <div class="detalhes-footer">
+            <p><strong>Valor Total do Pedido:</strong> R$ ${valorTotal
+              .toFixed(2)
+              .replace(".", ",")}</p>
+        </div>
+    `;
   }
 
   // --- LÓGICA GENÉRICA DE PAGINAÇÃO ---

@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const cartItemsContainer = document.getElementById("cart-items-container");
   const finalizeOrderBtn = document.getElementById("finalize-order-btn");
-  const feedbackDiv = document.getElementById("feedback-message");
   const resumoContainer = document.getElementById("cart-summary-values");
 
   const token = localStorage.getItem("jwtToken");
@@ -12,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let cart = JSON.parse(localStorage.getItem("shoppingCart")) || [];
   let appliedCoupons = {};
-  let fornecedoresCache = {}; // fornecedorId -> nomeFornecedor
+  let fornecedoresCache = {};
 
   function agruparItensPorFornecedor(cart) {
     return cart.reduce((acc, item) => {
@@ -28,16 +27,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (fornecedoresCache[fornecedorId]) {
       return fornecedoresCache[fornecedorId];
     }
-
     const res = await fetch(`/api/v1/fornecedores/${fornecedorId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-
     if (!res.ok) {
       fornecedoresCache[fornecedorId] = `Fornecedor ${fornecedorId}`;
       return fornecedoresCache[fornecedorId];
     }
-
     const data = await res.json();
     fornecedoresCache[fornecedorId] = data.nome || `Fornecedor ${fornecedorId}`;
     return fornecedoresCache[fornecedorId];
@@ -56,6 +52,26 @@ document.addEventListener("DOMContentLoaded", () => {
     return await res.json();
   }
 
+  function atualizarQuantidadeItem(produtoId, fornecedorId, acao) {
+    const itemIndex = cart.findIndex(
+      (item) => item.id === produtoId && item.fornecedorId === fornecedorId
+    );
+    if (itemIndex > -1) {
+      if (acao === "incrementar") {
+        cart[itemIndex].quantidade++;
+      } else if (acao === "decrementar") {
+        if (cart[itemIndex].quantidade > 1) {
+          cart[itemIndex].quantidade--;
+        } else {
+          cart.splice(itemIndex, 1);
+          mostrarToast("Item removido do carrinho.", "success");
+        }
+      }
+      localStorage.setItem("shoppingCart", JSON.stringify(cart));
+      renderCartItems();
+    }
+  }
+
   async function renderCartItems() {
     cartItemsContainer.innerHTML = "";
 
@@ -63,6 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
       cartItemsContainer.innerHTML = `<p class="empty-list-message">Seu carrinho está vazio.</p>`;
       finalizeOrderBtn.disabled = true;
       resumoContainer.innerHTML = "";
+      // Garantir que o contador do header seja atualizado
+      if (typeof updateCartCounter === "function") {
+        updateCartCounter();
+      }
       return;
     }
 
@@ -73,7 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     const nomesFornecedoresArray = await Promise.all(nomesPromises);
 
-    // Mapeia os IDs dos fornecedores para seus respectivos nomes
     const nomesPorId = fornecedorIds.reduce((acc, id, index) => {
       acc[id] = nomesFornecedoresArray[index];
       return acc;
@@ -83,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const itens = grupos[fornecedorId];
       if (!itens.length) continue;
 
-      // Pega o nome do fornecedor do novo objeto de mapeamento
       const nomeFornecedor = nomesPorId[fornecedorId];
 
       const fornecedorDiv = document.createElement("div");
@@ -101,9 +119,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <th>Produto</th>
             <th>Valor Cheio (R$)</th>
             <th>Desconto Fornecedor (R$)</th>
-            <th>Quantidade</th>
             <th>Valor Total (R$)</th>
-          </tr>
+            <th class="text-center">Ações</th> </tr>
         </thead>
       `;
       const tbody = document.createElement("tbody");
@@ -120,8 +137,16 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${item.nome}</td>
           <td>${valorCheio.toFixed(2).replace(".", ",")}</td>
           <td>- ${descontoFornecedor.toFixed(2).replace(".", ",")}</td>
-          <td>${item.quantidade}</td>
           <td>${valorTotalItem.toFixed(2).replace(".", ",")}</td>
+          <td class="text-center">
+            <div class="quantidade-controls" data-produto-id="${
+              item.id
+            }" data-fornecedor-id="${item.fornecedorId}">
+              <button class="decrementar-btn" aria-label="Remover um item">-</button>
+              <span class="quantidade-display">${item.quantidade}</span>
+              <button class="incrementar-btn" aria-label="Adicionar um item">+</button>
+            </div>
+          </td>
         `;
         tbody.appendChild(tr);
       });
@@ -129,7 +154,6 @@ document.addEventListener("DOMContentLoaded", () => {
       table.appendChild(tbody);
       fornecedorDiv.appendChild(table);
 
-      // Input e botão para cupom (com classes para visual melhor)
       const cupomDiv = document.createElement("div");
       cupomDiv.className = "coupon-section";
       cupomDiv.innerHTML = `
@@ -140,7 +164,6 @@ document.addEventListener("DOMContentLoaded", () => {
       fornecedorDiv.appendChild(cupomDiv);
       cartItemsContainer.appendChild(fornecedorDiv);
 
-      // Se cupom aplicado, preenche input
       if (appliedCoupons[fornecedorId]) {
         const input = cupomDiv.querySelector(`#coupon-code-${fornecedorId}`);
         input.value = appliedCoupons[fornecedorId].codigo;
@@ -152,20 +175,16 @@ document.addEventListener("DOMContentLoaded", () => {
       applyBtn.addEventListener("click", async () => {
         const input = cupomDiv.querySelector(`#coupon-code-${fornecedorId}`);
         const codigo = input.value.trim();
-
         if (!codigo) {
           mostrarToast("Informe um código de cupom válido.", "error");
           delete appliedCoupons[fornecedorId];
           renderResumoPedido();
           return;
         }
-
         applyBtn.disabled = true;
         input.disabled = true;
-
         try {
           const cupom = await validarCupom(fornecedorId, codigo);
-
           if (!cupom.ativo) throw new Error("Cupom inativo.");
           const hoje = new Date().toISOString().slice(0, 10);
           if (cupom.dataValidade < hoje) throw new Error("Cupom expirado.");
@@ -174,7 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
             cupom.usosAtuais >= cupom.limiteDeUsos
           )
             throw new Error("Cupom já atingiu o limite de usos.");
-
           const subtotalFornecedor = calcularSubtotalFornecedor(itens);
           if (
             cupom.valorMinimoPedido !== null &&
@@ -186,7 +204,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 .replace(".", ",")} não atingido para este cupom.`
             );
           }
-
           appliedCoupons[fornecedorId] = cupom;
           mostrarToast(
             `Cupom "${codigo}" aplicado com sucesso! Desconto: ${
@@ -196,7 +213,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }`,
             "success"
           );
-
           renderResumoPedido();
         } catch (error) {
           delete appliedCoupons[fornecedorId];
@@ -207,6 +223,28 @@ document.addEventListener("DOMContentLoaded", () => {
           input.disabled = false;
         }
       });
+    }
+
+    document.querySelectorAll(".incrementar-btn").forEach((button) => {
+      button.addEventListener("click", (e) => {
+        const controls = e.target.closest(".quantidade-controls");
+        const produtoId = controls.dataset.produtoId;
+        const fornecedorId = controls.dataset.fornecedorId;
+        atualizarQuantidadeItem(produtoId, fornecedorId, "incrementar");
+      });
+    });
+
+    document.querySelectorAll(".decrementar-btn").forEach((button) => {
+      button.addEventListener("click", (e) => {
+        const controls = e.target.closest(".quantidade-controls");
+        const produtoId = controls.dataset.produtoId;
+        const fornecedorId = controls.dataset.fornecedorId;
+        atualizarQuantidadeItem(produtoId, fornecedorId, "decrementar");
+      });
+    });
+
+    if (typeof updateCartCounter === "function") {
+      updateCartCounter();
     }
 
     finalizeOrderBtn.disabled = false;
@@ -254,18 +292,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const cupom = appliedCoupons[fornecedorId];
       if (cupom) {
         let descontoCupom = 0;
-
         if (cupom.tipoDesconto === "P") {
           descontoCupom =
             subtotalComDescontoFornecedor * (parseFloat(cupom.valor) / 100);
         } else if (cupom.tipoDesconto === "F") {
           descontoCupom = parseFloat(cupom.valor);
         }
-
         if (descontoCupom > subtotalComDescontoFornecedor) {
           descontoCupom = subtotalComDescontoFornecedor;
         }
-
         descontoCupomTotal += descontoCupom;
       }
     }
@@ -284,14 +319,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderResumoPedido() {
     if (!resumoContainer) return;
-
     if (cart.length === 0) {
       resumoContainer.innerHTML = "";
       return;
     }
-
     const resumo = calcularResumoPedido();
-
     resumoContainer.innerHTML = `
       <p><strong>Valor Bruto:</strong> R$ ${resumo.valorBrutoTotal
         .toFixed(2)
@@ -316,10 +348,8 @@ document.addEventListener("DOMContentLoaded", () => {
       toast.className = "toast";
       document.body.appendChild(toast);
     }
-
     toast.textContent = mensagem;
     toast.className = `toast show ${tipo}`;
-
     setTimeout(() => {
       toast.className = "toast";
     }, 4000);
@@ -330,10 +360,8 @@ document.addEventListener("DOMContentLoaded", () => {
       mostrarToast("O carrinho está vazio.", "error");
       return;
     }
-
     const grupos = agruparItensPorFornecedor(cart);
     finalizeOrderBtn.disabled = true;
-
     try {
       for (const fornecedorId in grupos) {
         const itens = grupos[fornecedorId];
@@ -341,15 +369,12 @@ document.addEventListener("DOMContentLoaded", () => {
           produtoId: item.id,
           quantidade: item.quantidade,
         }));
-
         const cupomFornecedor = appliedCoupons[fornecedorId];
         const codigoCupom = cupomFornecedor ? cupomFornecedor.codigo : null;
-
         const pedidoDTO = {
           itens: itensPedido,
           codigoCupom: codigoCupom,
         };
-
         const response = await fetch("/api/v1/pedidos", {
           method: "POST",
           headers: {
@@ -358,7 +383,6 @@ document.addEventListener("DOMContentLoaded", () => {
           },
           body: JSON.stringify(pedidoDTO),
         });
-
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(
@@ -367,10 +391,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }`
           );
         }
-
         await response.json();
       }
-
       mostrarToast("Todos os pedidos foram realizados com sucesso!", "success");
       localStorage.removeItem("shoppingCart");
       cart = [];

@@ -31,10 +31,9 @@
             <section id="produtos" class="tab-content active">
               <div class="top-section">
                 <h3>Lista de Produtos</h3>
-                <%-- ADICIONA AS CLASSES DE BOTÃO CORRETAS --%>
-                  <a href="<c:url value='/fornecedor/produtos/cadastrar' />" class="btn primary-btn">
-                    Adicionar Produto
-                  </a>
+                <a href="<c:url value='/fornecedor/produtos/cadastrar' />" class="btn primary-btn">
+                  Adicionar Produto
+                </a>
               </div>
               <div class="product-grid-wrapper">
                 <div id="product-grid" role="list" aria-label="Lista de produtos">
@@ -64,6 +63,21 @@
             </section>
           </section>
 
+        </div>
+
+        <div id="modal-detalhes-pedido" class="modal-backdrop" role="dialog" aria-modal="true"
+          aria-labelledby="modal-detalhes-titulo" tabindex="-1">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 id="modal-detalhes-titulo">Detalhes do Pedido</h3>
+              <button class="modal-close-btn">&times;</button>
+            </div>
+            <div id="modal-detalhes-body">
+            </div>
+            <div class="modal-footer">
+              <button class="btn secondary-btn modal-close-btn">Fechar</button>
+            </div>
+          </div>
         </div>
 
         <%@ include file="includes/footer.jsp" %>

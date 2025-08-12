@@ -107,4 +107,19 @@ public class PedidoController {
         pageable);
     return ResponseEntity.ok(pedidos);
   }
+
+  @GetMapping("/fornecedor/{id}")
+  @SecurityRequirement(name = "bearerAuth")
+  @Operation(summary = "Fornecedor busca os detalhes de um de seus pedidos", description = "Retorna os detalhes completos de um pedido específico, validando se ele tem itens do fornecedor autenticado.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Detalhes do pedido encontrados."),
+      @ApiResponse(responseCode = "403", description = "Acesso negado (pedido não contém produtos deste fornecedor)."),
+      @ApiResponse(responseCode = "404", description = "Pedido não encontrado.")
+  })
+  public ResponseEntity<PedidoFornecedorDetalhadoResponseDTO> buscarDetalhesPedidoFornecedor(
+      @PathVariable UUID id, Authentication authentication) {
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    PedidoFornecedorDetalhadoResponseDTO pedido = pedidoUseCases.buscarDetalhesPedidoFornecedor(id, userDetails);
+    return ResponseEntity.ok(pedido);
+  }
 }
