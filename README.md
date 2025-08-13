@@ -229,7 +229,7 @@ Lista completa de todos os endpoints da API.
     ```
 
 4.  **Compilar e Executar a Aplicação**
-   * ○ Navegue até a pasta: `\Dunnas_Challenge\sistema_pedidos_fornecedores`
+    * ○ Navegue até a pasta: `\Dunnas_Challenge\sistema_pedidos_fornecedores`
     * Compile o projeto com o Maven:
     ```bash
     mvn clean install
