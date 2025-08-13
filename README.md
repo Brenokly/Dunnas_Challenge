@@ -202,6 +202,8 @@ Lista completa de todos os endpoints da API.
 * **PostgreSQL:** Versão 17 ou superior.
 * **IDE (Opcional):** VS Code, IntelliJ IDEA ou Eclipse.
 
+> **Importante:** Todos os pré-requisitos acima devem estar configurados nas variáveis de ambiente do computador que irá executar o projeto.
+
 ### Guia de Instalação e Execução
 
 1.  **Clonar o Repositório**
@@ -227,6 +229,7 @@ Lista completa de todos os endpoints da API.
     ```
 
 4.  **Compilar e Executar a Aplicação**
+   * ○ Navegue até a pasta: `\Dunnas_Challenge\sistema_pedidos_fornecedores`
     * Compile o projeto com o Maven:
     ```bash
     mvn clean install
