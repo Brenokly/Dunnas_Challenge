@@ -199,14 +199,14 @@ Lista completa de todos os endpoints da API.
 * **Java (JDK):** Versão 21 ou superior.
 * **Apache Maven:** Versão 3.8 ou superior.
 * **Git**
-* **PostgreSQL:** Versão 15 ou superior.
+* **PostgreSQL:** Versão 17 ou superior.
 * **IDE (Opcional):** VS Code, IntelliJ IDEA ou Eclipse.
 
 ### Guia de Instalação e Execução
 
 1.  **Clonar o Repositório**
     ```bash
-    git clone [https://github.com/Brenokly/Dunnas_Challenge.git](https://github.com/Brenokly/Dunnas_Challenge.git)
+    git clone https://github.com/Brenokly/Dunnas_Challenge.git
     cd Dunnas_Challenge
     ```
 
