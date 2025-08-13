@@ -29,6 +29,8 @@ Antes de começar, é crucial configurar o ambiente no Postman para automatizar 
     * `PRODUTO_A_ID`
     * `PRODUTO_B_ID`
     * `CUPOM_ID`
+    * `CATEGORIA_ELETRONICOS_ID`
+    * `CATEGORIA_PERIFERICOS_ID`
 
 > **Importante:** No canto superior direito do Postman, certifique-se de que o seu ambiente `Desenvolvimento Local` está selecionado para a execução dos testes.
 
@@ -165,7 +167,43 @@ Para cada requisição listada abaixo, vá para a aba **"Tests"** e cole o códi
 
 **Requisito:** Todas as requisições deste fluxo devem usar o `{{FORNECEDOR_TOKEN}}` na aba `Authorization`, selecionando `Bearer Token`.
 
-### Teste 2.1: [SUCESSO] Fornecedor cadastra um novo Produto
+### Teste 2.1: [SUCESSO] Cadastrar uma categoria
+* **Método:** `POST`
+* **URL:** `{{BASE_URL}}/api/v1/categorias`
+* **Body** (raw, JSON):
+    ```json
+    {
+        "nome": "Moda"
+    }
+    ```
+* **Script** (aba "Tests"):
+    ```javascript
+      pm.test("Status da Resposta é 201 Created", () => pm.response.to.have.status(201));
+      const responseJson = pm.response.json();
+      if (responseJson.id) {
+          pm.environment.set("CATEGORIA_ELETRONICOS_ID", responseJson.id);
+      }
+    ```
+    
+### Teste 2.2: [SUCESSO] Cadastrar uma outra categoria
+* **Método:** `POST`
+* **URL:** `{{BASE_URL}}/api/v1/categorias`
+* **Body** (raw, JSON):
+    ```json
+    {
+        "nome": "Periféricos"
+    }
+    ```
+* **Script** (aba "Tests"):
+    ```javascript
+      pm.test("Status da Resposta é 201 Created", () => pm.response.to.have.status(201));
+      const responseJson = pm.response.json();
+      if (responseJson.id) {
+          pm.environment.set("CATEGORIA_PERIFERICOS_ID", responseJson.id);
+      }
+    ```
+
+### Teste 2.3: [SUCESSO] Fornecedor cadastra um novo Produto
 * **Método:** `POST`
 * **URL:** `{{BASE_URL}}/api/v1/produtos`
 * **Body** (raw, JSON):
@@ -175,7 +213,10 @@ Para cada requisição listada abaixo, vá para a aba **"Tests"** e cole o códi
         "descricao": "Mouse ergonômico com 12000 DPI.",
         "preco": 250.00,
         "percentualDesconto": 10,
-        "categoriaIds": []
+        "categoriaIds": [
+           "{{CATEGORIA_ELETRONICOS_ID}}",
+           "{{CATEGORIA_PERIFERICOS_ID}}"
+        ]
     }
     ```
 * **Script** (aba "Tests"):
@@ -187,7 +228,7 @@ Para cada requisição listada abaixo, vá para a aba **"Tests"** e cole o códi
     }
     ```
 
-### Teste 2.2: [SUCESSO] Fornecedor cadastra um segundo Produto
+### Teste 2.4: [SUCESSO] Fornecedor cadastra um segundo Produto
 * **Método:** `POST`
 * **URL:** `{{BASE_URL}}/api/v1/produtos`
 * **Body** (raw, JSON):
@@ -197,7 +238,10 @@ Para cada requisição listada abaixo, vá para a aba **"Tests"** e cole o códi
         "descricao": "Headset com som surround virtual.",
         "preco": 450.00,
         "percentualDesconto": 0,
-        "categoriaIds": []
+        "categoriaIds": [
+           "{{CATEGORIA_ELETRONICOS_ID}}",
+           "{{CATEGORIA_PERIFERICOS_ID}}"
+        ]
     }
     ```
 * **Script** (aba "Tests"):
@@ -209,7 +253,7 @@ Para cada requisição listada abaixo, vá para a aba **"Tests"** e cole o códi
     }
     ```
 
-### Teste 2.3: [SUCESSO] Fornecedor cadastra um Cupom
+### Teste 2.5: [SUCESSO] Fornecedor cadastra um Cupom
 * **Método:** `POST`
 * **URL:** `{{BASE_URL}}/api/v1/cupons`
 * **Body** (raw, JSON):
@@ -232,7 +276,7 @@ Para cada requisição listada abaixo, vá para a aba **"Tests"** e cole o códi
     }
     ```
 
-### Teste 2.4: [SUCESSO] Fornecedor lista seus próprios produtos
+### Teste 2.6: [SUCESSO] Fornecedor lista seus próprios produtos
 * **Método:** `GET`
 * **URL:** `{{BASE_URL}}/api/v1/produtos/meus-produtos`
 * **Script** (aba "Tests"):
@@ -244,7 +288,7 @@ Para cada requisição listada abaixo, vá para a aba **"Tests"** e cole o códi
     });
     ```
 
-### Teste 2.5: [SUCESSO] Fornecedor lista seus próprios cupons
+### Teste 2.7: [SUCESSO] Fornecedor lista seus próprios cupons
 * **Método:** `GET`
 * **URL:** `{{BASE_URL}}/api/v1/cupons`
 * **Script** (aba "Tests"):
@@ -256,7 +300,7 @@ Para cada requisição listada abaixo, vá para a aba **"Tests"** e cole o códi
     });
     ```
 
-### Teste 2.6: [ERRO] Cliente tenta cadastrar um produto
+### Teste 2.8: [ERRO] Cliente tenta cadastrar um produto
 * **Método:** `POST`
 * **URL:** `{{BASE_URL}}/api/v1/produtos`
 * **Header:** `Authorization: Bearer {{CLIENTE_TOKEN}}`
