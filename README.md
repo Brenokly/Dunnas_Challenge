@@ -206,7 +206,7 @@ Lista completa de todos os endpoints da API.
 
 1.  **Clonar o Repositório**
     ```bash
-    git clone [https://github.com/Brenokly/Dunnas_Challenge.git](https://github.com/Brenokly/Dunnas_Challenge.git)
+    git clone https://github.com/Brenokly/Dunnas_Challenge.git
     cd Dunnas_Challenge
     ```
 
