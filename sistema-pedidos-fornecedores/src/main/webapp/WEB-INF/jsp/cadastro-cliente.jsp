@@ -18,9 +18,7 @@
     </head>
 
     <body>
-
       <%@ include file="includes/header.jsp" %>
-
         <div class="container">
           <h2>Cadastro de Novo Cliente</h2>
 

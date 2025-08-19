@@ -1,10 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token) {
-    window.location.href = "/login";
-    return;
-  }
-
   // O ID do produto será extraído da URL
   const produtoId = window.location.pathname.split("/").pop();
   const form = document.getElementById("form-editar-produto");
@@ -15,9 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function carregarDadosProduto() {
     try {
-      const res = await fetch(`/api/v1/produtos/${produtoId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(`/api/v1/produtos/${produtoId}`);
       if (!res.ok)
         throw new Error("Produto não encontrado ou você não tem permissão.");
 
@@ -40,9 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function carregarCategorias(categoriasProduto) {
     try {
-      const res = await fetch("/api/v1/categorias?page=0&size=100", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch("/api/v1/categorias?page=0&size=100");
       if (!res.ok) throw new Error("Erro ao carregar categorias.");
 
       const data = await res.json();
@@ -87,8 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch(`/api/v1/produtos/${produtoId}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(data),
       });

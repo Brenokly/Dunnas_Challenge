@@ -1,10 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token) {
-    window.location.href = "/login";
-    return;
-  }
-
   // Elementos DOM para as abas
   const tabs = document.querySelectorAll(".tab-button");
   const contents = document.querySelectorAll(".tab-content");
@@ -93,11 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const res = await fetch(
-        `/api/v1/produtos/meus-produtos?page=${pagina}&size=${tamanhoPagina}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+        `/api/v1/produtos/meus-produtos?page=${pagina}&size=${tamanhoPagina}`      );
       if (!res.ok) throw new Error("Erro ao carregar seus produtos.");
 
       const data = await res.json();
@@ -180,9 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function desativarProduto(id) {
     try {
       const res = await fetch(`/api/v1/produtos/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+        method: "DELETE"});
       if (!res.ok) throw new Error("Erro ao desativar produto.");
 
       carregarProdutos(paginaAtualProdutos);
@@ -196,8 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function reativarProduto(id) {
     try {
       const res = await fetch(`/api/v1/produtos/${id}/reativar`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        method: "POST"
       });
       if (!res.ok) throw new Error("Erro ao reativar produto.");
 
@@ -216,10 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const res = await fetch(
-        `/api/v1/pedidos/fornecedor?page=${pagina}&size=${tamanhoPagina}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        `/api/v1/pedidos/fornecedor?page=${pagina}&size=${tamanhoPagina}`
       );
       if (!res.ok) throw new Error("Erro ao carregar pedidos.");
 
@@ -284,9 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modalDetalhesBody.innerHTML = `<div class="spinner-wrapper"><div class="spinner"></div></div>`;
 
     try {
-      const res = await fetch(`/api/v1/pedidos/fornecedor/${pedidoId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(`/api/v1/pedidos/fornecedor/${pedidoId}`);
       if (!res.ok) throw new Error("Detalhes do pedido não encontrados.");
 
       const pedido = await res.json();

@@ -37,7 +37,7 @@ public class SqlStateErrorMapping {
 
         // ERROS DE PEDIDO
         errorMap.put("PPE01", RegraDeNegocioException::new);
-        errorMap.put("PPE02", RegraDeNegocioException::new);
+        errorMap.put("PPE02", SaldoInsuficienteException::new);
 
         // Erros de Categoria
         errorMap.put("PCA01", RecursoDuplicadoException::new);

@@ -1,10 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token) {
-    window.location.href = "/login";
-    return;
-  }
-
   const form = document.getElementById("form-novo-cupom");
 
   form.addEventListener("submit", async (e) => {
@@ -47,7 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
       });

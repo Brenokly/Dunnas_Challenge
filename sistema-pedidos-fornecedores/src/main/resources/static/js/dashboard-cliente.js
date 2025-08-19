@@ -1,9 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token) {
-    window.location.href = "/login";
-    return;
-  }
   // DOM elements
   const btnFiltrarCategorias = document.getElementById(
     "btn-filtrar-categorias"
@@ -92,9 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Carregamento de categorias
   async function carregarCategorias() {
     try {
-      const res = await fetch("/api/v1/categorias?page=0&size=100", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch("/api/v1/categorias?page=0&size=100");
       if (!res.ok) throw new Error("Erro ao carregar categorias");
       const data = await res.json();
       categorias = data.content || [];
@@ -119,9 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
       (categoriasQuery ? "&" + categoriasQuery : "");
 
     try {
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(url);
       if (!res.ok) throw new Error("Erro ao carregar produtos");
       const data = await res.json();
       renderizarProdutos(data.content);

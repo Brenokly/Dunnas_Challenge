@@ -4,11 +4,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const feedbackDiv = document.getElementById("feedback-message");
   const container = document.querySelector(".profile-container");
   const clienteId = container.dataset.clienteId;
-  const token = localStorage.getItem("jwtToken");
-
-  if (!token) {
-    window.location.href = "/login";
-  }
 
   if (profileForm) {
     profileForm.addEventListener("submit", function (event) {
@@ -22,8 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
       fetch(`/api/v1/clientes/${clienteId}/dados-pessoais`, {
         method: "PATCH",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(data),
       })
@@ -56,8 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
       fetch(`/api/v1/clientes/${clienteId}/senha`, {
         method: "PATCH",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(data),
       })

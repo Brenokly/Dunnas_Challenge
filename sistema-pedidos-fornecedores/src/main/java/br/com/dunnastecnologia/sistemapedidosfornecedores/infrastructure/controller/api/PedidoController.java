@@ -35,91 +35,91 @@ import jakarta.validation.Valid;
 @Tag(name = "Pedidos", description = "Endpoints para a realização e consulta de pedidos.")
 public class PedidoController {
 
-  private final PedidoUseCases pedidoUseCases;
+    private final PedidoUseCases pedidoUseCases;
 
-  public PedidoController(PedidoUseCases pedidoUseCases) {
-    this.pedidoUseCases = pedidoUseCases;
-  }
-
-  @PostMapping
-  @SecurityRequirement(name = "bearerAuth")
-  @Operation(summary = "Cliente cria um novo pedido", description = "Realiza a transação completa de um novo pedido. Requer autenticação de Cliente.")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description = "Pedido realizado com sucesso."),
-      @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos ou regra de negócio violada (ex: saldo insuficiente, cupom inválido)."),
-      @ApiResponse(responseCode = "403", description = "Acesso negado (usuário não é um cliente).")
-  })
-  public ResponseEntity<PedidoResponseDTO> criar(@RequestBody @Valid PedidoRequestDTO requestDTO,
-      Authentication authentication) {
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    PedidoResponseDTO responseDTO = pedidoUseCases.criarNovoPedido(requestDTO, userDetails);
-    URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-        .buildAndExpand(responseDTO.id()).toUri();
-    return ResponseEntity.created(location).body(responseDTO);
-  }
-
-  @GetMapping
-  @SecurityRequirement(name = "bearerAuth")
-  @Operation(summary = "Cliente lista seu histórico de pedidos", description = "Retorna uma lista paginada de todos os pedidos pertencentes ao cliente autenticado.")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Histórico de pedidos retornado com sucesso."),
-      @ApiResponse(responseCode = "403", description = "Acesso negado (usuário não é um cliente).")
-  })
-  public ResponseEntity<Page<PedidoResponseDTO>> listarMeusPedidos(
-      @ParameterObject Pageable pageable,
-      @RequestParam(required = false) StatusPedido status,
-      Authentication authentication) {
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    Page<PedidoResponseDTO> pedidos;
-    if (status != null) {
-      pedidos = pedidoUseCases.listarPedidosDoClientePorStatus(userDetails, status, pageable);
-    } else {
-      pedidos = pedidoUseCases.listarPedidosDoCliente(userDetails, pageable);
+    public PedidoController(PedidoUseCases pedidoUseCases) {
+        this.pedidoUseCases = pedidoUseCases;
     }
-    return ResponseEntity.ok(pedidos);
-  }
 
-  @GetMapping("/{id}")
-  @SecurityRequirement(name = "bearerAuth")
-  @Operation(summary = "Cliente busca um de seus pedidos por ID", description = "Retorna os detalhes de um pedido específico, validando se ele pertence ao cliente autenticado.")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Pedido encontrado com sucesso."),
-      @ApiResponse(responseCode = "403", description = "Acesso negado (pedido não pertence ao cliente)."),
-      @ApiResponse(responseCode = "404", description = "Pedido não encontrado.")
-  })
-  public ResponseEntity<PedidoResponseDTO> buscarMeuPedidoPorId(@PathVariable UUID id, Authentication authentication) {
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    PedidoResponseDTO pedido = pedidoUseCases.buscarPedidoPorId(id, userDetails);
-    return ResponseEntity.ok(pedido);
-  }
+    @PostMapping
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Cliente cria um novo pedido", description = "Realiza a transação completa de um novo pedido. Requer autenticação de Cliente.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Pedido realizado com sucesso."),
+        @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos ou regra de negócio violada (ex: saldo insuficiente, cupom inválido)."),
+        @ApiResponse(responseCode = "403", description = "Acesso negado (usuário não é um cliente).")
+    })
+    public ResponseEntity<PedidoResponseDTO> criar(@RequestBody @Valid PedidoRequestDTO requestDTO,
+            Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        PedidoResponseDTO responseDTO = pedidoUseCases.criarNovoPedido(requestDTO, userDetails);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(responseDTO.id()).toUri();
+        return ResponseEntity.created(location).body(responseDTO);
+    }
 
-  @GetMapping("/fornecedor")
-  @SecurityRequirement(name = "bearerAuth")
-  @Operation(summary = "Fornecedor lista seus pedidos", description = "Retorna uma lista paginada de pedidos feitos para o fornecedor autenticado.")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Lista de pedidos do fornecedor retornada com sucesso."),
-      @ApiResponse(responseCode = "403", description = "Acesso negado (usuário não é um fornecedor).")
-  })
-  public ResponseEntity<Page<PedidoFornecedorDetalhadoResponseDTO>> listarPedidosFornecedor(
-      @ParameterObject Pageable pageable, Authentication authentication) {
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    Page<PedidoFornecedorDetalhadoResponseDTO> pedidos = pedidoUseCases.listarPedidosDoFornecedor(userDetails,
-        pageable);
-    return ResponseEntity.ok(pedidos);
-  }
+    @GetMapping
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Cliente lista seu histórico de pedidos", description = "Retorna uma lista paginada de todos os pedidos pertencentes ao cliente autenticado.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Histórico de pedidos retornado com sucesso."),
+        @ApiResponse(responseCode = "403", description = "Acesso negado (usuário não é um cliente).")
+    })
+    public ResponseEntity<Page<PedidoResponseDTO>> listarMeusPedidos(
+            @ParameterObject Pageable pageable,
+            @RequestParam(required = false) StatusPedido status,
+            Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Page<PedidoResponseDTO> pedidos;
+        if (status != null) {
+            pedidos = pedidoUseCases.listarPedidosDoClientePorStatus(userDetails, status, pageable);
+        } else {
+            pedidos = pedidoUseCases.listarPedidosDoCliente(userDetails, pageable);
+        }
+        return ResponseEntity.ok(pedidos);
+    }
 
-  @GetMapping("/fornecedor/{id}")
-  @SecurityRequirement(name = "bearerAuth")
-  @Operation(summary = "Fornecedor busca os detalhes de um de seus pedidos", description = "Retorna os detalhes completos de um pedido específico, validando se ele tem itens do fornecedor autenticado.")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Detalhes do pedido encontrados."),
-      @ApiResponse(responseCode = "403", description = "Acesso negado (pedido não contém produtos deste fornecedor)."),
-      @ApiResponse(responseCode = "404", description = "Pedido não encontrado.")
-  })
-  public ResponseEntity<PedidoFornecedorDetalhadoResponseDTO> buscarDetalhesPedidoFornecedor(
-      @PathVariable UUID id, Authentication authentication) {
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    PedidoFornecedorDetalhadoResponseDTO pedido = pedidoUseCases.buscarDetalhesPedidoFornecedor(id, userDetails);
-    return ResponseEntity.ok(pedido);
-  }
+    @GetMapping("/{id}")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Cliente busca um de seus pedidos por ID", description = "Retorna os detalhes de um pedido específico, validando se ele pertence ao cliente autenticado.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Pedido encontrado com sucesso."),
+        @ApiResponse(responseCode = "403", description = "Acesso negado (pedido não pertence ao cliente)."),
+        @ApiResponse(responseCode = "404", description = "Pedido não encontrado.")
+    })
+    public ResponseEntity<PedidoResponseDTO> buscarMeuPedidoPorId(@PathVariable UUID id, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        PedidoResponseDTO pedido = pedidoUseCases.buscarPedidoPorId(id, userDetails);
+        return ResponseEntity.ok(pedido);
+    }
+
+    @GetMapping("/fornecedor")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Fornecedor lista seus pedidos", description = "Retorna uma lista paginada de pedidos feitos para o fornecedor autenticado.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de pedidos do fornecedor retornada com sucesso."),
+        @ApiResponse(responseCode = "403", description = "Acesso negado (usuário não é um fornecedor).")
+    })
+    public ResponseEntity<Page<PedidoFornecedorDetalhadoResponseDTO>> listarPedidosFornecedor(
+            @ParameterObject Pageable pageable, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Page<PedidoFornecedorDetalhadoResponseDTO> pedidos = pedidoUseCases.listarPedidosDoFornecedor(userDetails,
+                pageable);
+        return ResponseEntity.ok(pedidos);
+    }
+
+    @GetMapping("/fornecedor/{id}")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Fornecedor busca os detalhes de um de seus pedidos", description = "Retorna os detalhes completos de um pedido específico, validando se ele tem itens do fornecedor autenticado.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Detalhes do pedido encontrados."),
+        @ApiResponse(responseCode = "403", description = "Acesso negado (pedido não contém produtos deste fornecedor)."),
+        @ApiResponse(responseCode = "404", description = "Pedido não encontrado.")
+    })
+    public ResponseEntity<PedidoFornecedorDetalhadoResponseDTO> buscarDetalhesPedidoFornecedor(
+            @PathVariable UUID id, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        PedidoFornecedorDetalhadoResponseDTO pedido = pedidoUseCases.buscarDetalhesPedidoFornecedor(id, userDetails);
+        return ResponseEntity.ok(pedido);
+    }
 }

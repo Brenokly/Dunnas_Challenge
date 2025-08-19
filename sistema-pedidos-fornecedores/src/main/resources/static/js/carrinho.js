@@ -3,12 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const finalizeOrderBtn = document.getElementById("finalize-order-btn");
   const resumoContainer = document.getElementById("cart-summary-values");
 
-  const token = localStorage.getItem("jwtToken");
-  if (!token) {
-    window.location.href = "/login";
-    return;
-  }
-
   let cart = JSON.parse(localStorage.getItem("shoppingCart")) || [];
   let appliedCoupons = {};
   let fornecedoresCache = {};
@@ -27,9 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (fornecedoresCache[fornecedorId]) {
       return fornecedoresCache[fornecedorId];
     }
-    const res = await fetch(`/api/v1/fornecedores/${fornecedorId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await fetch(`/api/v1/fornecedores/${fornecedorId}`);
     if (!res.ok) {
       fornecedoresCache[fornecedorId] = `Fornecedor ${fornecedorId}`;
       return fornecedoresCache[fornecedorId];
@@ -40,9 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function validarCupom(fornecedorId, codigo) {
-    const res = await fetch(`/api/v1/cupons/${fornecedorId}/cupom/${codigo}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await fetch(`/api/v1/cupons/${fornecedorId}/cupom/${codigo}`);
     if (!res.ok) {
       const errorData = await res.json();
       throw new Error(
@@ -379,16 +369,15 @@ document.addEventListener("DOMContentLoaded", () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(pedidoDTO),
         });
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(
-            `Erro ao finalizar pedido do fornecedor ${fornecedorId}: ${
-              errorData.message || "Erro desconhecido"
-            }`
+            `Erro ao finalizar pedido do fornecedor ${
+              fornecedoresCache[fornecedorId]
+            }: ${errorData || "Erro desconhecido"}`
           );
         }
         await response.json();

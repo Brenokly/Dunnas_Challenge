@@ -18,13 +18,14 @@ import lombok.Setter;
 @Entity
 @Table(name = "categorias")
 public class Categoria {
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private UUID id;
 
-  @Column(name = "nome", nullable = false, unique = true, length = 100)
-  private String nome;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
 
-  @Column(name = "ativo", nullable = false)
-  private Boolean ativo;
+    @Column(name = "nome", nullable = false, unique = true, length = 100)
+    private String nome;
+
+    @Column(name = "ativo", nullable = false)
+    private Boolean ativo;
 }

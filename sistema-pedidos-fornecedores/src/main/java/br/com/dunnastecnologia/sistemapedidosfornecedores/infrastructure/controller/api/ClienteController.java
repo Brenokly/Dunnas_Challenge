@@ -43,8 +43,8 @@ public class ClienteController {
     @PostMapping
     @Operation(summary = "Cadastra um novo cliente", description = "Cria um novo cliente no sistema.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Cliente cadastrado com sucesso."),
-            @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos ou regra de negócio violada.")
+        @ApiResponse(responseCode = "201", description = "Cliente cadastrado com sucesso."),
+        @ApiResponse(responseCode = "400", description = "Dados de entrada inválidos ou regra de negócio violada.")
     })
     public ResponseEntity<ClienteResponseDTO> cadastrar(@RequestBody @Valid ClienteRequestDTO requestDTO) {
         ClienteResponseDTO responseDTO = clienteUseCases.cadastrarNovoCliente(requestDTO);
@@ -59,8 +59,8 @@ public class ClienteController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Busca os dados do cliente autenticado", description = "Retorna os detalhes do cliente autenticado.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Dados do cliente retornados."),
-            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+        @ApiResponse(responseCode = "200", description = "Dados do cliente retornados."),
+        @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
     public ResponseEntity<ClienteResponseDTO> buscarMeuPerfil(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -71,9 +71,9 @@ public class ClienteController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Atualiza os dados pessoais de um cliente", description = "Atualiza o nome e/ou data de nascimento. Requer autenticação do próprio cliente.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Dados atualizados com sucesso."),
-            @ApiResponse(responseCode = "403", description = "Acesso negado."),
-            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+        @ApiResponse(responseCode = "200", description = "Dados atualizados com sucesso."),
+        @ApiResponse(responseCode = "403", description = "Acesso negado."),
+        @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
     public ResponseEntity<ClienteResponseDTO> atualizarDadosPessoais(@PathVariable UUID id,
             @RequestBody @Valid ClienteUpdateDadosPessoaisDTO requestDTO, Authentication authentication) {
@@ -86,10 +86,10 @@ public class ClienteController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Atualiza a senha de um cliente", description = "Atualiza a senha. Requer a senha atual e autenticação do próprio cliente.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Senha alterada com sucesso."),
-            @ApiResponse(responseCode = "400", description = "Regra de negócio violada (ex: senha atual incorreta)."),
-            @ApiResponse(responseCode = "403", description = "Acesso negado."),
-            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+        @ApiResponse(responseCode = "204", description = "Senha alterada com sucesso."),
+        @ApiResponse(responseCode = "400", description = "Regra de negócio violada (ex: senha atual incorreta)."),
+        @ApiResponse(responseCode = "403", description = "Acesso negado."),
+        @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
     public ResponseEntity<Void> atualizarSenha(@PathVariable UUID id,
             @RequestBody @Valid ClienteUpdateSenhaDTO requestDTO, Authentication authentication) {
@@ -102,9 +102,9 @@ public class ClienteController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Adiciona saldo à conta do cliente autenticado", description = "Realiza uma operação de adição de saldo na conta do cliente autenticado.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Saldo adicionado com sucesso."),
-            @ApiResponse(responseCode = "400", description = "Valor inválido."),
-            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+        @ApiResponse(responseCode = "200", description = "Saldo adicionado com sucesso."),
+        @ApiResponse(responseCode = "400", description = "Valor inválido."),
+        @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
     public ResponseEntity<ClienteResponseDTO> adicionarSaldo(@RequestBody @Valid ValorRequestDTO valorDTO,
             Authentication authentication) {
@@ -116,8 +116,8 @@ public class ClienteController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Desativa a conta do cliente autenticado", description = "Altera o status da conta do cliente autenticado para 'inativo'.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Cliente desativado com sucesso."),
-            @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
+        @ApiResponse(responseCode = "204", description = "Cliente desativado com sucesso."),
+        @ApiResponse(responseCode = "404", description = "Cliente não encontrado.")
     })
     public ResponseEntity<Void> desativar(@PathVariable UUID id, Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();

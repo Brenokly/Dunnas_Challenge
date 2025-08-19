@@ -80,7 +80,6 @@ public class GlobalExceptionHandler {
     // Manipulador para estados ilegais/erros internos no servidor
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponseDTO> handleIllegalStateException(IllegalStateException ex) {
-        ex.printStackTrace();
         ErrorResponseDTO error = new ErrorResponseDTO(
                 "Ocorreu um erro interno crítico no servidor.",
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),

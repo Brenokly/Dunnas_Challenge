@@ -1,5 +1,6 @@
 INSERT INTO
-  categorias (id, nome, ativo)
+  categorias
+  (id, nome, ativo)
 VALUES
   (
     gen_random_uuid (),

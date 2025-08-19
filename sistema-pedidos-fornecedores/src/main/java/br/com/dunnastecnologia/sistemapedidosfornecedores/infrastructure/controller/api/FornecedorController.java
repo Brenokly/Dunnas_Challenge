@@ -46,12 +46,11 @@ public class FornecedorController {
     }
 
     // ENDPOINTS PÚBLICOS
-
     @PostMapping
     @Operation(summary = "Cadastra um novo fornecedor (Público)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Fornecedor cadastrado com sucesso."),
-            @ApiResponse(responseCode = "409", description = "CNPJ ou usuário já cadastrado.")
+        @ApiResponse(responseCode = "201", description = "Fornecedor cadastrado com sucesso."),
+        @ApiResponse(responseCode = "409", description = "CNPJ ou usuário já cadastrado.")
     })
     public ResponseEntity<FornecedorResponseDTO> cadastrar(@RequestBody @Valid FornecedorRequestDTO requestDTO) {
         FornecedorResponseDTO responseDTO = fornecedorUseCases.cadastrarNovoFornecedor(requestDTO);
@@ -69,8 +68,8 @@ public class FornecedorController {
     @GetMapping("/{id}")
     @Operation(summary = "Busca um fornecedor ativo por ID (Público)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Fornecedor encontrado."),
-            @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado.")
+        @ApiResponse(responseCode = "200", description = "Fornecedor encontrado."),
+        @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado.")
     })
     public ResponseEntity<FornecedorResponseDTO> buscarPorId(@PathVariable UUID id) {
         return ResponseEntity.ok(fornecedorUseCases.buscarPorId(id));
@@ -84,14 +83,13 @@ public class FornecedorController {
     }
 
     // ENDPOINTS PRIVADOS (REQUEREM AUTENTICAÇÃO E PROPRIEDADE)
-
     @GetMapping("/meu-perfil")
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Busca os dados do fornecedor autenticado")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Dados do fornecedor retornados."),
-            @ApiResponse(responseCode = "403", description = "Acesso negado (usuário não é um fornecedor)."),
-            @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado.")
+        @ApiResponse(responseCode = "200", description = "Dados do fornecedor retornados."),
+        @ApiResponse(responseCode = "403", description = "Acesso negado (usuário não é um fornecedor)."),
+        @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado.")
     })
     public ResponseEntity<FornecedorResponseDTO> buscarMeuPerfil(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -102,10 +100,10 @@ public class FornecedorController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Atualiza a senha de um fornecedor", description = "Atualiza a senha. Requer a senha atual e autenticação do próprio fornecedor.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Senha alterada com sucesso."),
-            @ApiResponse(responseCode = "400", description = "Regra de negócio violada (ex: senha atual incorreta)."),
-            @ApiResponse(responseCode = "403", description = "Acesso negado."),
-            @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado.")
+        @ApiResponse(responseCode = "204", description = "Senha alterada com sucesso."),
+        @ApiResponse(responseCode = "400", description = "Regra de negócio violada (ex: senha atual incorreta)."),
+        @ApiResponse(responseCode = "403", description = "Acesso negado."),
+        @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado.")
     })
     public ResponseEntity<Void> atualizarSenha(@PathVariable UUID id,
             @RequestBody @Valid FornecedorUpdateSenhaDTO requestDTO, Authentication authentication) {
@@ -118,9 +116,9 @@ public class FornecedorController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "Desativa a conta do fornecedor (requer autenticação do próprio fornecedor)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Fornecedor desativado."),
-            @ApiResponse(responseCode = "403", description = "Acesso negado."),
-            @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado.")
+        @ApiResponse(responseCode = "204", description = "Fornecedor desativado."),
+        @ApiResponse(responseCode = "403", description = "Acesso negado."),
+        @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado.")
     })
     public ResponseEntity<Void> desativar(@PathVariable UUID id, Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();

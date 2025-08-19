@@ -25,30 +25,30 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Transações", description = "Endpoints para a visualização do histórico de transações financeiras.")
 public class TransacaoController {
 
-  private final TransacaoUseCases transacaoUseCases;
+    private final TransacaoUseCases transacaoUseCases;
 
-  public TransacaoController(TransacaoUseCases transacaoUseCases) {
-    this.transacaoUseCases = transacaoUseCases;
-  }
-
-  @GetMapping("/meu-historico")
-  @SecurityRequirement(name = "bearerAuth")
-  @Operation(summary = "Cliente lista seu histórico de transações", description = "Retorna o extrato de transações financeiras (pagamentos, adições de saldo) do cliente autenticado.")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Histórico de transações retornado com sucesso."),
-      @ApiResponse(responseCode = "403", description = "Acesso negado (usuário não é um cliente).")
-  })
-  public ResponseEntity<Page<TransacaoResponseDTO>> listarMinhasTransacoes(
-      @ParameterObject Pageable pageable,
-      @RequestParam(required = false) TipoTransacao tipo,
-      Authentication authentication) {
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    Page<TransacaoResponseDTO> transacoes;
-    if (tipo != null) {
-      transacoes = transacaoUseCases.listarTransacoesDoClientePorTipo(userDetails, tipo, pageable);
-    } else {
-      transacoes = transacaoUseCases.listarTransacoesDoCliente(userDetails, pageable);
+    public TransacaoController(TransacaoUseCases transacaoUseCases) {
+        this.transacaoUseCases = transacaoUseCases;
     }
-    return ResponseEntity.ok(transacoes);
-  }
+
+    @GetMapping("/meu-historico")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Cliente lista seu histórico de transações", description = "Retorna o extrato de transações financeiras (pagamentos, adições de saldo) do cliente autenticado.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Histórico de transações retornado com sucesso."),
+        @ApiResponse(responseCode = "403", description = "Acesso negado (usuário não é um cliente).")
+    })
+    public ResponseEntity<Page<TransacaoResponseDTO>> listarMinhasTransacoes(
+            @ParameterObject Pageable pageable,
+            @RequestParam(required = false) TipoTransacao tipo,
+            Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Page<TransacaoResponseDTO> transacoes;
+        if (tipo != null) {
+            transacoes = transacaoUseCases.listarTransacoesDoClientePorTipo(userDetails, tipo, pageable);
+        } else {
+            transacoes = transacaoUseCases.listarTransacoesDoCliente(userDetails, pageable);
+        }
+        return ResponseEntity.ok(transacoes);
+    }
 }

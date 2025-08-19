@@ -1,5 +1,6 @@
 package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.controller.api;
 
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.auth.AuthenticationRequestDTO;
-import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.dto.auth.AuthenticationResponseDTO;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.security.JwtService;
 import br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -44,12 +45,12 @@ public class AuthenticationController {
     @PostMapping("/login")
     @Operation(summary = "Autentica um usuário", description = "Realiza o login de um usuário (cliente ou fornecedor) e retorna um token JWT.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Autenticação bem-sucedida."),
-            @ApiResponse(responseCode = "401", description = "Credenciais inválidas.")
+        @ApiResponse(responseCode = "200", description = "Autenticação bem-sucedida."),
+        @ApiResponse(responseCode = "401", description = "Credenciais inválidas.")
     })
-    public ResponseEntity<AuthenticationResponseDTO> login(
+    public ResponseEntity<String> login(
             @RequestBody @Valid AuthenticationRequestDTO request,
-            HttpServletRequest httpRequest) {
+            HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.usuario(), request.senha()));
@@ -67,7 +68,17 @@ public class AuthenticationController {
         final UserDetails user = authenticationService.loadUserByUsername(request.usuario());
         final String token = jwtService.generateToken(user);
 
-        return ResponseEntity.ok(new AuthenticationResponseDTO(token));
+        // Criar o cookie HttpOnly
+        ResponseCookie cookie = ResponseCookie.from("jwt", token)
+                .httpOnly(true) // Impede acesso via JavaScript
+                .secure(true) // Apenas HTTPS
+                .path("/") // Disponível para toda a aplicação
+                .maxAge(7 * 24 * 60 * 60) // Expiração em 7 dias
+                .build();
+
+        httpResponse.addHeader("Set-Cookie", cookie.toString());
+
+        return ResponseEntity.ok("Login bem-sucedido!");
     }
 
 }

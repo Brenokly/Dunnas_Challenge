@@ -34,74 +34,72 @@ import jakarta.validation.Valid;
 @Tag(name = "Categorias", description = "Endpoints para a visualização e gerenciamento de categorias de produtos.")
 public class CategoriaController {
 
-  private final CategoriaUseCases categoriaUseCases;
+    private final CategoriaUseCases categoriaUseCases;
 
-  public CategoriaController(CategoriaUseCases categoriaUseCases) {
-    this.categoriaUseCases = categoriaUseCases;
-  }
+    public CategoriaController(CategoriaUseCases categoriaUseCases) {
+        this.categoriaUseCases = categoriaUseCases;
+    }
 
-  // ENDPOINTS PÚBLICOS
+    // ENDPOINTS PÚBLICOS
+    @GetMapping
+    @Operation(summary = "Lista todas as categorias ativas", description = "Retorna uma lista paginada de todas as categorias ativas no sistema.")
+    @ApiResponse(responseCode = "200", description = "Lista de categorias retornada com sucesso.")
+    public ResponseEntity<Page<CategoriaResponseDTO>> listarAtivas(@ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(categoriaUseCases.listarCategoriasAtivas(pageable));
+    }
 
-  @GetMapping
-  @Operation(summary = "Lista todas as categorias ativas", description = "Retorna uma lista paginada de todas as categorias ativas no sistema.")
-  @ApiResponse(responseCode = "200", description = "Lista de categorias retornada com sucesso.")
-  public ResponseEntity<Page<CategoriaResponseDTO>> listarAtivas(@ParameterObject Pageable pageable) {
-    return ResponseEntity.ok(categoriaUseCases.listarCategoriasAtivas(pageable));
-  }
+    @GetMapping("/{id}")
+    @Operation(summary = "Busca uma categoria ativa por ID", description = "Retorna os detalhes de uma categoria ativa específica.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Categoria encontrada."),
+        @ApiResponse(responseCode = "404", description = "Categoria não encontrada ou inativa.")
+    })
+    public ResponseEntity<CategoriaResponseDTO> buscarAtivaPorId(@PathVariable UUID id) {
+        return ResponseEntity.ok(categoriaUseCases.buscarCategoriaAtivaPorId(id));
+    }
 
-  @GetMapping("/{id}")
-  @Operation(summary = "Busca uma categoria ativa por ID", description = "Retorna os detalhes de uma categoria ativa específica.")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Categoria encontrada."),
-      @ApiResponse(responseCode = "404", description = "Categoria não encontrada ou inativa.")
-  })
-  public ResponseEntity<CategoriaResponseDTO> buscarAtivaPorId(@PathVariable UUID id) {
-    return ResponseEntity.ok(categoriaUseCases.buscarCategoriaAtivaPorId(id));
-  }
+    // ENDPOINTS PRIVADOS (ADMINISTRATIVOS)
+    @PostMapping
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Cria uma nova categoria", description = "Cria uma nova categoria de produto. Requer autenticação (ex: Fornecedor).")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Categoria criada com sucesso."),
+        @ApiResponse(responseCode = "403", description = "Acesso negado."),
+        @ApiResponse(responseCode = "409", description = "Nome de categoria já existente.")
+    })
+    public ResponseEntity<CategoriaResponseDTO> criar(@RequestBody @Valid CategoriaRequestDTO requestDTO,
+            Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        CategoriaResponseDTO responseDTO = categoriaUseCases.criarNovaCategoria(requestDTO, userDetails);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(responseDTO.id()).toUri();
+        return ResponseEntity.created(location).body(responseDTO);
+    }
 
-  // ENDPOINTS PRIVADOS (ADMINISTRATIVOS)
+    @PutMapping("/{id}")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Atualiza o nome de uma categoria", description = "Atualiza o nome de uma categoria existente. Requer autenticação.")
+    public ResponseEntity<CategoriaResponseDTO> atualizar(@PathVariable UUID id,
+            @RequestBody @Valid CategoriaRequestDTO requestDTO, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        CategoriaResponseDTO responseDTO = categoriaUseCases.atualizarCategoria(id, requestDTO, userDetails);
+        return ResponseEntity.ok(responseDTO);
+    }
 
-  @PostMapping
-  @SecurityRequirement(name = "bearerAuth")
-  @Operation(summary = "Cria uma nova categoria", description = "Cria uma nova categoria de produto. Requer autenticação (ex: Fornecedor).")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description = "Categoria criada com sucesso."),
-      @ApiResponse(responseCode = "403", description = "Acesso negado."),
-      @ApiResponse(responseCode = "409", description = "Nome de categoria já existente.")
-  })
-  public ResponseEntity<CategoriaResponseDTO> criar(@RequestBody @Valid CategoriaRequestDTO requestDTO,
-      Authentication authentication) {
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    CategoriaResponseDTO responseDTO = categoriaUseCases.criarNovaCategoria(requestDTO, userDetails);
-    URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-        .buildAndExpand(responseDTO.id()).toUri();
-    return ResponseEntity.created(location).body(responseDTO);
-  }
+    @DeleteMapping("/{id}")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Desativa uma categoria", description = "Desativa uma categoria. Requer autenticação.")
+    public ResponseEntity<Void> desativar(@PathVariable UUID id, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        categoriaUseCases.desativarCategoria(id, userDetails);
+        return ResponseEntity.noContent().build();
+    }
 
-  @PutMapping("/{id}")
-  @SecurityRequirement(name = "bearerAuth")
-  @Operation(summary = "Atualiza o nome de uma categoria", description = "Atualiza o nome de uma categoria existente. Requer autenticação.")
-  public ResponseEntity<CategoriaResponseDTO> atualizar(@PathVariable UUID id,
-      @RequestBody @Valid CategoriaRequestDTO requestDTO, Authentication authentication) {
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    CategoriaResponseDTO responseDTO = categoriaUseCases.atualizarCategoria(id, requestDTO, userDetails);
-    return ResponseEntity.ok(responseDTO);
-  }
-
-  @DeleteMapping("/{id}")
-  @SecurityRequirement(name = "bearerAuth")
-  @Operation(summary = "Desativa uma categoria", description = "Desativa uma categoria. Requer autenticação.")
-  public ResponseEntity<Void> desativar(@PathVariable UUID id, Authentication authentication) {
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    categoriaUseCases.desativarCategoria(id, userDetails);
-    return ResponseEntity.noContent().build();
-  }
-
-  @PostMapping("/{id}/reativar")
-  @SecurityRequirement(name = "bearerAuth")
-  @Operation(summary = "Reativa uma categoria", description = "Reativa uma categoria. Requer autenticação.")
-  public ResponseEntity<CategoriaResponseDTO> reativar(@PathVariable UUID id, Authentication authentication) {
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    return ResponseEntity.ok(categoriaUseCases.reativarCategoria(id, userDetails));
-  }
+    @PostMapping("/{id}/reativar")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Reativa uma categoria", description = "Reativa uma categoria. Requer autenticação.")
+    public ResponseEntity<CategoriaResponseDTO> reativar(@PathVariable UUID id, Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return ResponseEntity.ok(categoriaUseCases.reativarCategoria(id, userDetails));
+    }
 }

@@ -1,10 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token) {
-    window.location.href = "/login";
-    return;
-  }
-
   const formDesativar = document.getElementById("delete-account-form");
   const fornecedorId = formDesativar.dataset.fornecedorId;
 
@@ -21,12 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const res = await fetch(`/api/v1/fornecedores/${fornecedorId}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!res.ok) throw new Error("Erro ao desativar a conta.");
 
-      localStorage.removeItem("jwtToken");
       mostrarToast(
         "Conta desativada com sucesso. Você será redirecionado.",
         "success"

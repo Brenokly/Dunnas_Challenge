@@ -1,10 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token) {
-    window.location.href = "/login";
-    return;
-  }
-
   const formSenha = document.getElementById("edit-password-form");
   const fornecedorId = formSenha.closest("[data-fornecedor-id]").dataset
     .fornecedorId;
@@ -42,8 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch(`/api/v1/fornecedores/${fornecedorId}/senha`, {
         method: "PATCH",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(data),
       });

@@ -1,10 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token) {
-    window.location.href = "/login";
-    return;
-  }
-
   const form = document.getElementById("form-novo-produto");
   const categoriasList = document.getElementById("modal-categorias-list");
   const btnSelecionarCategorias = document.getElementById(
@@ -87,9 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Lógica de Carregamento de Dados
   async function carregarCategorias() {
     try {
-      const res = await fetch("/api/v1/categorias?page=0&size=100", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch("/api/v1/categorias?page=0&size=100");
       if (!res.ok) throw new Error("Erro ao carregar categorias.");
 
       const data = await res.json();
@@ -127,8 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("/api/v1/produtos", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(data),
       });

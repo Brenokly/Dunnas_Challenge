@@ -4,12 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const saldoValorSpan = document.getElementById("saldo-valor");
   const feedbackDiv = document.getElementById("feedback-message");
 
-  const token = localStorage.getItem("jwtToken");
-  if (!token) {
-    window.location.href = "/login";
-    return;
-  }
-
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -29,8 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch("/api/v1/clientes/meu-perfil/saldo", {
         method: "PATCH",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({ valor: valor }),
       });

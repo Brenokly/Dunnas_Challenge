@@ -1,10 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token) {
-    window.location.href = "/login";
-    return;
-  }
-
   // Abas
   const tabs = document.querySelectorAll(".tab-button");
   const contents = document.querySelectorAll(".tab-content");
@@ -25,9 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function carregarPedidos(pagina = 0) {
     const url = `/api/v1/pedidos?page=${pagina}&size=${tamanhoPagina}&sort=dataPedido,desc`;
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await fetch(url);
     if (!res.ok) {
       alert("Erro ao carregar pedidos");
       return;
@@ -71,9 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function carregarTransacoes(pagina = 0) {
     const url = `/api/v1/transacoes/meu-historico?page=${pagina}&size=${tamanhoPagina}&sort=dataTransacao,desc`;
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await fetch(url);
     if (!res.ok) {
       alert("Erro ao carregar transações");
       return;

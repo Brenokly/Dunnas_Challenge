@@ -1,10 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token) {
-    window.location.href = "/login";
-    return;
-  }
-
   const cuponsTbody = document.getElementById("cupons-tbody");
   const paginacaoCupons = document.getElementById("paginacao-cupons");
   let paginaAtualCupons = 0;
@@ -17,9 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const url = `/api/v1/cupons?page=${pagina}&size=${tamanhoPagina}&sort=dataValidade,desc`;
 
-      const res = await fetch(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(url);
       if (!res.ok) throw new Error("Erro ao carregar cupons.");
 
       const data = await res.json();
@@ -93,8 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function desativarCupom(id) {
     try {
       const res = await fetch(`/api/v1/cupons/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        method: "DELETE"
       });
       if (!res.ok) throw new Error("Erro ao desativar cupom.");
 
@@ -109,8 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function reativarCupom(id) {
     try {
       const res = await fetch(`/api/v1/cupons/${id}/reativar`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        method: "POST"
       });
       if (!res.ok) throw new Error("Erro ao reativar cupom.");
 

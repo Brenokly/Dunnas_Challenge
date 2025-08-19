@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("login-form");
-  const errorDiv = form.nextElementSibling; // div para erros
+  const errorDiv = form.nextElementSibling;
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -32,16 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const data = await response.json();
-      const token = data.token;
-
-      if (!token) {
-        errorDiv.textContent = "Resposta inválida do servidor.";
-        errorDiv.style.display = "block";
-        return;
-      }
-
-      localStorage.setItem("jwtToken", token);
       window.location.href = "/dashboard";
     } catch (err) {
       console.error(err);
