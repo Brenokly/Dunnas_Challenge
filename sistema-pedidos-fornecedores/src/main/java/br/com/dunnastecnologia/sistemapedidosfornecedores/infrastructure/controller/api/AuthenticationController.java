@@ -1,6 +1,5 @@
 package br.com.dunnastecnologia.sistemapedidosfornecedores.infrastructure.controller.api;
 
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -48,7 +48,7 @@ public class AuthenticationController {
         @ApiResponse(responseCode = "200", description = "Autenticação bem-sucedida."),
         @ApiResponse(responseCode = "401", description = "Credenciais inválidas.")
     })
-    public ResponseEntity<String> login(
+    public ResponseEntity<Void> login(
             @RequestBody @Valid AuthenticationRequestDTO request,
             HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 
@@ -68,17 +68,15 @@ public class AuthenticationController {
         final UserDetails user = authenticationService.loadUserByUsername(request.usuario());
         final String token = jwtService.generateToken(user);
 
-        // Criar o cookie HttpOnly
-        ResponseCookie cookie = ResponseCookie.from("jwt", token)
-                .httpOnly(true) // Impede acesso via JavaScript
-                .secure(true) // Apenas HTTPS
-                .path("/") // Disponível para toda a aplicação
-                .maxAge(7 * 24 * 60 * 60) // Expiração em 7 dias
-                .build();
+        Cookie cookie = new Cookie("jwt", token);
+        cookie.setHttpOnly(true); // Impede acesso via JavaScript
+        cookie.setSecure(true); // Apenas HTTPS
+        cookie.setPath("/"); // Disponível para toda a aplicação
+        cookie.setMaxAge(7 * 24 * 60 * 60); // Expiração em 7 dias
 
         httpResponse.addHeader("Set-Cookie", cookie.toString());
 
-        return ResponseEntity.ok("Login bem-sucedido!");
+        return ResponseEntity.ok().build();
     }
 
 }

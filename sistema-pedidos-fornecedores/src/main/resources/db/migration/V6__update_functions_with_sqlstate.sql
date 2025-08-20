@@ -1,6 +1,6 @@
 -- Atualiza as funções já criadas para usar o SQLSTATEs customizados
 
-CREATE OR REPLACE FUNCTION cadastrar_novo_cliente(
+CREATE OR REPLACE PROCEDURE cadastrar_novo_cliente(
     p_nome VARCHAR, p_cpf VARCHAR, p_data_nascimento DATE, p_usuario VARCHAR, p_senha_hash VARCHAR
 ) RETURNS UUID AS $$
 DECLARE
@@ -29,7 +29,7 @@ $$ LANGUAGE plpgsql;
 
 
 -- Atualiza a função de adicionar saldo para usar SQLSTATEs customizados
-CREATE OR REPLACE FUNCTION adicionar_saldo_cliente(
+CREATE OR REPLACE PROCEDURE adicionar_saldo_cliente(
     p_cliente_id UUID,
     p_valor_adicao DECIMAL
 )

@@ -19,13 +19,13 @@ import br.com.dunnastecnologia.sistemapedidosfornecedores.domain.model.Cliente;
 public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
 
         /**
-         * Chama a função 'cadastrar_novo_cliente' no PostgreSQL para registrar um
+         * Chama a procedure 'cadastrar_novo_cliente' no PostgreSQL para registrar um
          * novo cliente. Delega a lógica de validação de duplicidade e inserção para
          * o banco de dados.
          *
          * @return o UUID do cliente recém-criado.
          */
-        @Query(value = "SELECT cadastrar_novo_cliente(:nome, :cpf, :dataNascimento, :usuario, :senhaHash)", nativeQuery = true)
+        @Query(value = "CALL cadastrar_novo_cliente(:nome, :cpf, :dataNascimento, :usuario, :senhaHash)", nativeQuery = true)
         UUID registrarClienteViaFuncao(
                         @Param("nome") String nome,
                         @Param("cpf") String cpf,
@@ -48,13 +48,13 @@ public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
                         @Param("novoSenhaHash") String novoSenhaHash);
 
         /**
-         * Chama a função 'adicionar_saldo_cliente' no PostgreSQL. Delega a
+         * Chama a procedure 'adicionar_saldo_cliente' no PostgreSQL. Delega a
          * transação atômica de atualizar o saldo e criar o registro no histórico
          * para o banco.
          *
          * @return o novo saldo do cliente após a adição.
          */
-        @Query(value = "SELECT adicionar_saldo_cliente(:clienteId, :valor)", nativeQuery = true)
+        @Query(value = "CALL adicionar_saldo_cliente(:clienteId, :valor)", nativeQuery = true)
         BigDecimal adicionarSaldoViaFuncao(
                         @Param("clienteId") UUID clienteId,
                         @Param("valor") BigDecimal valor);

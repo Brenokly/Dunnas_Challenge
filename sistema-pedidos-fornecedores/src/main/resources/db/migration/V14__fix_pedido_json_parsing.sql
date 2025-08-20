@@ -46,7 +46,7 @@ BEGIN
 
     SELECT saldo INTO cliente_saldo FROM clientes WHERE id = p_cliente_id FOR UPDATE;
     IF cliente_saldo < valor_final THEN
-        RAISE EXCEPTION 'Saldo insuficiente para realizar o pedido.' USING ERRCODE = 'PPE01';
+        RAISE EXCEPTION 'Regra de Negócio Violada: Saldo insuficiente para realizar o pedido.' USING ERRCODE = 'PPE01';
     END IF;
 
     UPDATE clientes SET saldo = saldo - valor_final WHERE id = p_cliente_id;
